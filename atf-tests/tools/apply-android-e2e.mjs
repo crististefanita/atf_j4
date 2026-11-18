@@ -29,6 +29,7 @@ export async function applyAndroidEvidence(candidateDir, runDir) {
   const declared = new Map(result.integrity.map(item => [item.path, item]));
   const accepted = await readE2eEvidence({
     manifest, name, declared, requireScenario: true, scenario,
+    readCurrentSource: async relative => strictJson(await regularFile(candidate, relative)),
     readDocument: async relative => strictJson(await regularFile(bundle, relative)),
     readReport: async relative => {
       const bytes = await fs.readFile(await regularFile(bundle, relative));

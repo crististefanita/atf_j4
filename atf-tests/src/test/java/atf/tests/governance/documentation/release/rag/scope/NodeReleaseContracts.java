@@ -10,16 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-final class NodeReleaseContracts {
+public final class NodeReleaseContracts {
     private NodeReleaseContracts() { }
-    static String runContracts(Duration timeout, String... scripts) throws Exception {
+    public static String runContracts(Duration timeout, String... scripts) throws Exception {
         var root = GovernanceProject.locateProjectRoot();
         var args = new ArrayList<>(List.of("node", "--test"));
         for (String script : scripts) args.add(root.resolve("atf-tests/tools").resolve(script).toString());
         return runNode(args, root, timeout);
     }
 
-    static String runNode(List<String> args, Path directory, Duration timeout) throws Exception {
+    public static String runNode(List<String> args, Path directory, Duration timeout) throws Exception {
         var result = CommandProcess.execute(args, directory, Map.of(), timeout, true);
         String output = new String(result.stdout(), StandardCharsets.UTF_8);
         AuditedAssertions.assertEquals(0, result.exitCode(),

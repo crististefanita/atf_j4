@@ -41,6 +41,11 @@ public final class TestChangeReview {
             "atf-tests/tools/visual-change-contracts.mjs", "atf-tests/tools/visual-contract-sources.mjs",
             "atf-tests/tools/github-retention-seal.mjs", "atf-tests/tools/collect-github-release-retention.mjs",
             "atf-tests/tools/verify-release-git-snapshot.mjs",
+            "atf-tests/tools/android-e2e-provenance.mjs", "atf-tests/tools/android-e2e-evidence.mjs",
+            "atf-tests/tools/source-input-identity.mjs",
+            "atf-tests/tools/prepare-android-e2e.mjs", "atf-tests/tools/apply-android-e2e.mjs",
+            "atf-ui-browser/tests/ro/cardtable/browser/WhistSurfaceContract.java",
+            "atf-ui-browser/tests/whist-surface-contract.test.mjs",
             "atf-tests/tools/evaluate-release-rag.mjs");
     private static final List<String> GATE_DIRECTORIES = List.of(
             "atf-tests/src/main/java/atf/tests/testchange/", "whist-lab-app/gradle/", ".github/workflows/");

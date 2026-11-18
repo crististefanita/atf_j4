@@ -184,6 +184,20 @@ Contractul de viewport păstrează pe desktop cadrul logic de 414 × 896, îl sc
 - Exportul reutilizează directorul aceleiași versiuni după confruntarea intrărilor și a octeților. Schimbarea intrărilor cere o versiune nouă. Proba de integrare pornește prima partidă prin JAR-ul fizic, adaptor și dependențele jocului.
 - Promovați aceiași octeți și aceleași amprente în consumatorii calificați. Versiunea cache-ului din HTML urmărește actualizarea resurselor site-ului. [Verificarea în consumatori](#verificare)
 
+### Contractele portabile ale adaptoarelor Web și APK
+
+Whist folosește aceeași politică nativă a mesei prin [WhistBoardAdapter](whist/src/main/java/ro/whistlab/browser/presentation/WhistBoardAdapter.java). Browserul furnizează unitățile CSS măsurate și scara textului rădăcinii; Android furnizează densitatea și scara textului din sistem. Referința browserului compară astfel regiuni logice, nu pixeli fizici bruți.
+
+| Frontieră de componentă | Contract verificat |
+|---|---|
+| Geometria mesei | Toate modurile, 3–6 locuri, lățimi compacte și mari, 1–17 cărți și text mărit; licitarea și jocul păstrează aceleași ancore ale jucătorilor. |
+| Adaptarea unităților | Normalizarea densității Android la coordonatele logice Web, cu toleranță limitată pentru rotunjire. Zoomul desktop rămâne în adaptorul ferestrei. |
+| Prezentarea cărților | Cele 52 de combinații rang/culoare păstrează marcajele, rolul culorii și proporțiile prin adaptoarele reale ale mâinii. |
+| Interacțiune | Scenariul comun verifică refuzul, evidențierile legale, expirarea întârziată și o singură depunere acceptată; cadrele colectării sunt comparate prin ambele adaptoare. |
+| Limita acceptanței | Componentele execută cod portabil de producție, nu View-uri Android sau rasterizarea fonturilor din browser. Acceptanța vizuală pe același dispozitiv rămâne separată. |
+
+[Componentele adaptorului](tests/whist-surface-contract.test.mjs) compilează numai dependențele portabile cu JDK, fără Gradle, SDK sau emulator. [Responsabilul JUnit](../atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/nativeproof/WhistSurfaceAdapterComponentTest.java) capturează observațiile reale în Extent. Scara implicită a textului rămâne neschimbată; intrările de scară invalide sunt refuzate la frontiera geometriei.
+
 ## Verificare
 
 Meniul mesei expune direct istoricul scorului în Whist și Rentz prin adaptorul comun de meniu. Deschiderea istoricului suspendă programarea automată; închiderea dialogului reia aceeași masă fără repetarea comenzilor. Componentele verifică etichetele localizate, un callback per alegere, închiderea la click în exterior și planurile de meniu imuabile.

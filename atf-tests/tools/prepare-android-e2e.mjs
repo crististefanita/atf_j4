@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 import {androidExecutionProfile, disposablePaths, e2ePaths, scenarioFor, signedE2eProtocol} from './android-e2e-contract.mjs';
 import {readE2eEvidence, verifyDisposableUser, verifyE2eReport} from './android-e2e-evidence.mjs';
 import {inspectE2eImages, verifyPng} from './android-e2e-images.mjs';
+import {captureNativeSource, e2eSourcePath} from './android-e2e-provenance.mjs';
 import {componentInputMap, digest, inputFingerprint, regularFile, strictJson} from './evaluate-release-rag.mjs';
 
 const doc = async (root, relative) => strictJson(await regularFile(root, relative));
@@ -29,10 +30,12 @@ export async function planAndroidE2e(candidate, manifest, request) {
     try {
       const accepted = await readE2eEvidence({
         manifest, name: group, declared, scenario, requireScenario: true,
-        readDocument: relative => doc(candidate, relative), readReport: relative => read(candidate, relative)
+        readDocument: relative => doc(candidate, relative), readReport: relative => read(candidate, relative),
+        expectedValidatorFingerprint: request.validatorRevision
       });
       decisions.push({group, scenario, decision: 'REUSE',
-        evidence: [...accepted.documents].map(([relative, document]) => entry(relative, document))});
+        evidence: [...accepted.documents].map(([relative, document]) => entry(relative, document)),
+        ...(accepted.provenance ? {provenance: accepted.provenance} : {})});
     } catch (error) {
       decisions.push({group, scenario, decision: 'RUN', reason: error.code === 'ENOENT' ? 'ANDROID_E2E_FILE_MISSING' : error.message});
     }
@@ -80,8 +83,18 @@ async function recordAttempt(root, manifest, attempt, group) {
   const identity = verifyE2eReport({manifest, name: group, group: result, receipt, report, expectedScenario: scenario});
   verifyDisposableUser(dataBoundary, ready, cleanup, identity, scenario);
   const receiptBytes = Buffer.from(JSON.stringify(receipt, null, 2) + '\n');
+  result.executionSource = e2eSourcePath(group);
+  const sourceDocument = await doc(attempt.candidateRoot, manifest.source.inputManifest);
+  const source = captureNativeSource(manifest, sourceDocument, receipt, digest(receiptBytes));
+  const sourceBytes = Buffer.from(JSON.stringify(source, null, 2) + '\n');
   const documents = new Map([[paths.report, report], [paths.executionReceipt, {bytes: receiptBytes, sha256: digest(receiptBytes)}],
+    [result.executionSource, {bytes: sourceBytes, sha256: digest(sourceBytes)}],
+    [source.sourceInputManifest, sourceDocument],
     [dataBoundary.readyReceipt, ready], [dataBoundary.cleanupReceipt, cleanup]]);
+  await writeBundle(root, group, result, documents);
+}
+
+async function writeBundle(root, group, result, documents) {
   const bundle = path.join(root, 'evidence');
   await fs.mkdir(bundle);
   for (const [relative, document] of documents) {
@@ -91,6 +104,31 @@ async function recordAttempt(root, manifest, attempt, group) {
   }
   await write(path.join(bundle, 'e2e-result.json'), {flow: group, group: result,
     integrity: [...documents].map(([relative, document]) => entry(relative, document))});
+}
+
+/** Export immutable native evidence and its original source inventory; never rewrite its receipt. */
+export async function exportAndroidEvidence(candidate, manifest, request, root, group) {
+  if (request.releaseVersion !== manifest.release?.versionName || !request.groups?.includes(group))
+    throw Error('ANDROID_E2E_GROUP_NOT_IN_PLAN');
+  const profile = androidExecutionProfile(request.executionProfile?.api, request.executionProfile?.displayProfile,
+    request.executionProfile?.responsiveProfiles);
+  const scenario = scenarioFor(group, profile);
+  const files = manifest.integrity?.files ?? [];
+  const declared = new Map(files.map(item => [item.path, item]));
+  if (declared.size !== files.length) throw Error('ANDROID_E2E_DUPLICATE_PAYLOAD');
+  const accepted = await readE2eEvidence({manifest, name: group, declared, scenario, requireScenario: true,
+    expectedValidatorFingerprint: request.validatorRevision,
+    readDocument: relative => doc(candidate, relative), readReport: relative => read(candidate, relative)});
+  const paths = e2ePaths(group), executionSource = e2eSourcePath(group);
+  if (!accepted.sourceProvenance) {
+    const receipt = accepted.documents.get(paths.executionReceipt);
+    const sourceDocument = await doc(candidate, manifest.source.inputManifest);
+    const value = captureNativeSource(manifest, sourceDocument, receipt.value, receipt.sha256);
+    const bytes = Buffer.from(JSON.stringify(value, null, 2) + '\n');
+    accepted.documents.set(executionSource, {bytes, sha256: digest(bytes)});
+    accepted.documents.set(value.sourceInputManifest, sourceDocument);
+  }
+  await writeBundle(root, group, {...accepted.group, executionSource}, accepted.documents);
 }
 
 async function main([command, candidateDir, runDir, ...args]) {
@@ -122,8 +160,16 @@ async function main([command, candidateDir, runDir, ...args]) {
         || !/^[0-9a-f]{64}$/.test(compilation.value.libraryFingerprint ?? '')
         || plan.sourceFingerprint !== manifest.source.workingTreeFingerprint || plan.installedApkSha256 !== manifest.release.apkSha256
         || JSON.stringify(selected.scenario) !== JSON.stringify(attempt.scenario)) throw Error('ANDROID_E2E_ATTEMPT_IDENTITY');
-    await recordAttempt(root, manifest, attempt, group);
-  } else throw Error('Use plan or record <candidate> <run> <group>');
+    await recordAttempt(root, manifest, {...attempt, candidateRoot: candidate}, group);
+  } else if (command === 'inspect') {
+    const request = (await doc(root, 'e2e-request.json')).value;
+    if (request.releaseVersion !== manifest.release.versionName) throw Error('ANDROID_E2E_SOURCE_SNAPSHOT_MISMATCH');
+    const decisions = await planAndroidE2e(candidate, manifest, request);
+    if (decisions.some(row => row.decision !== 'REUSE')) throw Error(JSON.stringify(decisions));
+    console.log(JSON.stringify(decisions));
+  } else if (command === 'export') {
+    await exportAndroidEvidence(candidate, manifest, (await doc(root, 'e2e-request.json')).value, root, args[0]);
+  } else throw Error('Use plan, record, export or inspect <candidate> <run> <group>');
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

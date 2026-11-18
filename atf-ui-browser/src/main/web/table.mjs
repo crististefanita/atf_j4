@@ -1,10 +1,10 @@
-import { fitTextWidth, isPhone, viewportGeometry } from "./viewport.mjs?v=0.2.10";
+import { fitTextWidth, isPhone, viewportGeometry, textScale } from "./viewport.mjs?v=0.2.14";
 import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
 import { bindHandFeedback } from "./hand-feedback.mjs";
 import { historyGrid } from "./records.mjs";
 import { historyFirst } from "./table-menu.mjs";
-import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.10";
+import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.14";
 
 const stage = document.querySelector("#table");
 const frame = document.querySelector("#frame");
@@ -647,6 +647,7 @@ async function placeTable(content = stage.firstElementChild) {
     board.style.minHeight = minHeight;
     const layout = await call("/api/layout", {
       width, height, mode: state.view.header?.mode ?? "", seatHeight: Math.max(...seats.map(seat => seat.offsetHeight)),
+      fontScale: textScale(getComputedStyle(document.documentElement).fontSize),
       bidOptions: stage.dataset.playingSteps && !content.hasAttribute("data-preparing")
         ? 0 : board.querySelectorAll("[data-bid]").length,
       players: seats.length, viewport: stage.clientHeight, handWidth: hand.clientWidth, cards: fan.children.length,

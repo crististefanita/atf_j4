@@ -54,6 +54,4 @@ Proba de transfer prin Android DownloadManager și verificarea certificatului ap
 
 ## Limitele calificării release-ului
 
-| Prioritate | Lacună și responsabil | Criteriu de închidere |
-|---|---|---|
-| P2 | Reutilizarea nativă leagă întregul snapshot al surselor, inclusiv instrumentele de calificare. O corecție doar în validator poate invalida dovezi ale unui APK neschimbat. [Admitere](../../atf-tests/tools/prepare-android-e2e.mjs) | Înregistrează intrările motorului separat de revizia validatorului. Reutilizează doar cu APK, surse ale jocului, scenariu, profil de afișare și capturi originale identice. Cazurile controlate trebuie să refuze cod al jocului, binare sau capturi schimbate și proveniența nepotrivită a validatorului. |
+Separarea sursei native de validator aparține [contractului de calificare](../testing/ATF_ReleaseQualification.md#proveniența-execuției-native-și-a-validatorului). Reutilizarea cere în continuare motor, scenariu, APK și dovezi originale neschimbate.

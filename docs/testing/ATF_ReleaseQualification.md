@@ -268,6 +268,24 @@ Evaluatorul compară fișierele adăugate, șterse și modificate. [Perimetrul s
 - Lansatorul acceptă numai grupuri din catalog. Parametrul -ReuseFrom primește o rulare anterioară de componente sau dosarul reports/component cu receipt-urile originale.
 - Planul component-reuse.json indică motivul deciziei și ID-ul snapshot-ului. Păstrați planul, Extent, receipt-ul de execuție și snapshot-ul original la asamblarea candidatului. În manifest, setați componentEvidenceOrigin pentru fiecare grup refolosit și folosiți calea androidComponentsReceipt, relativă la reports/component, pentru poarta Android de componente. [Componente](../../scripts/README.md)
 
+### Proveniența execuției native și a validatorului
+
+Rapoartele native păstrează APK-ul, commitul execuției, amprenta sursei, scenariul și capturile originale. [Admiterea sursei](../../atf-tests/tools/android-e2e-provenance.mjs) separă aceste fapte de revizia identificată prin conținut a validatorului Node curent. Validarea nu atribuie chitanței vechi commitul curent.
+
+| Familie de intrări | Frontiera reutilizării |
+|---|---|
+| APK și motor | SHA-256 al APK-ului și amprenta intrărilor motorului sunt identice; schimbarea surselor jocului, binarelor, resurselor sau intrărilor necunoscute cere un flux nou. |
+| Scenariu | Infrastructura nativă și intrările lansatoarelor rămân identice, împreună cu selecția fluxului, API-ul, profilul de afișare și matricea adaptivă. |
+| Validator | Modulele Node de la primul nivel al directorului uneltelor de release au o revizie observată proprie; schimbarea lor cere validare, nu execuție nativă. Câmpul opțional `validatorRevision` din cererea E2E sau plan fixează această revizie. |
+| Metadate editoriale | Documentația și înregistrarea reviziei bilingve se pot schimba fără modificarea identității motorului nativ. |
+| Dovezi originale | Păstrați octeții chitanței, raportului și izolării. Fiecare grup deține `source-provenance.json`; grupurile împart documentul original al intrărilor sursei sub amprenta lui. |
+
+Execuțiile noi înregistrează automat această proveniență. Pentru dovezile mai vechi cu schema 2, exportați din directorul calificat original într-o rulare externă nouă ce conține `e2e-request.json`, apoi importați în candidat. Exportul păstrează octeții originali și reduce reutilizările succesive la snapshot-ul primei execuții.
+
+- `prepare-android-e2e.mjs export <original-edition> <external-run> <group>` pregătește pachetul. `apply-android-e2e.mjs <prepared-candidate> <external-run>` îl validează și importă. Planificatorul și evaluatorul reverifică motorul, scenariul, revizia validatorului, hash-urile payload-ului și capturile originale; dovezile vechi fără proveniență suficientă păstrează decizia conservatoare `RUN`.
+
+- `prepare-android-e2e.mjs inspect <edition> <external-run>` aplică aceeași admitere fără modificări, pentru cererea din acea rulare. Profilul ei verifică consistența dovezii înregistrate; un release nou cere în continuare profilul selectat de RAG. Snapshot-urile lipsă, amprentele falsificate ale validatorului, intrările motorului sau scenariului schimbate și capturile deteriorate blochează reutilizarea.
+
 ### Probe native și porți Android
 
 Schimbările vizibile în fluxul utilizatorului cer un E2E focalizat pe acel flux. Pentru catalogul realizărilor, selecția de release deschide ecranul din APK-ul semnat, verifică progresul local și revine la pagina principală; testele de componentă păstrează oracolele pentru praguri, deduplicare și persistența popup-ului.

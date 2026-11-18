@@ -25,13 +25,16 @@ final class BrowserGeometry {
         int handIndexWidth = inputs.containsKey("handIndexWidth")
                 ? number(inputs, "handIndexWidth", 1, HandLayoutMetrics.CARD_WIDTH_DP)
                 : HandLayoutMetrics.DENSE_HAND_MIN_ADVANCE_DP;
-        var policy = new TableViewportPolicy(viewport);
+        float fontScale = Float.parseFloat(inputs.getOrDefault("fontScale", "1"));
+        if (!Float.isFinite(fontScale) || fontScale < 0.5f || fontScale > 3f)
+            throw new IllegalArgumentException("Geometry font scale out of range");
+        var policy = new TableViewportPolicy(viewport, fontScale);
         int bidOptions = inputs.containsKey("bidOptions") ? number(inputs, "bidOptions", 0, 18) : 0;
         TableGeometry.Plan board = null;
         PlayedCardMetrics.Layout played = null;
         BrowserGame.BidControls bids = null;
         if (players >= 3 && width >= 240) {
-            var profile = game.boardProfile(inputs.getOrDefault("mode", "ROMANIAN_WHIST"), players, width, bidOptions, policy);
+            var profile = game.boardProfile(inputs.getOrDefault("mode", "ROMANIAN_WHIST"), players, width, bidOptions, policy, fontScale);
             var center = profile.center();
             played = profile.playedCards();
             bids = profile.bids();
@@ -43,7 +46,7 @@ final class BrowserGeometry {
             int centerWidth = center.fullWidth() ? width : Math.min(width, center.width());
             board = new TableGeometry.Plan(plan.seats(), spec.content(plan, centerWidth, center.reservedHeight()));
         }
-        var hand = cards == 0 ? null : HandLayoutMetrics.fan(cards, handWidth, 1, 1, handIndexWidth);
+        var hand = cards == 0 ? null : HandLayoutMetrics.fan(cards, handWidth, 1, fontScale, handIndexWidth);
         var style = played == null ? Map.<String, Integer>of() : Map.of(
                 "faceWidth", played.cardWidthDp(),
                 "faceHeight", played.cardHeightDp(),
