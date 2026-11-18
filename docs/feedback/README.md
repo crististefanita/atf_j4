@@ -36,7 +36,6 @@ The 1–100 score expresses the recommended order of work, not the quality or pe
 | AND-03 | P1 | 89 | Qualify API 37, navigation of the system, resumption, enlarged fonts and memory on an identified device. [Register](ATF_Android.md) |
 | RPT-03 | P1 | 88 | Publish large suites within the declared limit of the heap, without repeated copies of HTML and without losing JUnit or comparisons to failure. [Register](ATF_Reporting.md#rpt-bounded-report-heap---safe-completion-for-large-suites) |
 | UI-01 | P1 | 86 | Qualify header, boxes and notifications on consumer APKs and check the name's entry of Unicode. [Register](ATF_CardUi_Extraction.md#priorities-and-closing-conditions) |
-| RAG-12 | P2 | 85 | Pass the reporting scope to the suite JVM without changing child-process streams; reject inherited launcher contamination before execution. [Register](ATF_Governance.md#release-launcher-and-finalization) |
 | RAG-11 | P2 | 84 | Separate immutable APK/runtime provenance from the validator revision, preserving strict rejection of changed game inputs. [Register](ATF_Governance.md#release-qualification-boundaries) |
 | RAG-13 | P2 | 83 | Finalize the publication payload before collecting mutable observations; resolve the qualified tag locally and resume only the invalidated check. [Register](ATF_Governance.md#release-launcher-and-finalization) |
 | AI-02 | P2 | 82 | Measure the opportunities, the conversions to 500, effect on the ranking and latency on new lots, with natural game separate from the controlled prefix. [Register](ATF_Ai.md#playing-for-zero) |

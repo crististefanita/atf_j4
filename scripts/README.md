@@ -56,6 +56,8 @@ PowerShell shall be checked syntactically separately from the operation. An Andr
 
 ## Preconditions after entry
 
+The component launcher uses [suite-local JVM options](AtfComponentJvm.ps1). Remove inherited `JAVA_TOOL_OPTIONS`, `_JAVA_OPTIONS` and `JDK_JAVA_OPTIONS` before running it; the diagnostic names the variable without printing its value. Normal suites and single or batched test-change proofs share this profile, and child JVMs do not inherit its reporting properties.
+
 | Entry point | Resources and data required | What checks execution |
 |---|---|---|
 | `run-whist-collection.ps1` | JDK selected by `JavaHome`, gradle wrapper and jvm cache; protocol, candidate and corpus when the collection requires them. | Validate the collection and identities, prepare the copy and call Gradle with `--offline`; report the output code separately. |

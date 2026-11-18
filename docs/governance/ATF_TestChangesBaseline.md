@@ -570,3 +570,58 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Suite-local JVM reporting profile</summary>
+
+```yaml
+testChanges:
+  - id: WHIST-COMPONENT-JVM-MAIN
+    status: VERIFIED
+    base: e36b62a1e53d3bf593533f6a14c52687be8a3596
+    expires: 2026-12-18
+    reason: Scope reporting options to the suite JVM and reject inherited option variables before preparation; preserve child-process oracles.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=ComponentJvmLauncherComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.execution.jvm.ComponentJvmLauncherComponentTest#scopeBelongsToTheSuiteAndChildBytesStreamsAndExitRemainOriginal
+      negative:
+        - atf.tests.execution.jvm.ComponentJvmLauncherComponentTest#whitespaceGlobalOptionsAreStillRejected
+        - atf.tests.governance.source.changes.TestChangeReviewComponentTest#theComponentJvmProfileCannotChangeWithoutAReviewedControl
+    paths:
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeReview.java
+      - atf-tests/src/test/java/atf/tests/execution/components/ComponentSuiteExecution.java
+      - atf-tests/src/test/java/atf/tests/execution/components/TestChangeProofExecution.java
+      - atf-tests/src/test/java/atf/tests/execution/jvm/ComponentJvmFixture.java
+      - atf-tests/src/test/java/atf/tests/execution/jvm/ComponentJvmLauncherComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java
+      - atf-tests/tools/release-test-scope.mjs
+      - atf-tests/tools/release-test-scope.test.mjs
+      - scripts/run-component-suites.ps1
+      - scripts/AtfComponentJvm.ps1
+  - id: WHIST-COMPONENT-JVM-RO
+    status: VERIFIED
+    base: 080da13d8f4edb48637043a0f6b1083ce58bcce5
+    expires: 2026-12-18
+    reason: Scope reporting options to the suite JVM and reject inherited option variables before preparation; preserve child-process oracles.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=ComponentJvmLauncherComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.execution.jvm.ComponentJvmLauncherComponentTest#scopeBelongsToTheSuiteAndChildBytesStreamsAndExitRemainOriginal
+      negative:
+        - atf.tests.execution.jvm.ComponentJvmLauncherComponentTest#whitespaceGlobalOptionsAreStillRejected
+        - atf.tests.governance.source.changes.TestChangeReviewComponentTest#theComponentJvmProfileCannotChangeWithoutAReviewedControl
+    paths:
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeReview.java
+      - atf-tests/src/test/java/atf/tests/execution/components/ComponentSuiteExecution.java
+      - atf-tests/src/test/java/atf/tests/execution/components/TestChangeProofExecution.java
+      - atf-tests/src/test/java/atf/tests/execution/jvm/ComponentJvmFixture.java
+      - atf-tests/src/test/java/atf/tests/execution/jvm/ComponentJvmLauncherComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/source/changes/TestChangeReviewComponentTest.java
+      - atf-tests/tools/release-test-scope.mjs
+      - atf-tests/tools/release-test-scope.test.mjs
+      - scripts/run-component-suites.ps1
+      - scripts/AtfComponentJvm.ps1
+```
+
+</details>

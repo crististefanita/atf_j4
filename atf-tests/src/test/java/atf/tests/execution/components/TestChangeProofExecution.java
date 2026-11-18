@@ -85,6 +85,7 @@ public final class TestChangeProofExecution {
         }
         request.filters(EngineFilter.includeEngines("junit-jupiter"), TagFilter.includeTags("component"))
                 .configurationParameter("atf.component.aggregate", "true")
+                .configurationParameter("atf.test.run.scope", "suite")
                 .configurationParameter("junit.jupiter.extensions.autodetection.enabled", "true")
                 .configurationParameter("junit.jupiter.execution.parallel.enabled", "false");
         var listener = new ComponentExecutionListener();

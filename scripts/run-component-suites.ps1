@@ -16,6 +16,8 @@ param(
     [string]$TestChangeBaseRef = $env:ATF_TEST_CHANGE_BASE_REF
 )
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'AtfComponentJvm.ps1')
+Assert-AtfComponentJavaEnvironment
 . (Join-Path $PSScriptRoot 'AtfQualificationSnapshot.ps1')
 . (Join-Path $PSScriptRoot 'AtfQualificationTiming.ps1')
 . (Join-Path $PSScriptRoot 'AtfTestChangeBatch.ps1')
@@ -113,11 +115,10 @@ function Invoke-MavenSelections($selections, $stage, $provenanceFile) {
         $entries = @($policy.mavenModules | ForEach-Object { Join-Path $stage "$_/target/test-classes" })
         $entries += @($policy.mavenModules | ForEach-Object { Join-Path $stage "$_/target/classes" })
         $classpath = ($entries + @((Get-Content -LiteralPath $classpathFile -Raw).Trim())) -join [IO.Path]::PathSeparator
+        $suiteJvm = @(Get-AtfComponentJvmArguments -InputPartCharacters $InputPartCharacters -SourceRoot $sourceRoot)
         if ($AllTestChangeControls) {
             $proofRunner = 'atf.tests.execution.components.TestChangeProofExecution'
-            $proofJvm = @('-Xmx768m', '-XX:ActiveProcessorCount=2',
-                "-Datf.component.input-part-characters=$InputPartCharacters", "-Datf.governance.gitRoot=$sourceRoot",
-                '-cp', $classpath, $proofRunner)
+            $proofJvm = $suiteJvm + @('-cp', $classpath, $proofRunner)
             Invoke-AtfTestChangeBatch -RunRoot $RunRoot -ReadPlan {
                 & $java @proofJvm --list $sourceRoot $TestChangeBaseRef $proofCommit 2>> (Join-Path $RunRoot 'test-change-plan.log')
                 if ($LASTEXITCODE -ne 0) { throw 'Selecția testChanges a eșuat. Consultați test-change-plan.log.' }
@@ -146,7 +147,7 @@ function Invoke-MavenSelections($selections, $stage, $provenanceFile) {
             Push-Location (Join-Path $stage $gate.module)
             try {
                 $exit = Invoke-AtfQualificationPhase $timing ("components.run." + $gate.module) {
-                    & $java '-Xmx768m' '-XX:ActiveProcessorCount=2' "-Datf.component.input-part-characters=$InputPartCharacters" "-Datf.governance.gitRoot=$sourceRoot" -cp $classpath @arguments *> (Join-Path $RunRoot ($gate.module + '.log'))
+                    & $java @suiteJvm -cp $classpath @arguments *> (Join-Path $RunRoot ($gate.module + '.log'))
                     $LASTEXITCODE
                 } -ExitCode
             } finally { Pop-Location }
