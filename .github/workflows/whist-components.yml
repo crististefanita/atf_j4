@@ -1,0 +1,168 @@
+name: Whist pinned component qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: Immutable application source commit
+        required: true
+        type: string
+      fingerprint:
+        description: Qualified source SHA-256
+        required: true
+        type: string
+      eol_recipe:
+        description: Gzip/base64 indexed line-ending recipe
+        required: true
+        type: string
+      release_fingerprint:
+        description: Retained release inventory SHA-256
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  framework:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    env:
+      QUALIFIED_SOURCE: ${{ inputs.source }}
+      QUALIFIED_FINGERPRINT: ${{ inputs.fingerprint }}
+      QUALIFIED_EOL: ${{ inputs.eol_recipe }}
+      QUALIFIED_RELEASES: ${{ inputs.release_fingerprint }}
+    steps:
+      - name: Validate immutable request
+        shell: pwsh
+        run: |
+          if ($env:QUALIFIED_SOURCE -cnotmatch '^[a-f0-9]{40}$' -or
+              $env:QUALIFIED_FINGERPRINT -cnotmatch '^[a-f0-9]{64}$' -or
+              $env:QUALIFIED_RELEASES -cnotmatch '^[a-f0-9]{64}$' -or
+              $env:QUALIFIED_EOL -cnotmatch '^[A-Za-z0-9+/=]{1,60000}$') {
+            throw 'Invalid immutable qualification request'
+          }
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Restore and verify qualified bytes
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $work = 'C:\wq'
+          $null = New-Item -ItemType Directory -Force "$work/tmp"
+          $env:TEMP = "$work/tmp"
+          $env:TMP = $env:TEMP
+          "TEMP=$env:TEMP" >> $env:GITHUB_ENV
+          "TMP=$env:TMP" >> $env:GITHUB_ENV
+          git merge-base --is-ancestor $env:QUALIFIED_SOURCE origin/main
+          if ($LASTEXITCODE) { throw 'Source is not on main' }
+          git config --global user.name 'Whist component validator'
+          git config --global user.email 'validator@example.invalid'
+          git config --global commit.gpgsign false
+          git config --global core.longpaths true
+          & ./scripts/Get-AtfSourceInputs.ps1 -SourceRoot $env:GITHUB_WORKSPACE -AsJson |
+            Set-Content "$work/initial-inputs.json" -Encoding utf8NoBOM -NoNewline
+          @'
+          import fs from 'node:fs/promises';
+          import path from 'node:path';
+          import {pathToFileURL} from 'node:url';
+          import {gunzipSync} from 'node:zlib';
+          import {createHash} from 'node:crypto';
+          const root=process.env.GITHUB_WORKSPACE;
+          const tool=name=>pathToFileURL(path.join(root,'atf-tests/tools',name));
+          const {trackedEntries,readGitBlobs}=await import(tool('git-snapshot-blobs.mjs'));
+          const {applyEol}=await import(tool('git-snapshot-eol.mjs'));
+          const rows=JSON.parse(await fs.readFile('C:/wq/initial-inputs.json','utf8'));
+          const encoded=Buffer.from(process.env.QUALIFIED_EOL,'base64');
+          const recipe=JSON.parse(gunzipSync(encoded,{maxOutputLength:200000}));
+          const endings=new Map();
+          for(const [index,kind,crlfBits] of recipe){
+            if(!Number.isSafeInteger(index)||index<0||index>=rows.length||endings.has(rows[index].path))throw Error('Invalid indexed EOL recipe');
+            endings.set(rows[index].path,{kind,crlfBits});
+          }
+          const tree=trackedEntries(root,process.env.QUALIFIED_SOURCE);
+          const selected=new Map(rows.map(row=>[row.path,tree.get(row.path)]));
+          if([...selected.values()].some(value=>!value))throw Error('Missing source blob');
+          const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+          const restored=[];
+          for(const [file,blob] of readGitBlobs(root,selected)){
+            const bytes=endings.has(file)?applyEol(blob,endings.get(file)):blob;
+            await fs.writeFile(path.join(root,file),bytes);
+            restored.push({path:file,sha256:hash(bytes)});
+          }
+          const fingerprint=hash(restored.map(row=>row.path+'\t'+row.sha256+'\n').join(''));
+          if(fingerprint!==process.env.QUALIFIED_FINGERPRINT)throw Error('Qualified source fingerprint differs');
+          await fs.writeFile('C:/wq/restored-inputs.json',JSON.stringify(restored,null,2)+'\n');
+          console.log(JSON.stringify({source:process.env.QUALIFIED_SOURCE,files:restored.length,fingerprint,status:'PASS'}));
+          '@ | Set-Content "$work/restore.mjs" -Encoding utf8NoBOM
+          node "$work/restore.mjs"
+          if ($LASTEXITCODE) { throw 'Qualified source restoration failed' }
+          git config core.autocrlf true
+          git add --renormalize .
+          git diff --cached --quiet
+          if ($LASTEXITCODE) { throw 'Restoration changes committed content' }
+          git update-index --refresh
+          $status = @(git status --porcelain=v1 --untracked-files=all)
+          if ($status.Count) {
+            $status | Write-Output
+            git diff --numstat
+            throw 'Qualified checkout is not clean'
+          }
+          . ./scripts/AtfQualificationSnapshot.ps1
+          $inventory = ConvertTo-AtfInputJson @(Get-AtfReleaseInputs $env:GITHUB_WORKSPACE)
+          if ((Get-AtfInputFingerprint $inventory) -cne $env:QUALIFIED_RELEASES) {
+            throw 'Retained release bytes differ'
+          }
+          $edge = @('C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
+            'C:/Program Files/Microsoft/Edge/Application/msedge.exe') |
+            Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+          if (!$edge) { throw 'Chromium component renderer is missing' }
+          "ATF_BROWSER_EXECUTABLE=$edge" >> $env:GITHUB_ENV
+      - name: Prepare public Maven dependencies
+        shell: pwsh
+        run: |
+          mvn -B -ntp -DskipTests install *> C:/wq/dependencies.log
+          if ($LASTEXITCODE) { Get-Content C:/wq/dependencies.log -Tail 80; throw 'Maven dependency preparation failed' }
+          mvn -B -ntp -pl atf-tests org.apache.maven.plugins:maven-dependency-plugin:3.8.1:build-classpath '-Dmdep.outputFile=C:/wq/dependencies.txt' *> C:/wq/classpath.log
+          if ($LASTEXITCODE) { Get-Content C:/wq/classpath.log -Tail 60; throw 'Classpath preparation failed' }
+      - name: Execute source-bound test change controls
+        shell: pwsh
+        run: |
+          foreach ($name in 'JAVA_TOOL_OPTIONS','_JAVA_OPTIONS','JDK_JAVA_OPTIONS') {
+            Remove-Item "Env:$name" -ErrorAction SilentlyContinue
+          }
+          & ./scripts/run-component-suites.ps1 -RunRoot C:/wq/controls -AllTestChangeControls -TestChangeBaseRef 1e078d06f4000d848675d87497302bad3052903d *> C:/wq/controls.log
+          if ($LASTEXITCODE) { Get-Content C:/wq/controls.log -Tail 80; throw 'Test change controls failed' }
+      - name: Execute primary framework collection
+        shell: pwsh
+        env:
+          ATF_TEST_CHANGE_PROOF_ROOT: C:/wq/controls
+          ATF_TEST_CHANGE_BASE_REF: 1e078d06f4000d848675d87497302bad3052903d
+        run: |
+          foreach ($name in 'JAVA_TOOL_OPTIONS','_JAVA_OPTIONS','JDK_JAVA_OPTIONS') {
+            Remove-Item "Env:$name" -ErrorAction SilentlyContinue
+          }
+          & ./scripts/run-component-suites.ps1 -RunRoot C:/wq/framework -Groups atf-tests *> C:/wq/framework.log
+          if ($LASTEXITCODE) { Get-Content C:/wq/framework.log -Tail 80; throw 'Framework component qualification failed' }
+      - name: Retain original component evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: whist-framework-${{ inputs.source }}
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            C:/wq/framework/**
+            C:/wq/controls/**
+            C:/wq/*.log
+            C:/wq/restored-inputs.json
