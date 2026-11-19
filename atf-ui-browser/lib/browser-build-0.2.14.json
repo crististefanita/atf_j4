@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "version": "0.2.14",
+  "sourceCommit": "04d8d51830586848820a438cc6f85e06fa207a9a",
+  "inputSha256": "7b5a17b777c1728ce4317fbaf6af21583ddd7d61f33e0dc926fad1884eeb7947",
+  "inputs": [
+    {
+      "path": "atf-ui-browser/Package-CardTableBrowser.ps1",
+      "sha256": "c434d6abb87ccb322b87c75be7d3a2a8c856471da2ba8461edcf9023c545362b"
+    },
+    {
+      "path": "atf-ui-browser/Start-CardTableBrowser.ps1",
+      "sha256": "c8c6d1f0ffdecc6d56ca583063382c195b6fdcdfe7e23bcf85c9bde29da4eaea"
+    },
+    {
+      "path": "atf-ui-browser/src/main/java/ro/cardtable/browser/BrowserExperience.java",
+      "sha256": "6b0acc74fdd6cc6f06f8ab14154304835fe5cd1bb328d2f965d297ee8390ec48"
+    },
+    {
+      "path": "atf-ui-browser/src/main/java/ro/cardtable/browser/BrowserGame.java",
+      "sha256": "32c479aa101298cd0813b24d7f1f4486ec0fbebbb81cb0f6859ba178bd7d4b12"
+    },
+    {
+      "path": "atf-ui-browser/src/main/java/ro/cardtable/browser/BrowserGeometry.java",
+      "sha256": "1ee6b4b9c8ddbb94a4e69f9f1f93cfee981d9dc3afce88200102675eb429d6bb"
+    },
+    {
+      "path": "atf-ui-browser/src/main/java/ro/cardtable/browser/BrowserHandAdapter.java",
+      "sha256": "70320931021d1f08532e104ec4693e692c4e449eb27c7ea1e93a42e54406cb05"
+    },
+    {
+      "path": "atf-ui-browser/src/main/java/ro/cardtable/browser/BrowserJson.java",
+      "sha256": "88c46097bb7ff1380284b163258387b941b84fa1a628bddc43b46dc8ef6c9879"
+    },
+    {
+      "path": "atf-ui-browser/src/main/java/ro/cardtable/browser/BrowserServer.java",
+      "sha256": "dbef865d4c249a6834e18fd24acc0ed87e45ebe208b1f295d39a603d70b6cfc5"
+    },
+    {
+      "path": "atf-ui-browser/src/main/java/ro/cardtable/browser/BrowserSession.java",
+      "sha256": "43feb10aee5652255b415fd212b6ab7cb39a0e5c87915c88966618e36136562e"
+    },
+    {
+      "path": "atf-ui-browser/src/main/java/ro/cardtable/browser/tool/BrowserBuild.java",
+      "sha256": "704679f5c059e203eabea69e9c9399a882fc40ba46ba52d27c3e4b19f80401e3"
+    },
+    {
+      "path": "atf-ui-browser/src/main/web/auto-game.mjs",
+      "sha256": "ab51ca2f3174863b62d202c1fc4cab03c29febf90bbf694128e87419ef749bc5"
+    },
+    {
+      "path": "atf-ui-browser/src/main/web/card-suits-OFL.txt",
+      "sha256": "dee1e0758c6ce86a7aee4aa812387de573fbe1b9a78bfc8332515fac2762aba5"
+    },
+    {
+      "path": "atf-ui-browser/src/main/web/card-suits.woff2",
+      "sha256": "9d61ec200ed1ec29915f888b791d7a17673b9b3fa272571f7daaca41221ca7da"
+    },
+    {
+      "path": "atf-ui-browser/src/main/web/collection.mjs",
+      "sha256": "4d866bddc9e9b71b790df916f2108a1185fe73373ae78dac2dc2110ca8645248"
+    },
+    {
+      "path": "atf-ui-browser/src/main/web/hand-feedback.mjs",
+      "sha256": "fae3921f25c0964b435f18daf74b9fe7ff3739b3f318e9d2195fee34a545ea5f"
+    },
+    {
+      "path": "atf-ui-browser/src/main/web/index.html",
+      "sha256": "8ede89aef0c2f137e6b21d90940333436e527ff55b148a1393d1835df745492f"
+    },
+    {
+      "path": "atf-ui-browser/src/main/web/profile.mjs",
+      "sha256": "c4fb0184aa8bd8a99e852425f869c47ee5837dccbb4f7bc3d271c0c0ea7b055b"
+    },
+    {
+      "path": "atf-ui-browser/src/main/web/records.mjs",
+      "sha256": "82cfb6173518eb6806f22ca87792d4917732fca723363ffff37fd2d8d17c14de"
+    },
+    {
+      "path": "atf-ui-browser/src/main/web/table-menu.mjs",
+      "sha256": "0073eab4c969b7a102dd73338d38eb4bff4605cb3bfb8e6a5134efbfcc463bc0"
+    },
+    {
+      "path": "atf-ui-browser/src/main/web/table.css",
+      "sha256": "9b9f67dc03160ca2d17fddb8be5bc4dc3bf7bee798403582bde60618f570a669"
+    },
+    {
+      "path": "atf-ui-browser/src/main/web/table.mjs",
+      "sha256": "1a8c73e2d51a2aae8fdb89f170766a1b13736ca84a4a985e83f9319f1b9d19d5"
+    },
+    {
+      "path": "atf-ui-browser/src/main/web/viewport.mjs",
+      "sha256": "17a5521b039af1a3cf65c22362e0494f81c22a8fb57ea3f438c02ec8292cc178"
+    },
+    {
+      "path": "atf-ui-browser/tests/card-typography.mjs",
+      "sha256": "5bfda36671a54c2a5b47084a9bca5230196a28ebd901eae21db157f07537efec"
+    },
+    {
+      "path": "atf-ui-browser/tests/fixtures.mjs",
+      "sha256": "61a8c732db60dbbaf1821ff38f7365d1716e2acd726172a3b3084fcb2a737f9c"
+    },
+    {
+      "path": "atf-ui-browser/tests/hand-presentation.mjs",
+      "sha256": "978fc6edd402ebf67a9c9271a6ebfcb5d4a7a3dbfc36ada7dea5511a1a376c73"
+    },
+    {
+      "path": "atf-ui-browser/tests/menu-presentation.mjs",
+      "sha256": "1d06b044327599cec7b4e31e1e6124e0ca256a446064a5b23201b93552022df0"
+    },
+    {
+      "path": "atf-ui-browser/tests/packaged-sanity.mjs",
+      "sha256": "6e90c03e9296193878ee9e0ab54b07408f7297d90615b65bfc58dc915f1fa384"
+    },
+    {
+      "path": "atf-ui-browser/tests/score-presentation.mjs",
+      "sha256": "f0a4e7ac511643e4735e251c3739e04c45fed3bbcde8a3433c9d49c3b31da5ff"
+    },
+    {
+      "path": "atf-ui-browser/tests/trump-text-fit.mjs",
+      "sha256": "e43160db2a1e80bfe5cdb2abbd75e6f3183ff03ecdf23b425e49d25a513b5619"
+    },
+    {
+      "path": "atf-ui-browser/tests/viewport-contract.mjs",
+      "sha256": "fbacb3ce3d7858532d975dc74ee8fdbd45278611a6f32817bad2372849b4bdbe"
+    },
+    {
+      "path": "whist-lab-app/app/src/test/resources/whist-trump-text-fit.tsv",
+      "sha256": "f5b66bf7fe9a42a00c55340cec77786294dd2d77f3d1fc0dd99005b856534842"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/animation/CollectionTarget.java",
+      "sha256": "b278d27ac5abc566a79286746d9c082884db1d17069d34a59cff9170efe56057"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/animation/TrickCollectionMotion.java",
+      "sha256": "e483eec1c3991648f26d55e18cbb69de341561b3a6537ad29bd8830a5b2c5788"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFace.java",
+      "sha256": "fd4d34c51549c5585e2d69eb5e6b492bcf1c5f0ef45934756c1b931d3f7981bb"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceInk.java",
+      "sha256": "a31779c744d9fd3cd5117274c5e29244afe5781811dfcac8c808732d81e501b7"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardFaceMetrics.java",
+      "sha256": "77aea9ba7521da689c46814cba137008fdf3d0375b13dd5d435f841fa9871599"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/cards/CardHighlight.java",
+      "sha256": "8009f7b1f9b1378da8a8a89ea0b423abc15a2b23beda1219c27502c31213a401"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandCard.java",
+      "sha256": "642d7f9db83295177865a08ed8d901e0268fa11b9b6d11675595142338c35a9e"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandInput.java",
+      "sha256": "c60000d0b35bf5cbc30a8dee88128d00b900869b9387f22189dbb5fa9ad77970"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/hand/HandLayoutMetrics.java",
+      "sha256": "ae8d40c40c05fb826c8759c65a89837e8173a4ca743e095a345d62ef315572cc"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/menu/TableMenuContent.java",
+      "sha256": "fafbaf4e11c413861624956e7181c4834b01008a84dd81e398a019909e14d9e6"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/score/HistoryContent.java",
+      "sha256": "844e848f786079e23d821678d43c3ca88846ed678f6a180dd18e6f460432d208"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/score/HistoryGridMetrics.java",
+      "sha256": "38849b55e597ac234ec949547380c6ea84641d41e7e40ce884320687ca50403e"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/score/HistoryScrollSync.java",
+      "sha256": "ca1c3bb526f88a2e057aafc41dbddd5270a7ab2716ea8fdfc2964de5a7d7a893"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/score/ScoreTableContent.java",
+      "sha256": "38ac7d2b53e558dfc2eb0875429a53f6d48147e275e01a8c65985c7046272237"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/screens/GameTitleLayout.java",
+      "sha256": "bb8c0962e907e24a04f5c28135d5c1cf6f677b89df7a4dac5c73ae5010b43cc4"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/seat/SeatContent.java",
+      "sha256": "76917b58a5740f08fbf42cbf6111ec4e664362713f80387fc9073ddee1922dff"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/PlayedCardContent.java",
+      "sha256": "eaeaf66ea5641e8355ec16c223004a66b4ab268d0a70da58aa140b306a356eca"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/PlayedCardMetrics.java",
+      "sha256": "02a89a2a48af2f14711be41c11a725702c24e79be7c8d2534d66cac9e0334279"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/PlayedCardStyle.java",
+      "sha256": "696f8a987afa46f13436404075347165d79e8c150fd6ae0baf5cc74298b7e296"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/ScoreGridStyle.java",
+      "sha256": "acef538ce04f0968f0c1ab15850f739e8977345282123d265a4933d60e5789d5"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/TableGeometry.java",
+      "sha256": "3105cbb698bff621822cb83d2ce6a14fcf2cd015261c74eb83f0c3857542a163"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/TableSeatLayout.java",
+      "sha256": "e9f54a0abd4286ff5e9549f2ca3fd65795057cfdaf853202ac1a2c42772b4991"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/TableSizing.java",
+      "sha256": "b9d102d9449a4f01b81e82ca72f4110bb1e4c5f2c0cbca26808225408607b0bb"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/TableViewportPolicy.java",
+      "sha256": "4f49960f5423ae5188cf98692120dace35c5cd72897d64fbd5aa4df8eebf2528"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/table/trump/TrumpTileMetrics.java",
+      "sha256": "ce2a07dee3e303c874854f5b56e6631871ff3151906d3f9af3b506658dab80ac"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/theme/TableColors.java",
+      "sha256": "5b1f679ef70b7b9da2bf923714ac268c0020a83860478435563b32b1dbbe6d78"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/turn/TurnPacing.java",
+      "sha256": "b611bb503412a81de44f877b3dcf0210d88f05caa2a908102d793c06d0b32bf5"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/test/resources/card-typography.tsv",
+      "sha256": "f6d58f3eae26c1d8d574ec700561e6bde3782e8febd427a7469d93c25ad334cb"
+    },
+    {
+      "path": "whist-lab-app/atf-card-table-ui/src/test/resources/hand-feedback.tsv",
+      "sha256": "3d0c74d0df5498c612245d97af96835f8de8df198bfe16809b856ab5494840a1"
+    },
+    {
+      "path": "whist-lab-app/card-table-names/src/main/java/ro/cardtable/names/PlayerNames.java",
+      "sha256": "ae765ba9f6bce2932a15255d1ba0e52c7231f4a6ab6ecd9faaa45bfe8dfbb173"
+    }
+  ],
+  "files": [
+    {
+      "path": "atf-ui-browser-0.2.14.jar",
+      "bytes": 154078,
+      "sha256": "a4d7abfd07524bedadb6220ce1cdaf969d09a05a8aeb0cc01554d71d75f741ba"
+    },
+    {
+      "path": "atf-ui-browser-0.2.14.jar.sha256",
+      "bytes": 65,
+      "sha256": "529bc80d17e0577c42d9701b4ff7afdddd1a640f88ee4be358e03f38fd27a15c"
+    },
+    {
+      "path": "atf-ui-browser-0.2.14-tests.jar",
+      "bytes": 12794,
+      "sha256": "d8324ef18b3beb75e2ab049ce2309991dde4cc9cc118f0c81562a39bdc4a029c"
+    },
+    {
+      "path": "atf-ui-browser-0.2.14-tests.jar.sha256",
+      "bytes": 65,
+      "sha256": "53baf02575ae7338c6acbeaad62d8934ca1510c91c9d421a08cc6b33bc2d3e0f"
+    }
+  ]
+}
