@@ -3,7 +3,7 @@ import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
 import { bindHandFeedback } from "./hand-feedback.mjs";
 import { historyGrid } from "./records.mjs";
-import { fitSeatLine, fitSeatLines } from "./seat-presentation.mjs";
+import { fitSeatLine, fitSeatLines, retainSeatFrames } from "./seat-presentation.mjs";
 import { historyFirst } from "./table-menu.mjs";
 import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.14";
 
@@ -838,8 +838,9 @@ async function render() {
 
   const bids = match.actions.filter(move => move.key.startsWith("bid:"));
   const board = element("div", "", "board");
-  for (const seat of match.seats) {
+  for (const [seatIndex, seat] of match.seats.entries()) {
     const position = element("div", "", "seat " + seat.anchor);
+    position.dataset.seat = String(seatIndex);
     position.append(element("strong", seat.name), element("span", seat.firstFact, "seat-bid"),
       element("span", seat.secondFact, "seat-won"));
     if (match.header) {
@@ -919,6 +920,7 @@ async function render() {
   delete content.dataset.preparing;
   content.inert = false;
   content.append(errorBox);
+  retainSeatFrames(stage.querySelector(":scope > .match:not([data-preparing])"), content);
   stage.replaceChildren(content);
   refreshAutomationGate();
 }

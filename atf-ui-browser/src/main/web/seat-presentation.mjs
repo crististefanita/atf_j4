@@ -20,3 +20,26 @@ export function fitSeatLines(seats) {
     for (const line of seat.querySelectorAll(":scope > strong, :scope > .seat-bid, :scope > .seat-won")) fitSeatLine(line);
   }
 }
+
+/** Commit measured content without replacing the existing per-seat frame objects. */
+export function retainSeatFrames(previous, next) {
+  if (!previous || previous === next) return 0;
+  const before = [...(previous?.querySelectorAll(":scope > .board > .seat") ?? [])];
+  const after = [...next.querySelectorAll(":scope > .board > .seat")];
+  if (!before.length || before.length !== after.length) return 0;
+  const keys = nodes => nodes.map(node => node.dataset.seat);
+  const oldKeys = keys(before), newKeys = keys(after);
+  if (oldKeys.some(key => !key) || new Set(oldKeys).size !== before.length
+      || newKeys.some(key => !key) || new Set(newKeys).size !== after.length
+      || newKeys.some(key => !oldKeys.includes(key))) return 0;
+  const frames = new Map(before.map(node => [node.dataset.seat, node]));
+  for (const measured of after) {
+    const frame = frames.get(measured.dataset.seat);
+    const attributes = new Map([...measured.attributes].map(attribute => [attribute.name, attribute.value]));
+    for (const attribute of [...frame.attributes]) if (!attributes.has(attribute.name)) frame.removeAttribute(attribute.name);
+    for (const [name, value] of attributes) frame.setAttribute(name, value);
+    frame.replaceChildren(...measured.childNodes);
+    measured.replaceWith(frame);
+  }
+  return after.length;
+}
