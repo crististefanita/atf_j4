@@ -1055,7 +1055,6 @@ testChanges:
       - whist-lab-app/atf-card-table-ui/build.gradle
       - whist-lab-app/app/build.gradle
       - config/gradle-audit-collections.properties
-``` 
+```
 
 </details>
-

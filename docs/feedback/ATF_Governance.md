@@ -54,4 +54,3 @@ Android Download Manager transfer and certificate checks belong to the tested re
 ## Release qualification boundaries
 
 Native source and validator separation belongs to the [qualification contract](../testing/ATF_ReleaseQualification.md#native-execution-and-validator-provenance). Reuse remains conditional on unchanged runtime, scenario, APK and original evidence.
-
