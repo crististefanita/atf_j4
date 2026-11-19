@@ -26,6 +26,11 @@ class SharedPresentationComponentTest {
         assertTrue(output.contains("Shared trick observations:"), "Actual shell, clock, frame and collection comparisons must be captured");
     }
 
+    @Test void scoreActionsRejectStaleRolesClippingAndRepeatedScaling(ComponentInputs inputs) throws Exception {
+        String output = run("score action contract rejects", inputs);
+        assertTrue(output.contains("Score action rejection observations:"), "Negative adapter comparisons must be captured");
+    }
+
     private static String run(String selection, ComponentInputs inputs) throws Exception {
         var root = GovernanceProject.locateProjectRoot();
         return NodeReleaseContracts.runNode(List.of("node", "--test", "--test-name-pattern=" + selection,

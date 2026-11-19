@@ -37,23 +37,23 @@ public final class ScoreScreens {
         LinearLayout.LayoutParams scoreTableParams = views.matchWrap();
         scoreTableParams.setMargins(0, 0, 0, views.dp(8));
         page.addView(new ScoreTableView(activity, state, copy, history), scoreTableParams);
-        views.addQuietButton(page, copy.scoringDetails(), () -> new AlertDialog.Builder(activity)
+        views.addScoreAction(page, copy.scoringDetails(), "score_details", true, () -> new AlertDialog.Builder(activity)
                 .setTitle(copy.scoringDetails()).setMessage(copy.scoreRule(state)
                         + (state.streakBonuses() ? "\n\n" + copy.streakSummary(state) : "")
                         + (state.allowZeroGame() ? "\n\n" + copy.zeroGameRule() : ""))
-                .setPositiveButton(copy.close(), null).show(), QUIET.sp());
+                .setPositiveButton(copy.close(), null).show(), false);
 
         if (!state.finalHand()) {
-            views.addButton(page, copy.nextHand(), "btn_next_hand", true, () -> {
+            views.addScoreAction(page, copy.nextHand(), "btn_next_hand", true, () -> {
                 actions.next().run();
-            }, true, PRIMARY.sp());
+            }, true);
         } else {
-            views.addButton(page, copy.playAgain(), "btn_play_again", true, () -> {
+            views.addScoreAction(page, copy.playAgain(), "btn_play_again", true, () -> {
                 actions.again().run();
-            }, true, PRIMARY.sp());
+            }, true);
         }
-        views.addQuietButton(page, copy.scoreHistory(), actions.history(), QUIET.sp());
-        views.addQuietButton(page, copy.mainMenu(), actions.home(), QUIET.sp());
+        views.addScoreAction(page, copy.scoreHistory(), "score_history", true, actions.history(), false);
+        views.addScoreAction(page, copy.mainMenu(), "score_home", true, actions.home(), false);
     }
     public void live(WhistUiText copy, GameSession.Snapshot state, ScoreHistory history, Runnable dismissed, Runnable showHistory) {
         LinearLayout content = new LinearLayout(activity);

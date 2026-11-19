@@ -8,6 +8,7 @@ import {test} from 'node:test';
 import {withBrowser} from './fixtures.mjs';
 import {verifyTrickPlayback,verifyCollectionPoses} from './trick-playback.mjs';
 import {verifyCenterContinuity, verifySeatRetention} from './seat-presentation.mjs';
+import {verifyScoreActionTypography} from './score-presentation.mjs';
 
 const web=process.env.ATF_BROWSER_WEB_ROOT??fileURLToPath(new URL('../src/main/web/',import.meta.url));
 const {retainSeatFrames}=await import(pathToFileURL(path.join(web,'seat-presentation.mjs')));
@@ -44,6 +45,8 @@ test('the real Web score renderer matches native text roles and preserves action
   const tokens=JSON.parse(execFileSync('java',['-cp',classpath,'ScoreTypographyProbe'],{encoding:'utf8',windowsHide:true,timeout:30000}));
   assert.equal(tokens['--score-text-title'],'1.5625rem','Native score title remains 25 logical sp');
   assert.equal(tokens['--score-text-quiet'],'0.875rem','Native quiet actions retain their 14 sp role');
+  assert.equal(tokens['--score-text-action-primary'],'1.5rem','Score primary actions gain 50% independently of body text');
+  assert.equal(tokens['--score-text-action-secondary'],'1.3125rem','Score secondary actions gain 50% independently of dialogs');
   const css=fs.readFileSync(path.join(web,'table.css'),'utf8');
   const score=fragment('function whistScore(', 'function writeSeatFact(');
   const grid=fragment('function scoreGrid(', 'function showHistory(');
@@ -53,7 +56,8 @@ test('the real Web score renderer matches native text roles and preserves action
   await withBrowser(executable,path.join(work,'profile'),async({send,evaluate,version})=>{
     await send('Page.enable');
     for(const language of ['ro','en'])for(const width of [280,414,760])for(const font of [16,24,32]){
-      await send('Emulation.setDeviceMetricsOverride',{width,height:896,deviceScaleFactor:1,mobile:true});
+      const height=width===280?568:896;
+      await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:true});
       const labels=language==='ro'?{scoringDetails:'Calculul punctajului',history:'Istoric punctaj',mainMenu:'Meniul principal',next:'Mâna următoare',score:'Scorul partidei'}
         :{scoringDetails:'Scoring details',history:'Score history',mainMenu:'Main menu',next:'Next hand',score:'Match score'};
       const observed=await evaluate(`(()=>{
@@ -65,7 +69,8 @@ test('the real Web score renderer matches native text roles and preserves action
         const stage=document.createElement('main');stage.id='table';stage.dataset.surface='whist';
         // Fixture palette only; this contract measures typography and callbacks, not native color parity.
         stage.style.setProperty('--whist-accent','#306f4e');stage.style.setProperty('--whist-surface','#fffef8');
-        stage.style.setProperty('--stage-width',${JSON.stringify(width+'px')});document.body.append(stage);
+        stage.style.setProperty('--stage-width',${JSON.stringify(width+'px')});
+        stage.style.setProperty('--stage-height',${JSON.stringify(height+'px')});document.body.append(stage);
         const labels=${JSON.stringify(labels)},clicks=[];
         function element(tag,text='',type=''){const node=document.createElement(tag);node.className=type;node.textContent=text;return node;}
         function button(label,action,type=''){const node=element('button',label,type);node.onclick=action;return node;}
@@ -98,6 +103,11 @@ test('the real Web score renderer matches native text roles and preserves action
         const edge=scroll.getBoundingClientRect(),last=scroll.querySelector('tbody tr td:last-child').getBoundingClientRect();
         result.lastColumnVisible=last.left>=edge.left-1&&last.right<=edge.right+1;
         result.tableFocusable=document.activeElement===scroll;scroll.scrollLeft=0;
+        result.actionsReachable=buttons.every(node=>{
+          node.scrollIntoView({block:'center'});
+          const bounds=node.getBoundingClientRect(),viewport=stage.getBoundingClientRect();
+          return bounds.top>=Math.max(0,viewport.top)-1&&bounds.bottom<=Math.min(innerHeight,viewport.bottom)+1;
+        });stage.scrollTop=0;
         buttons.forEach(node=>node.click());result.clicks=clicks;
         result.detailsFont=size(realDialogs.dialog);result.detailsTitle=size(realDialogs.dialog.querySelector('h2'));realDialogs.dialog.close();
         realDialogs.liveScore({summary:'8 / 19',liveTitle:labels.score},scoreGrid({headings:['Player','Total'],rows:[['Player 0','120']]},true),()=>{});
@@ -118,11 +128,12 @@ test('the real Web score renderer matches native text roles and preserves action
       assert.equal(observed.liveSummary,font*.75);
       assert.equal(observed.genericFont,font,'Unrelated dialogs retain their existing text size');
       assert.deepEqual(observed.buttons.map(row=>row.label),[labels.scoringDetails,labels.next,labels.history,labels.mainMenu]);
-      for(const row of observed.buttons){assert.equal(row.size,font*(row.quiet ? .875 : 1));assert.ok(row.height>=48);assert.equal(row.overflow,false,row.label);}
+      verifyScoreActionTypography(tokens,font,observed.buttons);
       assert.deepEqual(observed.clicks,[['automatic',false],['details',labels.scoringDetails,['Exact contract'],'game-score-rules'],['next'],['history'],['home']]);
       assert.ok(observed.extraWidth<=1,JSON.stringify({contract:'Score page horizontal viewport',language,width,font,...observed}));
       assert.equal(observed.lastColumnVisible,true,'The final score column must remain reachable in its own region');
       assert.equal(observed.tableFocusable,true,'The overflowing score region must accept keyboard focus');
+      assert.equal(observed.actionsReachable,true,'Every enlarged action remains reachable in the score scroll region');
       for(const column of observed.columns)assert.ok(column.ink<=column.available+1,
         JSON.stringify({contract:'Readable score columns without overlapping ink',language,width,font,column}));
       observations.push({language,width,font,version,...observed});
@@ -139,4 +150,17 @@ test('the real Web score renderer matches native text roles and preserves action
     }
     console.log('Score text adapter observations: '+JSON.stringify(observations));
   });
+});
+
+test('the score action contract rejects stale roles, double scaling and clipped controls',()=>{
+  const roles={'--score-text-primary':'1rem','--score-text-quiet':'.875rem',
+    '--score-text-action-primary':'1.5rem','--score-text-action-secondary':'1.3125rem'};
+  roles['--score-text-quiet']='0.875rem';
+  const button={label:'Istoricul jocului',quiet:true,size:21,height:48,overflow:false};
+  assert.deepEqual(verifyScoreActionTypography(roles,16,[button]),{actions:1,primaryRem:1.5,secondaryRem:1.3125});
+  for(const mutation of [{size:14},{size:31.5},{height:47},{overflow:true}])
+    assert.throws(()=>verifyScoreActionTypography(roles,16,[{...button,...mutation}]));
+  assert.throws(()=>verifyScoreActionTypography({...roles,'--score-text-action-secondary':undefined},16,[button]));
+  assert.throws(()=>verifyScoreActionTypography(roles,0,[button]));
+  console.log('Score action rejection observations: stale role, duplicate scale, clipped label and undersized target refused');
 });

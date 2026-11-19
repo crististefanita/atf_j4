@@ -42,3 +42,12 @@ The Android view measures actual text. JVM fixtures cover compact and wide windo
 Create content from a confirmed snapshot, pass a callback keyed by stable row identity, and keep navigation and persistence outside the widget. Browser adapters compile the same portable content classes and translate them into their renderer protocol. A browser renderer's column capacity must be verified explicitly before adopting another column family.
 
 [Module boundary and packaging](../../../../../../../README.md) · [Component strategy](../../../../../../../../../docs/testing/README.md)
+
+## Result action typography
+
+Score actions have dedicated shared roles: primary actions use 24 logical units and secondary actions use 21, a 50% increase over the legacy 16/14 roles. Android consumes sp and Web consumes rem; user accessibility scaling applies once.
+
+- The native adapter uses `ScreenViews.scoreActionButton` or `addScoreAction`. Wrapped labels use content height with a minimum 48-unit touch target; fixed-height quiet controls remain separate.
+- The Web adapter uses the same exported `ScoreTypography` tokens. Narrow windows wrap complete labels and scroll the score page; desktop scaling belongs to the shared viewport contract.
+- Numeric columns, history cells, card ranks, generic dialogs and other menus keep their own roles. Game adapters own localized captions, confirmed values and callbacks.
+- Consumer tests execute the delivered renderer and compare the actual AAR/JAR roles. Cover RO/EN, short windows, enlarged text, reachable actions, unchanged callback order and rejection of stale or double-scaled styles.

@@ -174,12 +174,12 @@ flowchart LR
 
 </details>
 
-### Current qualified package: 0.2.26
+### Current qualified package: 0.2.27
 
 The adjacent `browser-build.json` binds this release to its source commit, input inventory and artifact hashes.
 
-- Runtime: [Card Table Browser 0.2.26](lib/atf-ui-browser-0.2.26.jar) · [SHA-256](lib/atf-ui-browser-0.2.26.jar.sha256)
-- Shared tests: [Card Table Browser tests 0.2.26](lib/atf-ui-browser-0.2.26-tests.jar) · [SHA-256](lib/atf-ui-browser-0.2.26-tests.jar.sha256)
+- Runtime: [Card Table Browser 0.2.27](lib/atf-ui-browser-0.2.27.jar) · [SHA-256](lib/atf-ui-browser-0.2.27.jar.sha256)
+- Shared tests: [Card Table Browser tests 0.2.27](lib/atf-ui-browser-0.2.27-tests.jar) · [SHA-256](lib/atf-ui-browser-0.2.27-tests.jar.sha256)
 - Provenance: [browser-build.json](lib/browser-build.json)
 
 The viewport contract preserves a 414 × 896 logical frame on desktop, scales uniformly to fit the usable browser height and width, and retains a 0.68 readability floor only when both dimensions permit it. Phone browsers use their CSS viewport 1:1. Consumers must adopt the runtime and test archive from the same receipt and verify their bytes.
@@ -275,3 +275,12 @@ The trump tile loads a local subset of Noto Sans Symbols 2 containing the four s
 
 - `shared-presentation.test.mjs` is shipped in the test JAR. Set `ATF_BROWSER_WEB_ROOT` to the extracted runtime's Web resources, `ATF_BROWSER_RUNTIME_JAR` to the delivered runtime JAR and `ATF_BROWSER_EXECUTABLE` to Edge or Chrome, then run `node --test shared-presentation.test.mjs`. Browser profiles use the external temporary root; audio is muted. Typography checks use controlled game content and the production DOM/CSS, rather than an Android raster.
 - Browser teardown requests a graceful exit and waits for the owned process. Profile cleanup is asynchronous with bounded retries so Windows handle release can finish before directory removal.
+
+## Result action typography
+
+Score actions have dedicated shared roles: primary actions use 24 logical units and secondary actions use 21, a 50% increase over the legacy 16/14 roles. Android consumes sp and Web consumes rem; user accessibility scaling applies once.
+
+- The native adapter uses `ScreenViews.scoreActionButton` or `addScoreAction`. Wrapped labels use content height with a minimum 48-unit touch target; fixed-height quiet controls remain separate.
+- The Web adapter uses the same exported `ScoreTypography` tokens. Narrow windows wrap complete labels and scroll the score page; desktop scaling belongs to the shared viewport contract.
+- Numeric columns, history cells, card ranks, generic dialogs and other menus keep their own roles. Game adapters own localized captions, confirmed values and callbacks.
+- Consumer tests execute the delivered renderer and compare the actual AAR/JAR roles. Cover RO/EN, short windows, enlarged text, reachable actions, unchanged callback order and rejection of stale or double-scaled styles.

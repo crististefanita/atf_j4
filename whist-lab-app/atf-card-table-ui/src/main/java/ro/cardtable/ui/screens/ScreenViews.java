@@ -161,6 +161,31 @@ public class ScreenViews {
         return spinner;
     }
 
+    /** Result actions keep their own text roles and may grow when a localized label wraps. */
+    public Button scoreActionButton(String label, String description, boolean enabled,
+            Runnable action, boolean primary) {
+        var role = primary ? ro.cardtable.ui.score.ScoreTypography.ACTION_PRIMARY
+                : ro.cardtable.ui.score.ScoreTypography.ACTION_SECONDARY;
+        Button button = actionButton(label, description, enabled, action, primary, role.sp());
+        button.setSingleLine(false);
+        button.setHorizontallyScrolling(false);
+        button.setEllipsize(null);
+        if (!primary) {
+            button.setBackgroundColor(Color.TRANSPARENT);
+            button.setElevation(0);
+            button.setStateListAnimator(null);
+        }
+        return button;
+    }
+
+    public void addScoreAction(LinearLayout parent, String label, String description, boolean enabled,
+            Runnable action, boolean primary) {
+        Button button = scoreActionButton(label, description, enabled, action, primary);
+        LinearLayout.LayoutParams params = matchWrap();
+        if (primary) params.setMargins(0, dp(8), 0, dp(3));
+        parent.addView(button, params);
+    }
+
     public void addSetupSelector(LinearLayout parent, String label, Spinner selector) {
         LinearLayout row = new LinearLayout(activity);
         row.setGravity(Gravity.CENTER_VERTICAL);
