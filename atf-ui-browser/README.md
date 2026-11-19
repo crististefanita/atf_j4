@@ -14,6 +14,8 @@ Prepared redraws retain the existing frame element for each stable seat identity
 
 The trick center attaches controls only when the native-style table has visible actions. An empty control sibling must not add a flex gap when playback returns to the human turn; real bidding controls and legacy prompts retain their place.
 
+The component guard checks the delivered constructor's DOM invariant directly: automatic-only and action-free tables attach no empty control sibling. It does not reconstruct a pixel displacement from a guessed CSS gap. Platform observations measure the painted geometry separately.
+
 The two interfaces share game rules and table portable calculations. Each adapter measures and draws with the tools of its platform.
 
 ```mermaid
