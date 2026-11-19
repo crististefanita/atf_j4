@@ -3,7 +3,7 @@ import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
 import { bindHandFeedback } from "./hand-feedback.mjs";
 import { historyGrid } from "./records.mjs";
-import { fitSeatLine, fitSeatLines, retainSeatFrames } from "./seat-presentation.mjs";
+import { fitSeatLine, fitSeatLines, retainSeatFrames, measureSeatActionClearance } from "./seat-presentation.mjs";
 import { historyFirst } from "./table-menu.mjs";
 import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.14";
 
@@ -649,6 +649,7 @@ async function placeTable(content = stage.firstElementChild) {
     board.style.minHeight = minHeight;
     const layout = await call("/api/layout", {
       width, height, mode: state.view.header?.mode ?? "", seatHeight: Math.max(...seats.map(seat => seat.offsetHeight)),
+      actorClearance: Math.max(0, ...seats.map(measureSeatActionClearance)),
       fontScale: textScale(getComputedStyle(document.documentElement).fontSize),
       bidOptions: stage.dataset.playingSteps && !content.hasAttribute("data-preparing")
         ? 0 : board.querySelectorAll("[data-bid]").length,

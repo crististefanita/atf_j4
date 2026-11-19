@@ -1,6 +1,24 @@
 import assert from "node:assert/strict";
 import { runInNewContext } from "node:vm";
 
+export function verifySeatActionClearance(measure) {
+  let cases = 0;
+  for (const hidden of [false, true]) for (const offset of [-14, -25, -36, 0]) {
+    const original = {hidden, textContent: "JOACĂ", style: {}, cloneNode() {
+      return {hidden: this.hidden, style: {}, textContent: this.textContent, offsetTop: offset,
+        remove() { this.removed = true; }};
+    }};
+    const seat = {querySelector: () => original, append(node) { this.probe = node; }};
+    assert.equal(measure(seat), Math.max(0, -offset));
+    assert.equal(original.hidden, hidden); assert.equal(original.textContent, "JOACĂ");
+    assert.equal(seat.probe.hidden, false); assert.equal(seat.probe.style.visibility, "hidden");
+    assert.equal(seat.probe.removed, true, "A measurement probe must never survive a render");
+    cases++;
+  }
+  assert.equal(measure({querySelector: () => null}), 0);
+  return {cases, absentBadge: 0, probesRemoved: true, visibleBadgeUntouched: true};
+}
+
 export function verifyCenterContinuity(shell, adapterBindings = {}) {
   const fragment = shell.slice(shell.indexOf('  const controls = element('), shell.indexOf('  const hand = element('));
   assert.ok(fragment.includes('controls.append(actions)'), 'Exercise the actual delivered render constructor');

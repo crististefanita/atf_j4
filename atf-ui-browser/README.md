@@ -253,3 +253,7 @@ node .\atf-ui-browser\pages\verify-card-adapter.mjs $Site $AdapterEvidence
 | Reporting | Extent reads the results of each level and attaches the captures of PNG inline. |
 
 The trump tile loads a local subset of Noto Sans Symbols 2 containing the four suit symbols. [OFL licence](src/main/web/card-suits-OFL.txt)
+
+### Spațiul etichetei de acțiune
+
+Shell-ul măsoară separat linia de acțiune aflată deasupra chenarului și transmite `actorClearance` către adaptorul de geometrie. Proba de măsurare este invizibilă, folosește unități CSS neafectate de scalarea scenei și este eliminată imediat. Adaptorul unui joc cu șiruri dense poate rezerva această înălțime fără să mute locurile comune. Geometria jocurilor care nu consumă parametrul rămâne aceeași. Testele comune verifică eticheta vizibilă, ascunsă, fonturile cu înălțimi diferite și eliminarea probei.
