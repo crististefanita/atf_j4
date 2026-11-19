@@ -1126,13 +1126,14 @@ testChanges:
     base: 30812f432d7e744e6f2acf711e30dbd1848fbacb
     expires: 2026-12-19
     reason: Enlarge only result actions through shared roles and preserve narrow-window access, other typography and callback order.
-    proof: 'scripts/run-component-suites.ps1 -AllTestChangeControls'
+    proof: 'mvn -o -pl atf-tests -am -Dtest=SharedPresentationComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
     checks:
       positive:
         - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#scoreTextAdapterKeepsLocalizedActionsAtLargerWebSizes
       negative:
         - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#scoreActionsRejectStaleRolesClippingAndRepeatedScaling
     paths:
+      - atf-ui-browser/Build-WhistPages.ps1
       - atf-ui-browser/tests/shared-presentation.test.mjs
       - atf-ui-browser/tests/score-presentation.mjs
       - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/nativeproof/SharedPresentationComponentTest.java
@@ -1143,13 +1144,14 @@ testChanges:
     base: f680c257777611dc19d3cdf24a4295ed9b697029
     expires: 2026-12-19
     reason: Enlarge only result actions through shared roles and preserve narrow-window access, other typography and callback order.
-    proof: 'scripts/run-component-suites.ps1 -AllTestChangeControls'
+    proof: 'mvn -o -pl atf-tests -am -Dtest=SharedPresentationComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
     checks:
       positive:
         - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#scoreTextAdapterKeepsLocalizedActionsAtLargerWebSizes
       negative:
         - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#scoreActionsRejectStaleRolesClippingAndRepeatedScaling
     paths:
+      - atf-ui-browser/Build-WhistPages.ps1
       - atf-ui-browser/tests/shared-presentation.test.mjs
       - atf-ui-browser/tests/score-presentation.mjs
       - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/nativeproof/SharedPresentationComponentTest.java
