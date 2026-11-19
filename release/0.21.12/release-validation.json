@@ -55,6 +55,10 @@
           "androidComponents": {
             "status": "PASS",
             "receipt": "reports/component/source-component-run.json"
+          },
+          "distributionDownload": {
+            "status": "PASS",
+            "receipt": "reports/distribution-verification.json"
           }
         }
       }
