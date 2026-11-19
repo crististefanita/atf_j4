@@ -1,0 +1,15 @@
+{
+  "kind": "hosted-component-evidence-origin",
+  "repository": "crististefanita/whist",
+  "runId": 44608237991,
+  "jobId": 135857580919,
+  "workflowCommit": "25ac9be5697dea9664268b9982e287fc05797b51",
+  "applicationSourceCommit": "1ff434dfd3aef176ced5340fe5a3d284192532a5",
+  "artifactId": 14572326940,
+  "artifactSha256": "9283d3ce2604ce5b67847dad51741ac280c163c1dd8259faf055a22d89496612",
+  "sourceFiles": 1378,
+  "sourceFingerprint": "a996002da5a38980631c5d918b5359365b39ff2f055f437a0666ce94dc26a46b",
+  "frameworkCases": 519,
+  "frameworkOutcome": "PASS",
+  "scope": "The validator workflow restores the immutable application inputs; it does not rebuild or replace the already signed APK. Original execution and provenance receipts remain unchanged in the component dossier."
+}

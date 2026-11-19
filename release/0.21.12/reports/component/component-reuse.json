@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "kind": "evidence-assembly",
+  "decisions": [
+    {
+      "group": "atf-tests",
+      "decision": "RUN",
+      "environment": "dedicated hosted Windows runner"
+    },
+    {
+      "group": "atf-validation",
+      "decision": "REUSE",
+      "componentEvidenceOrigin": "49f84d53f7adde432d4d8c04025c8f1d34652e85d2702097feab271d519ef9bc"
+    },
+    {
+      "group": "atf-test-android",
+      "decision": "REUSE",
+      "componentEvidenceOrigin": "49f84d53f7adde432d4d8c04025c8f1d34652e85d2702097feab271d519ef9bc"
+    },
+    {
+      "group": "whist-lab-app-bidding",
+      "decision": "REUSE",
+      "componentEvidenceOrigin": "4efa573676139ff7f899c538913d8f5bdc7d84a0aec513bdfe5f7aab3429d314"
+    },
+    {
+      "group": "whist-lab-app-commands",
+      "decision": "REUSE",
+      "componentEvidenceOrigin": "4efa573676139ff7f899c538913d8f5bdc7d84a0aec513bdfe5f7aab3429d314"
+    },
+    {
+      "group": "whist-lab-app-display",
+      "decision": "REUSE",
+      "componentEvidenceOrigin": "4efa573676139ff7f899c538913d8f5bdc7d84a0aec513bdfe5f7aab3429d314"
+    },
+    {
+      "group": "whist-lab-app-history",
+      "decision": "REUSE",
+      "componentEvidenceOrigin": "4efa573676139ff7f899c538913d8f5bdc7d84a0aec513bdfe5f7aab3429d314"
+    },
+    {
+      "group": "whist-lab-app-achievements",
+      "decision": "REUSE",
+      "componentEvidenceOrigin": "4efa573676139ff7f899c538913d8f5bdc7d84a0aec513bdfe5f7aab3429d314"
+    },
+    {
+      "group": "whist-lab-app-atf-card-table-ui",
+      "decision": "REUSE",
+      "componentEvidenceOrigin": "4efa573676139ff7f899c538913d8f5bdc7d84a0aec513bdfe5f7aab3429d314"
+    },
+    {
+      "group": "whist-lab-app-rules",
+      "decision": "REUSE",
+      "componentEvidenceOrigin": "49f84d53f7adde432d4d8c04025c8f1d34652e85d2702097feab271d519ef9bc"
+    }
+  ]
+}

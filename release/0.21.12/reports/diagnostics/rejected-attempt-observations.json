@@ -1,0 +1,64 @@
+{
+  "kind": "original-diagnostic-extracts",
+  "observations": [
+    {
+      "title": "Initial framework fixture timeout",
+      "kind": "rejected-infrastructure-attempt",
+      "originalExecutionReceipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "suite": "atf.tests.suites.AtfComponentSuite",
+        "tests": 519,
+        "outcomes": {
+          "FAIL": 1,
+          "PASS": 518
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "junitIdentitySha256": "4f168e28ff96d9c2d72dff511efc456d4e98dd4b6928083d9fa78fc4e43d187a",
+        "provenanceSha256": "4092a69d297c3765a7bbc1d72eb8ebf768b770bc6ed6ea35b202bbe027ae655f",
+        "reportSha256": "8ecea16d766aa05a90b4ea9600fba526a7801c414ff7792008f6661120f3237b"
+      },
+      "originalReportSha256": "8ecea16d766aa05a90b4ea9600fba526a7801c414ff7792008f6661120f3237b",
+      "originalPreformattedHtmlExcerpts": [
+        "{&quot;schemaVersion&quot;:1,&quot;invocationId&quot;:&quot;[engine:junit-platform-suite]/[suite:atf.tests.suites.AtfComponentSuite]/[engine:junit-jupiter]/[class:atf.tests.governance.documentation.release.rag.scope.QualificationLauncherComponentTest]/[test-template:anInvalidArtifactStopsTheRealLauncherBeforeMaven(java.lang.String, java.lang.String, java.lang.String)]/[test-template-invocation:#4]&quot;,&quot;outcome&quot;:&quot;FAIL&quot;,&quot;comparisons&quot;:1}",
+        "org.opentest4j.AssertionFailedError: Launcher timed out: C:\\work\\whist_back\\score-release-20261119\\tmp\\junit-3993906056427904873\\launcher-12680177182772149325.log ==&gt; expected: &lt;true&gt; but was: &lt;false&gt;"
+      ],
+      "qualificationEffect": "NONE: this rejected attempt does not qualify a component group"
+    },
+    {
+      "title": "Publication fixture timeout",
+      "kind": "rejected-infrastructure-attempt",
+      "originalExecutionReceipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "suite": "atf.tests.suites.AtfComponentSuite",
+        "tests": 519,
+        "outcomes": {
+          "FAIL": 1,
+          "PASS": 518
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "junitIdentitySha256": "1836b4642fd069b9212a3882e37668ee7701d6c0047659daba0aa1299b21f669",
+        "provenanceSha256": "4efa573676139ff7f899c538913d8f5bdc7d84a0aec513bdfe5f7aab3429d314",
+        "reportSha256": "3e86f0abd864ec8eb275c122e11c29f9ae7cfd4b2ec9fa21debdc69e95bfd58c"
+      },
+      "originalReportSha256": "3e86f0abd864ec8eb275c122e11c29f9ae7cfd4b2ec9fa21debdc69e95bfd58c",
+      "originalPreformattedHtmlExcerpts": [
+        "{&quot;schemaVersion&quot;:1,&quot;invocationId&quot;:&quot;[engine:junit-platform-suite]/[suite:atf.tests.suites.AtfComponentSuite]/[engine:junit-jupiter]/[class:atf.tests.governance.documentation.release.rag.scope.ReleasePublicationSealComponentTest]/[method:publicationSealsTheManifestBeforeObservingGithub()]&quot;,&quot;outcome&quot;:&quot;FAIL&quot;,&quot;comparisons&quot;:0}",
+        "java.io.IOException: Command timed out after PT2M"
+      ],
+      "qualificationEffect": "NONE: this rejected attempt does not qualify a component group"
+    },
+    {
+      "title": "Rejected AutoGame hierarchy capture",
+      "kind": "rejected-native-capture",
+      "originalJunitText": "-------------------------------------------------------------------------------\r\nTest set: atf.android.e2e.release.WhistReleaseBidE2eTest\r\n-------------------------------------------------------------------------------\r\nTests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 190.0 s <<< FAILURE! -- in atf.android.e2e.release.WhistReleaseBidE2eTest\r\natf.android.e2e.release.WhistReleaseBidE2eTest.autoGamePlaysOnlyTheCurrentHandAndReturnsControlForTheNext -- Time elapsed: 189.7 s <<< ERROR!\r\njava.lang.IllegalStateException: UI Automator did not produce a hierarchy: C:\\work\\whist_back\\score-release-20261119\\native-final\\signed-release-auto-game-2\\android-artifacts\\signed-release-auto-game\\current-window.xml\r\n\tat atf.android.e2e.driver.UiDeviceCapture.dump(UiDeviceCapture.java:44)\r\n\tat atf.android.e2e.driver.UiDeviceCapture.capture(UiDeviceCapture.java:50)\r\n\tat atf.android.e2e.driver.AndroidUiDriver.capture(AndroidUiDriver.java:593)\r\n\tat atf.android.e2e.release.ReleaseBidContext.checkpoint(ReleaseBidContext.java:169)\r\n\tat atf.android.e2e.release.autogame.AutoGameReleaseScenario.run(AutoGameReleaseScenario.java:49)\r\n\tat atf.android.e2e.release.ReleaseBidContext.execute(ReleaseBidContext.java:192)\r\n\tat atf.android.e2e.release.WhistReleaseBidE2eTest.autoGamePlaysOnlyTheCurrentHandAndReturnsControlForTheNext(WhistReleaseBidE2eTest.java:24)\r\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:580)\r\n\tat java.base/java.util.ArrayList.forEach(ArrayList.java:1596)\r\n\tat java.base/java.util.ArrayList.forEach(ArrayList.java:1596)\r\n\r\n",
+      "originalTextSha256": "5c48b97f4086296b105ae0da369a4b60293d971c142c5d22907d8cf4ce945116",
+      "qualificationEffect": "NONE: the accepted AutoGame report belongs to its later complete execution"
+    }
+  ]
+}
