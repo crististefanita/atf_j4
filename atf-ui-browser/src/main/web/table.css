@@ -725,6 +725,7 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 .whist-score h1 { font-size: calc(1.5625rem * var(--whist-text-scale, 1.5)); }
 .whist-score > * { min-width: 0; max-width: 100%; }
 .score-table-scroll { overflow: auto; }
+.score-table-scroll .whist-score-grid, .game-live-score .whist-score-grid { table-layout: auto; }
 .whist-score-hand { color: var(--whist-accent); font-size: 12px; font-weight: 700; text-transform: uppercase; }
 .whist-score-status { white-space: pre-line; font-size: 13px; color: #69756a; }
 .whist-score .whist-score-hand { font-size: calc(.75rem * var(--whist-text-scale, 1.5)); }

@@ -267,7 +267,7 @@ Chenarul de atu încarcă local un subset Noto Sans Symbols 2 cu cele patru simb
 ### Textul scorului și verificările comune de redare
 
 - Titlurile, rezumatele și acțiunile scorului Web folosesc o singură dată scara comună a textului, implicit 1,5. Dialogurile calculului și scorului curent au roluri explicite de prezentare; celelalte dialoguri își păstrează dimensiunea textului.
-- O zonă derulabilă, accesibilă prin focus, păstrează coloanele mărite accesibile în ferestre înguste. Widgeturile Android și calculul jocului rămân neschimbate.
+- O zonă derulabilă, accesibilă prin focus, cu minime de coloană determinate de text, păstrează coloanele mărite accesibile în ferestre înguste. Widgeturile Android și calculul jocului rămân neschimbate.
 
 - Testele comune execută constructorul Web și colectarea reale, cu DOM și ceas controlate. Actorul este semnalizat înaintea cărții; fețele măsurate își păstrează originea, dimensiunile și destinația până la terminarea colectării.
 - Ștergerea prematură este control negativ. Câștigătorii levatelor, premiile și regulile secvențelor rămân în testele fiecărui consumator.

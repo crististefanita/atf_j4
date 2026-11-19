@@ -66,7 +66,7 @@ test('the real Web score renderer enlarges text once and preserves actions at na
         ${grid}
         ${score}
         whistScore({heading:'HAND 8',prompt:'Completed',score:{title:labels.score,
-          table:{headings:['Player','Bid','Won','Hand','Total'],rows:Array.from({length:6},(_,i)=>['Player '+i,'1','1','6','120'])}},
+          table:{headings:['Player','Bid','Won','Hand','Total'],rows:Array.from({length:6},(_,i)=>['Player '+i,'1','1','6',['120','-12345','500','1000','-5','0'][i]])}},
           scoreDetails:{summary:'8 / 19',rules:['Exact contract'],winner:'Winner',awards:'Series +10'},history:{},
           actions:[{key:'next',label:labels.next}]});
         const size=node=>parseFloat(getComputedStyle(node).fontSize);
@@ -74,7 +74,15 @@ test('the real Web score renderer enlarges text once and preserves actions at na
         const result={heading:size(stage.querySelector('h1')),summary:size(stage.querySelector('.whist-score-status')),
           hand:size(stage.querySelector('.whist-score-hand')),buttons:buttons.map(node=>({label:node.textContent,size:size(node),
             height:node.getBoundingClientRect().height,overflow:node.scrollWidth>node.clientWidth+1})),
-          extraWidth:stage.scrollWidth-stage.clientWidth};
+          extraWidth:stage.scrollWidth-stage.clientWidth,
+          columns:[...stage.querySelectorAll('.whist-score-grid :is(th,td):not(:first-child)')].map(cell=>{
+            const range=document.createRange();range.selectNodeContents(cell);const css=getComputedStyle(cell);
+            return {text:cell.textContent,ink:range.getBoundingClientRect().width,
+              available:cell.clientWidth-parseFloat(css.paddingLeft)-parseFloat(css.paddingRight)};})};
+        const scroll=stage.querySelector('.score-table-scroll');scroll.focus();scroll.scrollLeft=scroll.scrollWidth;
+        const edge=scroll.getBoundingClientRect(),last=scroll.querySelector('tbody tr td:last-child').getBoundingClientRect();
+        result.lastColumnVisible=last.left>=edge.left-1&&last.right<=edge.right+1;
+        result.tableFocusable=document.activeElement===scroll;scroll.scrollLeft=0;
         buttons.forEach(node=>node.click());result.clicks=clicks;
         result.detailsFont=size(realDialogs.dialog);realDialogs.dialog.close();
         realDialogs.liveScore({summary:'8 / 19',liveTitle:labels.score},scoreGrid({headings:['Player','Total'],rows:[['Player 0','120']]},true),()=>{});
@@ -93,11 +101,20 @@ test('the real Web score renderer enlarges text once and preserves actions at na
       for(const row of observed.buttons){assert.equal(row.size,font*1.5);assert.ok(row.height>=48);assert.equal(row.overflow,false,row.label);}
       assert.deepEqual(observed.clicks,[['automatic',false],['details',labels.scoringDetails,['Exact contract'],'game-score-rules'],['next'],['history'],['home']]);
       assert.ok(observed.extraWidth<=1,JSON.stringify({contract:'Score page horizontal viewport',language,width,font,...observed}));
+      assert.equal(observed.lastColumnVisible,true,'The final score column must remain reachable in its own region');
+      assert.equal(observed.tableFocusable,true,'The overflowing score region must accept keyboard focus');
+      for(const column of observed.columns)assert.ok(column.ink<=column.available+1,
+        JSON.stringify({contract:'Readable score columns without overlapping ink',language,width,font,column}));
       observations.push({language,width,font,version,...observed});
       if(process.env.ATF_COMPONENT_CAPTURE_DIR&&width===414&&[16,32].includes(font)){
         fs.mkdirSync(process.env.ATF_COMPONENT_CAPTURE_DIR,{recursive:true});
         const png=await send('Page.captureScreenshot',{format:'png'});
         fs.writeFileSync(path.join(process.env.ATF_COMPONENT_CAPTURE_DIR,`score-${language}-${font}.png`),Buffer.from(png.data,'base64'));
+        if(font===32){
+          await evaluate("(()=>{const region=document.querySelector('.score-table-scroll');region.scrollLeft=region.scrollWidth;})()");
+          const right=await send('Page.captureScreenshot',{format:'png'});
+          fs.writeFileSync(path.join(process.env.ATF_COMPONENT_CAPTURE_DIR,`score-${language}-${font}-right.png`),Buffer.from(right.data,'base64'));
+        }
       }
     }
     console.log('Score text adapter observations: '+JSON.stringify(observations));
