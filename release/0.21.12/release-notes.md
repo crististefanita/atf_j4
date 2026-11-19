@@ -14,4 +14,4 @@ Shared score text roles keep Android and Web consistent while preserving accessi
 
 ## Documentation
 
-- [Extent](https://github.com/crististefanita/whist/blob/main/release/0.21.12/reports/README.md)
+- [Extent](https://github.com/crististefanita/whist/blob/dea9812d762b3db5e9cda283eaeb0dff58e36b8b/release/0.21.12/reports/README.md)
