@@ -13,6 +13,7 @@ import ro.cardtable.browser.BrowserExperience;
 import ro.cardtable.browser.BrowserServer;
 import ro.cardtable.ui.table.TableViewportPolicy;
 import ro.cardtable.ui.table.ScoreGridStyle;
+import ro.cardtable.ui.score.ScoreTypography;
 import ro.cardtable.ui.table.PlayedCardStyle;
 import ro.cardtable.ui.table.trump.TrumpTileMetrics;
 import ro.cardtable.ui.cards.CardHighlight;
@@ -118,6 +119,7 @@ public final class WhistBrowser implements BrowserGame {
         tokens.add(new Token("--whist-hand-slot", (HandLayoutMetrics.CARD_HEIGHT_DP + HandLayoutMetrics.LIFT_CLEARANCE_DP) + "px"));
         tokens.add(new Token("--whist-score-head", ScoreGridStyle.HEADER_DP + "px"));
         tokens.add(new Token("--whist-score-row", ScoreGridStyle.ROW_DP + "px"));
+        for (var role : ScoreTypography.values()) tokens.add(new Token(role.cssName(), role.rem()));
         return List.copyOf(tokens);
     }
 

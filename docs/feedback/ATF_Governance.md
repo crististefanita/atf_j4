@@ -34,7 +34,6 @@ The [documentation editorial grid](../governance/ATF_Documentation.md#editorial-
 | Priority | Owner and area | Closure criterion |
 |---|---|---|
 | P2 | Distributed library guides: producer-side sample reuse. | [Local example acceptance](../platform/ATF_Integration.md#verification-of-examples-in-guides) separates compilation, execution and verdict. Promote a generic evidence contract in the shared-ownership register and synchronize consumer guides. Producer regression and each consumer's acceptance remain separate. |
-| P2 | The release-description generator can merge all changes into an overly dense paragraph. | Generate a short summary and separate bullets; validate structure before sealing the manifest. Preserve descriptions already included in a published edition's integrity inventory. |
 
 ## Download via browser
 
@@ -55,3 +54,4 @@ Android Download Manager transfer and certificate checks belong to the tested re
 ## Release qualification boundaries
 
 Native source and validator separation belongs to the [qualification contract](../testing/ATF_ReleaseQualification.md#native-execution-and-validator-provenance). Reuse remains conditional on unchanged runtime, scenario, APK and original evidence.
+

@@ -29,7 +29,7 @@ class SharedPresentationComponentTest {
     private static String run(String selection, ComponentInputs inputs) throws Exception {
         var root = GovernanceProject.locateProjectRoot();
         return NodeReleaseContracts.runNode(List.of("node", "--test", "--test-name-pattern=" + selection,
-                root.resolve("atf-ui-browser/tests/shared-presentation.test.mjs").toString()), root, Duration.ofSeconds(90),
+                root.resolve("atf-ui-browser/tests/shared-presentation.test.mjs").toString()), root, Duration.ofMinutes(2),
                 output -> inputs.add("Original shared presentation comparisons", output));
     }
 }

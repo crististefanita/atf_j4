@@ -53,6 +53,8 @@ class ComponentEvidenceScopeComponentTest {
                 "The component report covers draft recovery without tag lookup.");
         AuditedAssertions.assertTrue(output.contains("rotation denies a stale README, missing download, wrong bytes or changed main"),
                 "The component report covers the download gate before rotation.");
+        AuditedAssertions.assertTrue(output.contains("new release notes require a short summary and separate change bullets before any draft"),
+                "Editorial preflight rejects dense or missing change lists before any GitHub mutation.");
     }
 
     @Test void localReleaseSyncKeepsOnlyQualifiedPublishedBytesAndRejectsLocalEdits() throws Exception {

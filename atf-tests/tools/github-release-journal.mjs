@@ -3,6 +3,7 @@ import path from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {digest, regularFile, strictJson} from './evaluate-release-rag.mjs';
 import {gitCommit, githubId, githubRepository} from './github-release-api.mjs';
+import {validateReleaseNotes} from './release-notes-layout.mjs';
 
 export const publicationJournalName = 'github-publication.json';
 const sha256 = /^[a-f0-9]{64}$/;
@@ -50,6 +51,7 @@ export async function loadPublication(candidate, verdictFile) {
   if (apkFile.asset.size !== release.apkBytes || apkFile.asset.sha256 !== release.apkSha256
       || checksum.bytes.toString('utf8').trim() !== release.apkSha256 + '  ' + apk
       || !notes.bytes.toString('utf8').trim()) throw Error('GITHUB_CANDIDATE_ASSETS');
+  validateReleaseNotes(notes.bytes.toString('utf8'));
   return {
     identity: {repository, tag, commit, accessMode, manifestSha256: manifest.sha256, assets: [apkFile.asset, checksum.asset]},
     notes: notes.bytes.toString('utf8').trimEnd(),

@@ -135,6 +135,8 @@ Selected tests must pass; a relevant failure blocks publication. Record missing 
 
 Keep draft metadata separately in `github-release-draft.json`; `github-release.json` describes actual publication. Draft URLs may contain `untagged`, so recheck published note links against canonical asset URLs after publication. Supply the tag and source commit explicitly and compare the response with APK identity.
 
+Before creating a draft, the publication loader checks the new notes: one opening summary of at most 400 Unicode characters and separate change bullets of at most 300 characters each. Invalid notes stop before GitHub writes; published historical notes remain immutable. The [publication components](../../atf-tests/tools/publish-github-release.test.mjs) cover both languages and a hash-valid but editorially invalid candidate.
+
 ## Source and evidence commits
 
 - **Sources:** the tag pins the qualified source commit. Compare all APK inputs, including new files; later documentation or evidence changes do not move the tag.

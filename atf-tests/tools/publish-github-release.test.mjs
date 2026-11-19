@@ -6,6 +6,7 @@ import test from 'node:test';
 import {digest} from './evaluate-release-rag.mjs';
 import {loadPublication, publicationJournalName, withPublicationJournal} from './github-release-journal.mjs';
 import {runGithubPublication} from './publish-github-release.mjs';
+import {validateReleaseNotes} from './release-notes-layout.mjs';
 
 const repository = 'example/whist';
 const source = 'a'.repeat(40);
@@ -191,7 +192,7 @@ async function fixture(t) {
   const directory = path.join(root, 'journal'), candidateDir = path.join(root, 'candidate');
   await Promise.all([fs.mkdir(directory), fs.mkdir(candidateDir)]);
   const active = edition('1.2.0', source), previous = edition('1.1.0', previousSource);
-  const notes = '## Schimbări\n\n- Notele ediției.\n';
+  const notes = '# Whist\n\nNotele ediției.\n\n## Schimbări\n\n- Detaliul schimbării.\n';
   const manifest = {...active.manifest, publication: {...active.manifest.publication, state: 'PREPARED'}, integrity: {
     files: [...active.manifest.integrity.files, {path: 'release-notes.md', bytes: Buffer.byteLength(notes), sha256: digest(notes)}]
   }};
@@ -221,6 +222,29 @@ test('qualification and candidate bytes are verified before publication', async 
   await fs.writeFile(x.verdictFile, JSON.stringify(x.verdict));
   await fs.writeFile(path.join(x.candidateDir, x.active.apk), Buffer.alloc(x.active.manifest.release.apkBytes));
   await assert.rejects(loadPublication(x.candidateDir, x.verdictFile), /GITHUB_CANDIDATE_HASH/);
+});
+
+test('new release notes require a short summary and separate change bullets before any draft', async t => {
+  const x = await fixture(t);
+  for (const invalid of ['## Changes\n\n- Missing summary.', '# Whist\n\n' + 'x'.repeat(401) + '\n\n## Changes\n\n- Change.',
+    '# Whist\n\nSummary.\n\n## Changes\n\nChanges merged into a dense paragraph.',
+    '# Whist\n\nSummary.\n\n## Changes\n\n- ' + 'x'.repeat(301)]) {
+    assert.throws(() => validateReleaseNotes(invalid), /GITHUB_NOTES_(SUMMARY|CHANGES)/);
+  }
+  for (const heading of ['Changes since 1.1.0', 'Schimbări față de 1.1.0']) {
+    assert.deepEqual(validateReleaseNotes('# Whist\n\nReadable summary.\n\n## ' + heading + '\n\n- First change.\n- Second change.\n'),
+      {summaryCharacters: 17, changeCount: 2});
+  }
+  const file = path.join(x.candidateDir, 'release-notes.md');
+  const invalid = '# Whist\n\nSummary.\n\n## Changes\n\nA merged change paragraph.';
+  const manifestFile = path.join(x.candidateDir, 'release-validation.json');
+  const manifest = JSON.parse(await fs.readFile(manifestFile, 'utf8'));
+  Object.assign(manifest.integrity.files.find(row => row.path === 'release-notes.md'), {bytes: Buffer.byteLength(invalid), sha256: digest(invalid)});
+  const bytes = JSON.stringify(manifest);
+  await Promise.all([fs.writeFile(file, invalid), fs.writeFile(manifestFile, bytes),
+    fs.writeFile(x.verdictFile, JSON.stringify({...x.verdict, candidateManifestSha256: digest(bytes)}))]);
+  await assert.rejects(loadPublication(x.candidateDir, x.verdictFile), /GITHUB_NOTES_CHANGES/);
+  assert.deepEqual(x.remote.writes(), [], 'Editorial refusal precedes GitHub writes');
 });
 
 test('missing source or a tag on another commit stops before writes', async t => {

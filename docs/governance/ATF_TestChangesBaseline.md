@@ -1001,3 +1001,61 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Native score typography and release-note preflight</summary>
+
+```yaml
+testChanges:
+  - id: SCORE-TYPOGRAPHY-MAIN
+    status: VERIFIED
+    base: 1e078d06f4000d848675d87497302bad3052903d
+    expires: 2026-12-19
+    reason: Preserve native score roles through the Web adapter and validate new release notes before GitHub writes; retain controlled early-clear and invalid-note rejection cases.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=SharedPresentationComponentTest,ComponentEvidenceScopeComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#scoreTextAdapterKeepsLocalizedActionsAtLargerWebSizes
+      negative:
+        - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#trickPlaybackRejectsPrematureClearingAndKeepsCollectionOrigins
+        - atf.tests.governance.documentation.release.rag.scope.ComponentEvidenceScopeComponentTest#githubPublicationResumesByIdAndVerifiesDownloadsBeforeRotation
+    paths:
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java
+      - atf-tests/tools/publish-github-release.test.mjs
+      - atf-ui-browser/tests/fixtures.mjs
+      - atf-ui-browser/tests/shared-presentation.test.mjs
+      - atf-ui-browser/tests/ScoreTypographyProbe.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/nativeproof/SharedPresentationComponentTest.java
+      - whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/score/ScoreTypographyComponentTest.java
+      - whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/boundary/UiLibraryBoundaryComponentTest.java
+      - whist-lab-app/atf-card-table-ui/build.gradle
+      - whist-lab-app/app/build.gradle
+      - config/gradle-audit-collections.properties
+  - id: SCORE-TYPOGRAPHY-RO
+    status: VERIFIED
+    base: 910439dab4bbcd72afe2d0a18c4fb9f583d339c6
+    expires: 2026-12-19
+    reason: Apply the same reviewed source and test boundaries to the Romanian edition.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=SharedPresentationComponentTest,ComponentEvidenceScopeComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#scoreTextAdapterKeepsLocalizedActionsAtLargerWebSizes
+      negative:
+        - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#trickPlaybackRejectsPrematureClearingAndKeepsCollectionOrigins
+        - atf.tests.governance.documentation.release.rag.scope.ComponentEvidenceScopeComponentTest#githubPublicationResumesByIdAndVerifiesDownloadsBeforeRotation
+    paths:
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java
+      - atf-tests/tools/publish-github-release.test.mjs
+      - atf-ui-browser/tests/fixtures.mjs
+      - atf-ui-browser/tests/shared-presentation.test.mjs
+      - atf-ui-browser/tests/ScoreTypographyProbe.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/nativeproof/SharedPresentationComponentTest.java
+      - whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/score/ScoreTypographyComponentTest.java
+      - whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/boundary/UiLibraryBoundaryComponentTest.java
+      - whist-lab-app/atf-card-table-ui/build.gradle
+      - whist-lab-app/app/build.gradle
+      - config/gradle-audit-collections.properties
+``` 
+
+</details>
+

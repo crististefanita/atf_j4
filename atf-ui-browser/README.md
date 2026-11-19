@@ -173,12 +173,12 @@ flowchart LR
 
 </details>
 
-### Current qualified package: 0.2.10
+### Current qualified package: 0.2.25
 
 The adjacent `browser-build.json` binds this release to its source commit, input inventory and artifact hashes.
 
-- Runtime: [Card Table Browser 0.2.10](lib/atf-ui-browser-0.2.10.jar) · [SHA-256](lib/atf-ui-browser-0.2.10.jar.sha256)
-- Shared tests: [Card Table Browser tests 0.2.10](lib/atf-ui-browser-0.2.10-tests.jar) · [SHA-256](lib/atf-ui-browser-0.2.10-tests.jar.sha256)
+- Runtime: [Card Table Browser 0.2.25](lib/atf-ui-browser-0.2.25.jar) · [SHA-256](lib/atf-ui-browser-0.2.25.jar.sha256)
+- Shared tests: [Card Table Browser tests 0.2.25](lib/atf-ui-browser-0.2.25-tests.jar) · [SHA-256](lib/atf-ui-browser-0.2.25-tests.jar.sha256)
 - Provenance: [browser-build.json](lib/browser-build.json)
 
 The viewport contract preserves a 414 × 896 logical frame on desktop, scales uniformly to fit the usable browser height and width, and retains a 0.68 readability floor only when both dimensions permit it. Phone browsers use their CSS viewport 1:1. Rentz and Hold’em consume the same runtime and test-archive bytes, verified against this receipt.
@@ -266,11 +266,11 @@ The trump tile loads a local subset of Noto Sans Symbols 2 containing the four s
 
 ### Score text and shared playback checks
 
-- Web score captions, summaries and actions use the shared text scale once, with a default factor of 1.5. Scoring-detail and live-score dialogs have explicit presentation roles; unrelated dialogs retain their text size.
-- A focusable scroll region with intrinsic column minima keeps enlarged score columns accessible in narrow windows. Android widgets and game scoring are unchanged.
+- `ScoreTypography` owns the logical score sizes. Android uses sp and the Whist Web adapter exports the same roles as rem at a 16 px root. The score does not inherit the separate 1.5 menu scale; accessibility text enlargement and desktop viewport scaling each apply once.
+- A focusable scroll region with intrinsic column minima keeps enlarged score columns accessible in narrow windows. Native score sizes and game scoring are preserved.
 
 - The shared tests execute the real Web constructor and collection code with a controlled DOM and clock. Actor cues precede cards; measured faces retain their origins, dimensions and destination until collection finishes.
 - Premature clearing is a negative control. Game-specific trick winners, awards and sequence rules remain in each consumer's tests.
 
-- `shared-presentation.test.mjs` is shipped in the test JAR. Set `ATF_BROWSER_WEB_ROOT` to the extracted runtime's Web resources and `ATF_BROWSER_EXECUTABLE` to Edge or Chrome, then run `node --test shared-presentation.test.mjs`. Browser profiles use the external temporary root; audio is muted. Typography checks use controlled game content and the production DOM/CSS, rather than an Android raster.
+- `shared-presentation.test.mjs` is shipped in the test JAR. Set `ATF_BROWSER_WEB_ROOT` to the extracted runtime's Web resources, `ATF_BROWSER_RUNTIME_JAR` to the delivered runtime JAR and `ATF_BROWSER_EXECUTABLE` to Edge or Chrome, then run `node --test shared-presentation.test.mjs`. Browser profiles use the external temporary root; audio is muted. Typography checks use controlled game content and the production DOM/CSS, rather than an Android raster.
 - Browser teardown requests a graceful exit and waits for the owned process. Profile cleanup is asynchronous with bounded retries so Windows handle release can finish before directory removal.
