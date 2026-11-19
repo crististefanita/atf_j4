@@ -35,6 +35,8 @@ Copy-Item -LiteralPath $footerImage -Destination (Join-Path $site 'menu-footer.p
 $index = Join-Path $site 'index.html'
 $markup = [IO.File]::ReadAllText($index).Replace('<html lang="ro">', '<html lang="ro" data-engine="whist">')
 $markup = $markup.Replace('<title>Card Table</title>', '<title>Whist Lab</title>')
+$cssRevision = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $site 'table.css')).Hash.ToLowerInvariant().Substring(0, 20)
+$markup = $markup -replace 'table\.css\?v=[^" ]+', "table.css?v=$cssRevision"
 $policy = "default-src 'self'; connect-src 'none'; style-src 'self' 'unsafe-inline'; worker-src 'self'; base-uri 'none'"
 $markup = $markup.Replace('<meta charset="utf-8">', "<meta charset=`"utf-8`">`n  <meta http-equiv=`"Content-Security-Policy`" content=`"$policy`">")
 [IO.File]::WriteAllText($index, $markup)

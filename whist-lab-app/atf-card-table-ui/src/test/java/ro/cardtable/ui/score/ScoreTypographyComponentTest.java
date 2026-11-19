@@ -25,6 +25,8 @@ public final class ScoreTypographyComponentTest extends atf.gradle.audit.GradleA
     }
 
     @Test public void resultActionsEnlargeExactlyOnceInBothPlatformUnits() {
+        atf.gradle.audit.GradleInputs.fixture("Result action typography", "baseline sizes", List.of(16, 14),
+                "enlargement", 1.5, "accessible roots", List.of(16, 20, 24, 32));
         for (int root : List.of(16, 20, 24, 32)) {
             double scale = root / 16.0;
             assertEquals("Primary action gains 50% before accessibility scaling", 16 * 1.5 * scale,
@@ -35,6 +37,8 @@ public final class ScoreTypographyComponentTest extends atf.gradle.audit.GradleA
     }
 
     @Test public void denseScoreCellsAndGenericDialogsKeepLegacyRoles() {
+        atf.gradle.audit.GradleInputs.fixture("Independent score roles", "column/value/body/dialog/quiet",
+                List.of(11, 13, 16, 20, 14));
         assertEquals("Compact column headings do not inherit action enlargement", 11, ScoreTypography.COLUMN.sp());
         assertEquals("Numeric cells retain their own role", 13, ScoreTypography.VALUE.sp());
         assertEquals("Generic body text is unchanged", 16, ScoreTypography.BODY.sp());
