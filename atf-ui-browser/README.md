@@ -12,6 +12,7 @@ Whist folosește motorul Java și contractele portabile ale mesei atât în APK,
 |---|---|
 | Eticheta actorului | Un `actorLabel` opțional, furnizat de consumator, păstrează acțiunea vizibilă a jocului, inclusiv la locul uman. Antetele ascunse sunt excluse înainte de layout. |
 | Textul locului | `SeatTypography` furnizează rolurile; textul măsurat se încadrează orizontal fără schimbarea înălțimii rândului. |
+| Textul scorului | `ScoreTypography` transmite dimensiuni logice adaptoarelor sp native și rem Web; mărirea accesibilă se aplică o singură dată. |
 | Identitatea chenarului | Reafișările pregătite aplică geometria, valorile și actorul accesibil pe obiectele existente ale locurilor. Mesele incompatibile păstrează chenare noi. |
 | Continuitatea levatei | Mesele native atașează controale doar pentru acțiuni vizibile. Stările fără acțiuni sau doar automate nu creează vecini goi ori spațiu flex suplimentar; licitarea reală și mesajele vechi rămân vizibile. |
 | Limita componentelor | Probele execută constructorul și adaptoarele livrate. Rasterul nativ și geometria pictată au acceptanță separată pe platformă. |
@@ -173,15 +174,15 @@ flowchart LR
 
 </details>
 
-### Pachetul calificat curent: 0.2.25
+### Pachetul calificat curent: 0.2.26
 
 Fișierul alăturat `browser-build.json` leagă această versiune de commitul sursă, inventarul intrărilor și hash-urile artefactelor.
 
-- Runtime: [Card Table Browser 0.2.25](lib/atf-ui-browser-0.2.25.jar) · [SHA-256](lib/atf-ui-browser-0.2.25.jar.sha256)
-- Teste comune: [Testele Card Table Browser 0.2.25](lib/atf-ui-browser-0.2.25-tests.jar) · [SHA-256](lib/atf-ui-browser-0.2.25-tests.jar.sha256)
+- Runtime: [Card Table Browser 0.2.26](lib/atf-ui-browser-0.2.26.jar) · [SHA-256](lib/atf-ui-browser-0.2.26.jar.sha256)
+- Teste comune: [Testele Card Table Browser 0.2.26](lib/atf-ui-browser-0.2.26-tests.jar) · [SHA-256](lib/atf-ui-browser-0.2.26-tests.jar.sha256)
 - Proveniență: [browser-build.json](lib/browser-build.json)
 
-Contractul de viewport păstrează pe desktop cadrul logic de 414 × 896, îl scalează uniform după înălțimea și lățimea utilă a browserului și menține pragul de lizibilitate 0,68 numai când încap ambele dimensiuni. Browserul de telefon folosește viewport-ul CSS la scara 1:1. Rentz și Hold’em consumă aceiași octeți pentru runtime și arhiva de teste, verificați cu această chitanță.
+Contractul de viewport păstrează pe desktop cadrul logic de 414 × 896, îl scalează uniform după înălțimea și lățimea utilă a browserului și menține pragul de lizibilitate 0,68 numai când încap ambele dimensiuni. Browserul de telefon folosește viewport-ul CSS la scara 1:1. Consumatorii trebuie să adopte arhivele de execuție și teste din același receipt și să le verifice octeții.
 
 ```powershell
 .\atf-ui-browser\Package-CardTableBrowser.ps1 -WorkRoot $WorkRoot -Version $BrowserLibraryVersion

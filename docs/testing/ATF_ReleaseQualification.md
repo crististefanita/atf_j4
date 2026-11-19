@@ -251,7 +251,7 @@ Evaluatorul compară fișierele adăugate, șterse și modificate. [Perimetrul s
 
 - Guvernanța verifică inventarul complet.
 - Componentele bibliotecii grafice au perimetru propriu. Modificările în consumatorii de joc permit reutilizarea raportului bibliotecii. Sursele, testele, resursele, configurația de compilare și puntea auditului fac parte din perimetrul acestei suite.
-- Modulele Maven independente pot reutiliza rezultate după schimbări limitate la UI Android dacă dependențele lor rămân identice.
+- Modulele Maven independente pot reutiliza rezultate după schimbări limitate la UI Android sau Web dacă dependențele rămân identice. Colecțiile native cunoscute exclud și modulul separat de browser; guvernanța rulează, iar modificările intrărilor proprii, bibliotecilor JVM sau căilor necunoscute cer execuție.
 - Colecțiile Gradle ale jocului urmăresc codul și configurația lor compilată; documentația și fișierele exclusiv din alte suite nu le invalidează. Calea necunoscută păstrează decizia sigură `RUN`.
 
 | Decizie | Acțiune |
@@ -418,6 +418,7 @@ $device = @{
 
 - `android-preflight.json` păstrează rezultatul, observația UTC și cauza refuzului. Lansatorul responsive verifică din nou dispozitivul după Maven și păstrează a doua dovadă în `android-preflight-execution.json`.
 - Pregătirea utilizatorului Android secundar colectează aceeași dovadă înainte de interacțiune și verifică valabilitatea ei înainte să creeze utilizatorul. Curățarea folosește în continuare identitatea lease-ului și a utilizatorului creat.
+- Inventarele utilizatorilor Android acceptă terminatori LF și CRLF ai transportului. ID-urile duplicate, rândurile incomplete și serviciile indisponibile rămân refuzuri; normalizarea nu autorizează niciodată curățarea unui profil neidentificat.
 
 ### Recuperarea utilizatorului temporar
 

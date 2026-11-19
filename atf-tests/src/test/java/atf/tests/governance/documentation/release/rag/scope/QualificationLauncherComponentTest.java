@@ -157,13 +157,15 @@ class QualificationLauncherComponentTest {
         write(source, "pom.xml", "<project/>");
         Path real = GovernanceProject.locateProjectRoot();
         Files.copy(real.resolve("config/release-platform-rag-policy.json"), source.resolve("config/release-platform-rag-policy.json"));
-        for (String file : List.of("check-release-artifacts.mjs", "evaluate-release-rag.mjs", "documentation-editions.mjs", "release-evidence-freshness.mjs",
-                "release-test-scope.mjs", "component-evidence-scope.mjs", "github-release-retention.mjs",
-                "android-e2e-contract.mjs", "android-e2e-evidence.mjs", "android-e2e-images.mjs", "release-timing.mjs")) {
-            String relative = "atf-tests/tools/" + file;
-            Path target = source.resolve(relative);
-            Files.createDirectories(target.getParent());
-            Files.copy(real.resolve(relative), target);
+        // Keep the real runtime module closure; a hand-maintained subset hid later helper imports.
+        Path tools = real.resolve("atf-tests/tools");
+        try (var entries = Files.list(tools)) {
+            for (var file : entries.filter(Files::isRegularFile).filter(path -> path.toString().endsWith(".mjs")
+                    && !path.toString().endsWith(".test.mjs")).toList()) {
+                Path target = source.resolve("atf-tests/tools").resolve(file.getFileName());
+                Files.createDirectories(target.getParent());
+                Files.copy(file, target);
+            }
         }
         write(source, "release/index.json", "{\"schemaVersion\":2,\"currentVersion\":\"" + VERSION + "\",\"versions\":[\"" + VERSION + "\"]}");
         Path apk = write(source, RELEASE + APK, "apk fixture");

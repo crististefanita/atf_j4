@@ -8,6 +8,40 @@ import {fileURLToPath} from 'node:url';
 import {deriveReleaseTestScope} from './release-test-scope.mjs';
 import {componentEvidenceScope} from './component-evidence-scope.mjs';
 
+test('user inventories accept LF and CRLF without admitting duplicate or incomplete identities', t => {
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'whist-user-list-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const script=path.join(root,'inventory.ps1');
+  fs.writeFileSync(script,String.raw`
+param($Helper)
+$ErrorActionPreference='Stop'
+. $Helper
+$rows=@();$crlf=[string][char]13+[char]10;$lf=[string][char]10;$tab=[char]9
+foreach($ending in @('LF','CRLF')) {
+ $nl=if($ending-eq'LF'){$lf}else{$crlf}
+ foreach($terminated in @($false,$true)) {
+  $text='Users:'+$nl+$tab+'UserInfo{0:Owner:13} running'+$nl+$tab+'UserInfo{10:Foreign profile:0}'
+  if($terminated){$text+=$nl}
+  $users=@(ConvertFrom-AtfAndroidUsers $text)
+  $rows+=@{format=$ending;terminated=$terminated;ids=@($users.id);names=@($users.name)}
+ }
+}
+$rejected=@()
+foreach($invalid in @(('Users:'+$crlf+' UserInfo{0:Owner:13}'+$crlf+' UserInfo{0:Duplicate:0}'),
+ ('Users:'+$crlf+' UserInfo{0:Owner:13}'+$crlf+' UserInfo{10:Truncated'),'Users:',"cmd: Can't find service: package")) {
+ try {ConvertFrom-AtfAndroidUsers $invalid|Out-Null;$rejected+='ACCEPTED'}
+ catch {$rejected+=$_.Exception.Message}
+}
+@{cases=$rows;rejected=$rejected}|ConvertTo-Json -Depth 5 -Compress
+`);
+  const output=execFileSync('pwsh',['-NoProfile','-File',script,
+    fileURLToPath(new URL('../../scripts/AtfAndroidUserOwnership.ps1',import.meta.url))],{encoding:'utf8',timeout:30000,windowsHide:true});
+  const result=JSON.parse(output);assert.equal(result.cases.length,4);
+  for(const row of result.cases){assert.deepEqual(row.ids,[0,10]);assert.deepEqual(row.names,['Owner','Foreign profile']);}
+  assert.deepEqual(result.rejected,Array(4).fill('ANDROID_USER_LIST_UNAVAILABLE'));
+  console.log('User inventory observations: '+JSON.stringify(result));
+});
+
 test('ownership tooling selects governance while preserving unchanged game evidence',()=>{
   const groups=['atf-tests','atf-test-android','whist-lab-app-bidding','whist-lab-app-atf-card-table-ui'];
   const changed=new Map([['scripts/AtfAndroidUserOwnership.ps1','new']]);
