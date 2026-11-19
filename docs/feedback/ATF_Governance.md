@@ -55,3 +55,12 @@ Proba de transfer prin Android DownloadManager și verificarea certificatului ap
 ## Limitele calificării release-ului
 
 Separarea sursei native de validator aparține [contractului de calificare](../testing/ATF_ReleaseQualification.md#proveniența-execuției-native-și-a-validatorului). Reutilizarea cere în continuare motor, scenariu, APK și dovezi originale neschimbate.
+
+## Costul calificării și reluarea invocărilor
+
+Validarea snapshot-ului și a cache-ului consumă timp chiar când execuția testelor se reutilizează. Măsurați aceste costuri separat de execuție și de așteptarea rezervării.
+
+- Salvați fiecare invocare acceptată împreună cu sursa, dependențele compilate, identitatea, comparațiile originale și hash-urile rapoartelor.
+- Reluați invocările nerezolvate numai după verificarea acestor intrări imuabile. Păstrați încercările respinse ca diagnostice.
+- Dovediți paritatea întregului set de identități JUnit față de o rulare completă; respingeți sursele schimbate, cazurile lipsă, identitățile duplicate și dovezile modificate.
+- Păstrați timeout-urile explicite până trece o reluare reală. Un caz vecin trecut sau un receipt rescris nu reprezintă dovezi înlocuitoare.

@@ -189,6 +189,12 @@ class ReleasePresentationGovernanceTest {
                 .replace("Pe scurt", "Overview").replace("Documentație", "Documentation")
                 .replace("Masă încadrată.", "Table fits the viewport.");
         AuditedAssertions.assertEquals(List.of(), violations(edition, english, "en", false));
+        String summary = "A short product summary.\n\n";
+        AuditedAssertions.assertEquals(List.of(), violations(edition, english.replace("## Download", summary + "## Download"), "en", false));
+        AuditedAssertions.assertEquals(List.of(), violations(edition, english.replace("## Download", "A wrapped\nproduct summary.\n\n## Download"), "en", false));
+        AuditedAssertions.assertEquals(List.of(), violations(edition, english.replace("## Download", "𐐀".repeat(400) + "\n\n## Download"), "en", false));
+        AuditedAssertions.assertTrue(violations(edition, english.replace("## Download", "x".repeat(401) + "\n\n## Download"), "en", false).contains("NOTE-SUMMARY"));
+        AuditedAssertions.assertTrue(violations(edition, english.replace("## Download", summary + summary + "## Download"), "en", false).contains("NOTE-SUMMARY"));
         AuditedAssertions.assertTrue(violations(edition, english.replace("- Table fits", "- Extra change.\n- Table fits"), "en", false).contains("NOTE-POINTS"));
         AuditedAssertions.assertTrue(violations(edition, english.replace(edition.asset(), "https://example.invalid/Game.apk"), "en", false).contains("NOTE-ASSET"));
         AuditedAssertions.assertTrue(violations(edition, english.replace("## Overview", "## Changes"), "en", false).contains("NOTE-SECTIONS"));
@@ -223,6 +229,15 @@ class ReleasePresentationGovernanceTest {
         if (edition.mode().equals("summary") && edition.previous() != null) errors.add("NOTE-BASELINE");
         var sections = new LinkedHashMap<String, List<String>>();
         List<String> current = null;
+        String normalized = markdown.replace("\r\n", "\n").strip();
+        var firstSection = Pattern.compile("(?m)^## ").matcher(normalized);
+        String opening = firstSection.find() ? normalized.substring(0, firstSection.start()).strip() : normalized;
+        String title = "# Whist " + edition.version();
+        if (opening.equals(title)) opening = "";
+        else if (opening.startsWith(title + "\n")) opening = opening.substring(title.length()).strip();
+        if (!opening.isEmpty() && (opening.startsWith("# ") || opening.startsWith("- ")
+                || opening.contains("\n\n") || opening.codePointCount(0, opening.length()) > 400))
+            errors.add("NOTE-SUMMARY");
         for (String row : markdown.split("\\R")) {
             String line = row.strip();
             if (line.isBlank()) continue;
@@ -230,7 +245,8 @@ class ReleasePresentationGovernanceTest {
             if (line.startsWith("## ")) {
                 current = new ArrayList<>();
                 if (sections.put(line.substring(3), current) != null) errors.add("NOTE-SECTIONS");
-            } else if (current == null || !line.startsWith("- ")) errors.add("NOTE-BULLETS");
+            } else if (current == null) continue;
+            else if (!line.startsWith("- ")) errors.add("NOTE-BULLETS");
             else current.add(line.substring(2));
         }
         if (!new ArrayList<>(sections.keySet()).equals(List.of(english ? "Download" : "Descărcare", changes, english ? "Documentation" : "Documentație")))

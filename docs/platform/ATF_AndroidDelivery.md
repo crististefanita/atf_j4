@@ -299,6 +299,7 @@ Pagina Release este destinată utilizatorului. Păstrează trei secțiuni cu bul
 | Îmbunătățiri față de versiunea precedentă | Schimbări confirmate pentru binarul publicat, cu versiunea de comparație identificată. |
 | Documentație | Legătura către rapoarte și proveniență, într-un commit identificat. |
 
+- **Rezumat introductiv:** publicările noi încep cu un paragraf de cel mult 400 de caractere Unicode. Păstrați fiecare schimbare confirmată într-un bullet separat de cel mult 300 de caractere; validați forma înainte de crearea draftului GitHub.
 - **Comparație:** dacă diferențele față de versiunea precedentă nu sunt confirmate, secțiunea se numește **Pe scurt** și descrie doar capabilități cunoscute ale versiunii. Nu transformați rezumatul în istoric inventat; următoarea livrare își adună schimbările pe parcursul dezvoltării.
 - **Audit:** numerele testelor, verdicturile tehnice, mesajele despre dispozitive neverificate și diagnosticul distribuției aparțin dosarului de dovezi. Linkul din Release păstrează accesul la ele fără a încărca prezentarea produsului.
 
