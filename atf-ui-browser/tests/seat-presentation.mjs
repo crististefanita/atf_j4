@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { runInNewContext } from "node:vm";
 
-export function verifyCenterContinuity(shell) {
+export function verifyCenterContinuity(shell, adapterBindings = {}) {
   const fragment = shell.slice(shell.indexOf('  const controls = element('), shell.indexOf('  const hand = element('));
   assert.ok(fragment.includes('controls.append(actions)'), 'Exercise the actual delivered render constructor');
   class Node {
@@ -12,7 +12,7 @@ export function verifyCenterContinuity(shell) {
   {
       const build = (header, actions, bids = []) => {
         const center = new Node(); center.append(new Node());
-        runInNewContext(fragment, { center, match: { header, prompt: 'Play', actions, history: { rows: [] } }, bids,
+        runInNewContext(fragment, { ...adapterBindings, center, match: { header, prompt: 'Play', actions, history: { rows: [] } }, bids,
           element: () => new Node(), control: () => new Node(), button: () => new Node(),
           bidding: (_bids, target) => target.append(new Node()) });
         return center.children.length > 1;
