@@ -719,23 +719,28 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 [data-surface="whist"] .seat span:first-of-type { white-space: pre-line; }
 .whist-score {
   display: grid; gap: 8px;
-  font-size: calc(1rem * var(--whist-text-scale, 1.5));
+  font-size: var(--score-text-body, 1rem);
   overflow-wrap: anywhere;
 }
-.whist-score h1 { font-size: calc(1.5625rem * var(--whist-text-scale, 1.5)); }
+.whist-score h1 { font-size: var(--score-text-title, 1.5625rem); }
+.whist-score button { font-size: var(--score-text-primary, 1rem); }
+.whist-score button.quiet { font-size: var(--score-text-quiet, .875rem); }
+.whist-score .whist-score-winner { font-size: var(--score-text-winner, 1.125rem); }
+.whist-score .whist-score-awards { font-size: var(--score-text-award, .875rem); }
 .whist-score > * { min-width: 0; max-width: 100%; }
 .score-table-scroll { overflow: auto; }
 .score-table-scroll .whist-score-grid, .game-live-score .whist-score-grid { table-layout: auto; }
 .whist-score-hand { color: var(--whist-accent); font-size: 12px; font-weight: 700; text-transform: uppercase; }
 .whist-score-status { white-space: pre-line; font-size: 13px; color: #69756a; }
-.whist-score .whist-score-hand { font-size: calc(.75rem * var(--whist-text-scale, 1.5)); }
-.whist-score .whist-score-status, .game-live-score .whist-score-status {
-  font-size: calc(.8125rem * var(--whist-text-scale, 1.5));
-}
+.whist-score .whist-score-hand { font-size: var(--score-text-hand, .75rem); }
+.whist-score .whist-score-status { font-size: var(--score-text-summary, .8125rem); }
+.game-live-score :is(.whist-score-status, .pending-bid) { font-size: calc(var(--score-text-live-summary, .75rem) * var(--dialog-scale, 1)); }
 .player-dialog:is(.game-live-score, .game-score-rules) {
-  font-size: calc(1rem * var(--dialog-scale, 1) * var(--whist-text-scale, 1.5));
+  font-size: calc(var(--score-text-body, 1rem) * var(--dialog-scale, 1));
   overflow-wrap: anywhere;
 }
+.player-dialog:is(.game-live-score, .game-score-rules) h2 { font-size: calc(var(--score-text-dialog-title, 1.25rem) * var(--dialog-scale, 1)); }
+.player-dialog:is(.game-live-score, .game-score-rules) button { font-size: calc(var(--score-text-quiet, .875rem) * var(--dialog-scale, 1)); }
 .whist-score .prompt { color: #69756a; }
 .whist-score-grid {
   table-layout: fixed;
@@ -747,11 +752,13 @@ thead, tr:nth-child(even) { background: #e8efe4; }
 .whist-score-grid thead tr { height: var(--whist-score-head); background: var(--whist-score-header); }
 .whist-score-grid thead th { color: var(--whist-score-muted); font-size: .6875rem; }
 .whist-score .whist-score-grid, .game-live-score .whist-score-grid {
-  font-size: calc(.8125rem * var(--whist-text-scale, 1.5));
+  font-size: var(--score-text-value, .8125rem);
 }
 .whist-score .whist-score-grid thead th, .game-live-score .whist-score-grid thead th {
-  font-size: calc(.6875rem * var(--whist-text-scale, 1.5));
+  font-size: var(--score-text-column, .6875rem);
 }
+.game-live-score .whist-score-grid { font-size: calc(var(--score-text-value, .8125rem) * var(--dialog-scale, 1)); }
+.game-live-score .whist-score-grid thead th { font-size: calc(var(--score-text-column, .6875rem) * var(--dialog-scale, 1)); }
 .whist-score-grid tbody tr { height: var(--whist-score-row); }
 .whist-score-grid tbody tr:nth-child(even) { background: var(--whist-score-stripe); }
 .whist-score-grid tbody tr:first-child { background: var(--whist-score-human); }

@@ -177,8 +177,8 @@ flowchart LR
 
 Fișierul alăturat `browser-build.json` leagă această versiune de commitul sursă, inventarul intrărilor și hash-urile artefactelor.
 
-- Runtime: [Card Table Browser 0.2.10](lib/atf-ui-browser-0.2.10.jar) · [SHA-256](lib/atf-ui-browser-0.2.10.jar.sha256)
-- Teste comune: [Testele Card Table Browser 0.2.10](lib/atf-ui-browser-0.2.10-tests.jar) · [SHA-256](lib/atf-ui-browser-0.2.10-tests.jar.sha256)
+- Runtime: [Card Table Browser 0.2.25](lib/atf-ui-browser-0.2.25.jar) · [SHA-256](lib/atf-ui-browser-0.2.25.jar.sha256)
+- Teste comune: [Testele Card Table Browser 0.2.25](lib/atf-ui-browser-0.2.25-tests.jar) · [SHA-256](lib/atf-ui-browser-0.2.25-tests.jar.sha256)
 - Proveniență: [browser-build.json](lib/browser-build.json)
 
 Contractul de viewport păstrează pe desktop cadrul logic de 414 × 896, îl scalează uniform după înălțimea și lățimea utilă a browserului și menține pragul de lizibilitate 0,68 numai când încap ambele dimensiuni. Browserul de telefon folosește viewport-ul CSS la scara 1:1. Rentz și Hold’em consumă aceiași octeți pentru runtime și arhiva de teste, verificați cu această chitanță.
@@ -266,11 +266,11 @@ Chenarul de atu încarcă local un subset Noto Sans Symbols 2 cu cele patru simb
 
 ### Textul scorului și verificările comune de redare
 
-- Titlurile, rezumatele și acțiunile scorului Web folosesc o singură dată scara comună a textului, implicit 1,5. Dialogurile calculului și scorului curent au roluri explicite de prezentare; celelalte dialoguri își păstrează dimensiunea textului.
-- O zonă derulabilă, accesibilă prin focus, cu minime de coloană determinate de text, păstrează coloanele mărite accesibile în ferestre înguste. Widgeturile Android și calculul jocului rămân neschimbate.
+- `ScoreTypography` deține dimensiunile logice ale scorului. Android folosește sp, iar adaptorul Web Whist exportă aceleași roluri în rem la o rădăcină de 16 px. Scorul nu moștenește scara separată de 1,5 a meniului; mărirea accesibilă a textului și scalarea ferestrei desktop se aplică fiecare o singură dată.
+- O zonă derulabilă, accesibilă prin focus, cu minime de coloană determinate de text, păstrează coloanele mărite accesibile în ferestre înguste. Dimensiunile native ale scorului și calculul jocului se păstrează.
 
 - Testele comune execută constructorul Web și colectarea reale, cu DOM și ceas controlate. Actorul este semnalizat înaintea cărții; fețele măsurate își păstrează originea, dimensiunile și destinația până la terminarea colectării.
 - Ștergerea prematură este control negativ. Câștigătorii levatelor, premiile și regulile secvențelor rămân în testele fiecărui consumator.
 
-- `shared-presentation.test.mjs` este livrat în JAR-ul de teste. Setați `ATF_BROWSER_WEB_ROOT` către resursele Web din execuția extrasă și `ATF_BROWSER_EXECUTABLE` către Edge sau Chrome, apoi rulați `node --test shared-presentation.test.mjs`. Profilele browserului folosesc rădăcina temporară externă; sunetul este oprit. Probele de tipografie folosesc conținut de joc controlat și DOM/CSS de producție, nu raster Android.
+- `shared-presentation.test.mjs` este livrat în JAR-ul de teste. Setați `ATF_BROWSER_WEB_ROOT` către resursele Web din execuția extrasă, `ATF_BROWSER_RUNTIME_JAR` către JAR-ul de execuție livrat și `ATF_BROWSER_EXECUTABLE` către Edge sau Chrome, apoi rulați `node --test shared-presentation.test.mjs`. Profilele browserului folosesc rădăcina temporară externă; sunetul este oprit. Probele de tipografie folosesc conținut de joc controlat și DOM/CSS de producție, nu raster Android.
 - Închiderea browserului cere ieșirea normală și așteaptă procesul propriu. Curățarea profilului este asincronă, cu reîncercări limitate, pentru ca Windows să elibereze handle-urile înaintea ștergerii directorului.

@@ -2,6 +2,7 @@ package ro.whistlab.app.screens;
 
 import static ro.whistlab.app.screens.ScreenViews.MUTED;
 import static ro.whistlab.app.screens.ScreenViews.ACCENT;
+import static ro.cardtable.ui.score.ScoreTypography.*;
 
 import ro.whistlab.app.localization.WhistUiText;
 import ro.whistlab.app.score.ScoreHistoryView;
@@ -26,13 +27,13 @@ public final class ScoreScreens {
     public void score(WhistUiText copy, GameSession.Snapshot state, ScoreHistory history, Actions actions) {
         views.applyStandardWindowChrome();
         LinearLayout page = views.page(copy.romanian() ? "MÂNA " + state.handNumber()
-                : "HAND " + state.handNumber(), copy.scoreSheet());
-        views.addText(page,copy.roundStatus(state),13,MUTED,false,0,4);
+                : "HAND " + state.handNumber(), copy.scoreSheet(), 22, HAND.sp(), TITLE.sp());
+        views.addText(page,copy.roundStatus(state),SUMMARY.sp(),MUTED,false,0,4);
         views.addText(page, state.finalHand() ? copy.gameComplete() : copy.handComplete(),
-                16, MUTED, false, 0, 12);
-        if(state.finalHand())views.addText(page,copy.winner(state),18,ACCENT,true,0,12);
+                BODY.sp(), MUTED, false, 0, 12);
+        if(state.finalHand())views.addText(page,copy.winner(state),WINNER.sp(),ACCENT,true,0,12);
         String awards = copy.zeroGameAwards(state);
-        if (!awards.isEmpty()) views.addText(page, awards, 14, ACCENT, false, 0, 8);
+        if (!awards.isEmpty()) views.addText(page, awards, AWARD.sp(), ACCENT, false, 0, 8);
         LinearLayout.LayoutParams scoreTableParams = views.matchWrap();
         scoreTableParams.setMargins(0, 0, 0, views.dp(8));
         page.addView(new ScoreTableView(activity, state, copy, history), scoreTableParams);
@@ -40,29 +41,29 @@ public final class ScoreScreens {
                 .setTitle(copy.scoringDetails()).setMessage(copy.scoreRule(state)
                         + (state.streakBonuses() ? "\n\n" + copy.streakSummary(state) : "")
                         + (state.allowZeroGame() ? "\n\n" + copy.zeroGameRule() : ""))
-                .setPositiveButton(copy.close(), null).show());
+                .setPositiveButton(copy.close(), null).show(), QUIET.sp());
 
         if (!state.finalHand()) {
             views.addButton(page, copy.nextHand(), "btn_next_hand", true, () -> {
                 actions.next().run();
-            }, true);
+            }, true, PRIMARY.sp());
         } else {
             views.addButton(page, copy.playAgain(), "btn_play_again", true, () -> {
                 actions.again().run();
-            }, true);
+            }, true, PRIMARY.sp());
         }
-        views.addQuietButton(page, copy.scoreHistory(), actions.history());
-        views.addQuietButton(page, copy.mainMenu(), actions.home());
+        views.addQuietButton(page, copy.scoreHistory(), actions.history(), QUIET.sp());
+        views.addQuietButton(page, copy.mainMenu(), actions.home(), QUIET.sp());
     }
     public void live(WhistUiText copy, GameSession.Snapshot state, ScoreHistory history, Runnable dismissed, Runnable showHistory) {
         LinearLayout content = new LinearLayout(activity);
         content.setOrientation(LinearLayout.VERTICAL);
         content.setPadding(views.dp(8), views.dp(2), views.dp(8), 0);
-        TextView summary = views.text(copy.bidSummary(state), 12, MUTED, false);
+        TextView summary = views.text(copy.bidSummary(state), LIVE_SUMMARY.sp(), MUTED, false);
         summary.setPadding(views.dp(2), views.dp(2), views.dp(2), views.dp(8));
         content.addView(summary, views.matchWrap());
         if (state.players().get(0).bid() == null) {
-            TextView pendingBid = views.text(copy.bidNotPlaced(), 12, MUTED, true);
+            TextView pendingBid = views.text(copy.bidNotPlaced(), LIVE_SUMMARY.sp(), MUTED, true);
             pendingBid.setPadding(views.dp(2), 0, views.dp(2), views.dp(8));
             content.addView(pendingBid, views.matchWrap());
         }

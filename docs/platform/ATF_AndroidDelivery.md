@@ -135,6 +135,8 @@ Selecțiile executate trebuie să treacă; un eșec relevant blochează publicar
 
 Metadatele draftului se păstrează separat în `github-release-draft.json`; `github-release.json` descrie publicarea efectivă. GitHub poate folosi adrese temporare `untagged` în draft, astfel că testul notelor legate de asset-urile publicate se execută din nou după publicare, pe adresele canonice observate. La publicare, trimiteți explicit tag-ul și commit-ul surselor și confruntați răspunsul cu identitatea APK-ului.
 
+Înainte de crearea unui draft, încărcătorul publicării verifică notele noi: un singur rezumat introductiv de cel mult 400 de caractere Unicode și schimbări în puncte separate, fiecare de cel mult 300 de caractere. Notele invalide opresc fluxul înainte de scrieri pe GitHub; notele istorice publicate rămân imuabile. [Componentele publicării](../../atf-tests/tools/publish-github-release.test.mjs) acoperă ambele limbi și un candidat cu hash valid, dar structură editorială invalidă.
+
 ## Commit-ul surselor și commit-ul dovezilor
 
 - **Surse:** tag-ul fixează commit-ul calificat înaintea publicării. Confruntați toate intrările APK-ului și fișierele noi; modificările documentației ori ale probelor ulterioare nu mută tag-ul.

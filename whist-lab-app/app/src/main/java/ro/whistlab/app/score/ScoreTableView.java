@@ -2,6 +2,7 @@ package ro.whistlab.app.score;
 
 import ro.whistlab.app.localization.WhistUiText;
 import ro.cardtable.ui.table.ScoreGridStyle;
+import ro.cardtable.ui.score.ScoreTypography;
 import static ro.cardtable.ui.table.ScoreGridStyle.*;
 
 import android.content.Context;
@@ -72,7 +73,7 @@ public final class ScoreTableView extends LinearLayout {
             boolean bold, boolean header) {
         TextView cell = new TextView(getContext());
         cell.setText(value);
-        cell.setTextSize(header ? 11 : 13);
+        cell.setTextSize((header ? ScoreTypography.COLUMN : ScoreTypography.VALUE).sp());
         cell.setTextColor(header ? MUTED : INK);
         cell.setGravity(gravity);
         cell.setSingleLine(true);

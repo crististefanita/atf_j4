@@ -22,6 +22,7 @@ $testInputs = @(
     Join-Path $tests 'score-presentation.mjs'
     Join-Path $tests 'trick-playback.mjs'
     Join-Path $tests 'shared-presentation.test.mjs'
+    Join-Path $tests 'ScoreTypographyProbe.java'
     Join-Path $tests 'seat-presentation.mjs'
     Join-Path $tests 'viewport-contract.mjs'
     Join-Path $tests 'card-typography.mjs'

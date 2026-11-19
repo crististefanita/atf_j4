@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { spawn, execFile } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
@@ -63,6 +63,7 @@ export function client(url, clientId = "a".repeat(32), profileId = clientId) {
 
 export async function withBrowser(executable, profile, exercise) {
   const child = spawn(executable, ["--headless=new", "--disable-gpu", "--disable-background-networking",
+    "--disable-extensions", "--disable-component-update", "--disable-sync",
     "--mute-audio", "--no-first-run", "--no-default-browser-check", "--remote-debugging-port=0",
     "--user-data-dir=" + profile, "about:blank"], { windowsHide: true, stdio: "ignore" });
   let startupFailure;
@@ -114,7 +115,14 @@ export async function withBrowser(executable, profile, exercise) {
       try { await send("Browser.close"); } catch { /* The browser may close its socket before acknowledging shutdown. */ }
     }
     socket?.close();
-    if (child.exitCode === null) child.kill();
+    if (child.exitCode === null) {
+      if (process.platform === "win32") {
+        // A terminated Chromium parent can retain live extension descendants and profile handles.
+        // Address only the child created above; never select a browser by its executable name.
+        await new Promise(resolve => execFile("taskkill.exe", ["/PID", String(child.pid), "/T", "/F"],
+          {windowsHide: true, timeout: 5000}, () => resolve()));
+      } else child.kill();
+    }
     await new Promise(resolve => {
       const timer = setTimeout(resolve, 5000);
       child.once("exit", () => { clearTimeout(timer); resolve(); });

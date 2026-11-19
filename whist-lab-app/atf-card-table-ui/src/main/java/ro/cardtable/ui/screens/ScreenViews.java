@@ -41,6 +41,10 @@ public class ScreenViews {
     }
 
     public LinearLayout page(String eyebrow, String title, int horizontalPadding) {
+        return page(eyebrow, title, horizontalPadding, 12, 25);
+    }
+
+    public LinearLayout page(String eyebrow, String title, int horizontalPadding, int eyebrowSize, int titleSize) {
         ScrollView scroll = new ScrollView(activity);
         scroll.setFillViewport(true);
         LinearLayout content = new LinearLayout(activity);
@@ -51,8 +55,8 @@ public class ScreenViews {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         activity.setContentView(scroll);
         protection.accept(scroll);
-        if (eyebrow != null && !eyebrow.isBlank()) addText(content, eyebrow, 12, ACCENT, true, 0, 8);
-        if (title != null && !title.isBlank()) addText(content, title, 25, PINE, true, 0, 8);
+        if (eyebrow != null && !eyebrow.isBlank()) addText(content, eyebrow, eyebrowSize, ACCENT, true, 0, 8);
+        if (title != null && !title.isBlank()) addText(content, title, titleSize, PINE, true, 0, 8);
         return content;
     }
 
@@ -105,7 +109,12 @@ public class ScreenViews {
 
     public void addButton(LinearLayout parent, String label, String description, boolean enabled,
             Runnable action, boolean primary) {
-        Button button = actionButton(label, description, enabled, action, primary, 16);
+        addButton(parent, label, description, enabled, action, primary, 16);
+    }
+
+    public void addButton(LinearLayout parent, String label, String description, boolean enabled,
+            Runnable action, boolean primary, int textSize) {
+        Button button = actionButton(label, description, enabled, action, primary, textSize);
         LinearLayout.LayoutParams params = matchWrap();
         params.setMargins(0, dp(8), 0, dp(3));
         parent.addView(button, params);
@@ -163,7 +172,11 @@ public class ScreenViews {
     }
 
     public void addQuietButton(LinearLayout parent, String label, Runnable action) {
-        Button button = actionButton(label, label, true, action, false, 14);
+        addQuietButton(parent, label, action, 14);
+    }
+
+    public void addQuietButton(LinearLayout parent, String label, Runnable action, int textSize) {
+        Button button = actionButton(label, label, true, action, false, textSize);
         button.setBackgroundColor(Color.TRANSPARENT);
         button.setElevation(0);
         button.setStateListAnimator(null);

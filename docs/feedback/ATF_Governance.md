@@ -34,7 +34,6 @@ Grila editorială din [contractul documentației](../governance/ATF_Documentatio
 | Prioritate | Responsabil și suprafață | Criteriu de închidere |
 |---|---|---|
 | P2 | Ghidurile bibliotecilor distribuite: reutilizarea probei la producător | [Acceptanța locală a fragmentelor](../platform/ATF_Integration.md#verificarea-exemplelor-din-ghiduri) separă compilarea, execuția și verdictul. Promovați un contract generic al acestor probe în registrul responsabililor comuni și sincronizați clarificările ghidurilor la consumatori. Regresia producătorului și acceptanța fiecărui consumator rămân distincte. |
-| P2 | Generatorul descrierii release-ului poate lipi toate schimbările într-un paragraf prea dens. | Generatorul trebuie să producă o sinteză scurtă și puncte separate. Verificați forma înainte de sigilarea manifestului. Păstrați intacte descrierile deja incluse în inventarul unei ediții publicate. |
 
 ## Descărcarea prin browser
 

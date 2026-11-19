@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.util.List;
 import ro.cardtable.ui.table.ScoreGridStyle;
+import ro.cardtable.ui.score.ScoreTypography;
 
 /** Neutral score widget: the adapter supplies all column roles and confirmed values. */
 public class ScoreTableView extends LinearLayout {
@@ -41,11 +42,12 @@ public class ScoreTableView extends LinearLayout {
         for (int column = 0; column < columns.size(); column++) {
             var data = values.get(column); var spec = columns.get(column);
             var cell = new TextView(getContext()); cell.setText(data.text()); cell.setContentDescription(data.description());
-            cell.setTextSize(header ? 11 : 13); cell.setTextColor(header ? ScoreGridStyle.MUTED : ScoreGridStyle.INK);
+            int size = (header ? ScoreTypography.COLUMN : ScoreTypography.VALUE).sp();
+            cell.setTextSize(size); cell.setTextColor(header ? ScoreGridStyle.MUTED : ScoreGridStyle.INK);
             cell.setTypeface(Typeface.DEFAULT, data.emphasized() ? Typeface.BOLD : Typeface.NORMAL);
             cell.setGravity(spec.numeric() ? Gravity.CENTER : Gravity.CENTER_VERTICAL | Gravity.START);
             cell.setSingleLine(true);
-            if (Build.VERSION.SDK_INT >= 26) cell.setAutoSizeTextTypeUniformWithConfiguration(10, header ? 11 : 13, 1, TypedValue.COMPLEX_UNIT_SP);
+            if (Build.VERSION.SDK_INT >= 26) cell.setAutoSizeTextTypeUniformWithConfiguration(10, size, 1, TypedValue.COMPLEX_UNIT_SP);
             cell.setEllipsize(TextUtils.TruncateAt.END);
             if (data.underlined()) cell.setPaintFlags(cell.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             row.addView(cell, new LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, spec.weight()));
