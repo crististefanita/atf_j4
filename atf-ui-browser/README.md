@@ -273,3 +273,4 @@ The trump tile loads a local subset of Noto Sans Symbols 2 containing the four s
 - Premature clearing is a negative control. Game-specific trick winners, awards and sequence rules remain in each consumer's tests.
 
 - `shared-presentation.test.mjs` is shipped in the test JAR. Set `ATF_BROWSER_WEB_ROOT` to the extracted runtime's Web resources and `ATF_BROWSER_EXECUTABLE` to Edge or Chrome, then run `node --test shared-presentation.test.mjs`. Browser profiles use the external temporary root; audio is muted. Typography checks use controlled game content and the production DOM/CSS, rather than an Android raster.
+- Browser teardown requests a graceful exit and waits for the owned process. Profile cleanup is asynchronous with bounded retries so Windows handle release can finish before directory removal.
