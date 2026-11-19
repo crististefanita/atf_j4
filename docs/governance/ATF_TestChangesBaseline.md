@@ -947,7 +947,7 @@ testChanges:
     base: 06badb5679bd9deb2ec87bae0a587128fbcec571
     expires: 2026-12-19
     reason: Review shared producer synchronization, native/Web portable adapters, local audit ownership and actual Web score typography; reject premature collection clearing.
-    proof: 'mvn -o -pl atf-tests -am -Dtest=SharedPresentationComponentTest,WhistSurfaceAdapterComponentTest,NativeSourceProvenanceComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    proof: 'mvn -o -pl atf-tests -am -Dtest=SharedPresentationComponentTest,WhistSurfaceAdapterComponentTest,NativeSourceProvenanceComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
     checks:
       positive:
         - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#scoreTextAdapterKeepsLocalizedActionsAtLargerWebSizes
@@ -972,7 +972,7 @@ testChanges:
     base: 19fbb34af6791e57e890f4856b3ca3bfbb2a9bf2
     expires: 2026-12-19
     reason: Review shared producer synchronization, native/Web portable adapters, local audit ownership and actual Web score typography; reject premature collection clearing.
-    proof: 'mvn -o -pl atf-tests -am -Dtest=SharedPresentationComponentTest,WhistSurfaceAdapterComponentTest,NativeSourceProvenanceComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    proof: 'mvn -o -pl atf-tests -am -Dtest=SharedPresentationComponentTest,WhistSurfaceAdapterComponentTest,NativeSourceProvenanceComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
     checks:
       positive:
         - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#scoreTextAdapterKeepsLocalizedActionsAtLargerWebSizes
