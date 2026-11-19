@@ -256,4 +256,10 @@ The trump tile loads a local subset of Noto Sans Symbols 2 containing the four s
 
 ### Spațiul etichetei de acțiune
 
-Shell-ul măsoară separat linia de acțiune aflată deasupra chenarului și transmite `actorClearance` către adaptorul de geometrie. Proba de măsurare este invizibilă, folosește unități CSS neafectate de scalarea scenei și este eliminată imediat. Adaptorul unui joc cu șiruri dense poate rezerva această înălțime fără să mute locurile comune. Geometria jocurilor care nu consumă parametrul rămâne aceeași. Testele comune verifică eticheta vizibilă, ascunsă, fonturile cu înălțimi diferite și eliminarea probei.
+| Contract | Responsabilitate |
+|---|---|
+| Măsurare | Shell-ul transmite `actorClearance` pentru eticheta aflată deasupra chenarului. |
+| Probă DOM | Nod invizibil, măsurat în unități CSS și eliminat imediat; scalarea scenei nu schimbă rezerva. |
+| Adaptor | Poate exclude rezerva din banda densă fără să mute locurile comune. |
+| Compatibilitate | Jocurile care nu consumă parametrul păstrează geometria existentă. |
+| Componente | Etichetă vizibilă sau ascunsă, înălțimi diferite și eliminarea probei. |
