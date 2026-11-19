@@ -1088,7 +1088,7 @@ testChanges:
 testChanges:
   - id: NOTE-SUMMARY-MAIN
     status: VERIFIED
-    base: 1ff434dfd3aef176ced5340fe5a3d284192532a5
+    base: 25ac9be5697dea9664268b9982e287fc05797b51
     expires: 2026-12-19
     reason: Acceptă un singur paragraf introductiv limitat, păstrând secțiunile canonice, limitele Unicode și notele istorice.
     proof: 'mvn -o -pl atf-tests -am -Dtest=ReleasePresentationGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
@@ -1101,7 +1101,7 @@ testChanges:
       - atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java
   - id: NOTE-SUMMARY-RO
     status: VERIFIED
-    base: c990f0671bcc99cc98a39bf7dc45862e6f37c9ae
+    base: 290590801afd29e201b03ebf43f10c6c4e8ad5a8
     expires: 2026-12-19
     reason: Acceptă un singur paragraf introductiv limitat, păstrând secțiunile canonice, limitele Unicode și notele istorice.
     proof: 'mvn -o -pl atf-tests -am -Dtest=ReleasePresentationGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
