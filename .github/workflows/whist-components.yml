@@ -108,7 +108,12 @@ jobs:
           node "$work/restore.mjs"
           if ($LASTEXITCODE) { throw 'Qualified source restoration failed' }
           git config core.autocrlf true
-          if (git status --porcelain=v1 --untracked-files=all) { throw 'Qualified checkout is not clean' }
+          $status = @(git status --porcelain=v1 --untracked-files=all)
+          if ($status.Count) {
+            $status | Write-Output
+            git diff --numstat
+            throw 'Qualified checkout is not clean'
+          }
           . ./scripts/AtfQualificationSnapshot.ps1
           $inventory = ConvertTo-AtfInputJson @(Get-AtfReleaseInputs $env:GITHUB_WORKSPACE)
           if ((Get-AtfInputFingerprint $inventory) -cne $env:QUALIFIED_RELEASES) {
