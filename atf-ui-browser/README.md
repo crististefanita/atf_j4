@@ -12,6 +12,8 @@ The header accepts an optional consumer-owned `actorLabel`; supplying it preserv
 
 Prepared redraws retain the existing frame element for each stable seat identity. The measured geometry, current facts and accessible actor state are applied together at commit; an incompatible table keeps fresh frames. This continuity is component-tested independently of Android raster qualification.
 
+The trick center attaches controls only when the native-style table has visible actions. An empty control sibling must not add a flex gap when playback returns to the human turn; real bidding controls and legacy prompts retain their place.
+
 The two interfaces share game rules and table portable calculations. Each adapter measures and draws with the tools of its platform.
 
 ```mermaid

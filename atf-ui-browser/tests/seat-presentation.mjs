@@ -1,4 +1,34 @@
 import assert from "node:assert/strict";
+import { runInNewContext } from "node:vm";
+
+export function verifyCenterContinuity(shell) {
+  const fragment = shell.slice(shell.indexOf('  const controls = element('), shell.indexOf('  const hand = element('));
+  assert.ok(fragment.includes('controls.append(actions)'), 'Exercise the actual delivered render constructor');
+  class Node {
+    children = [];
+    append(...nodes) { this.children.push(...nodes); }
+    get childElementCount() { return this.children.length; }
+  }
+  {
+      const build = (header, actions, bids = []) => {
+        const center = new Node(); center.append(new Node());
+        runInNewContext(fragment, { center, match: { header, prompt: 'Play', actions, history: { rows: [] } }, bids,
+          element: () => new Node(), control: () => new Node(), button: () => new Node(),
+          bidding: (_bids, target) => target.append(new Node()) });
+        return center.children.length > 1;
+      };
+      // Model only the flex gap port: hiding a zero-height sibling changes the card origin by gap/2.
+      for (const actions of [[], [{ key: 'auto' }], [{ key: 'auto-step' }], [{ key: 'auto' }, { key: 'auto-step' }]]) {
+        const hasEmptyControls = build(true, actions);
+        const top = playback => (400 - 260 - (!playback && hasEmptyControls ? 6 : 0)) / 2;
+        assert.equal(top(false), top(true), 'Empty controls cannot shift the existing trick at a playback handoff');
+      }
+      assert.equal(build(true, [{ key: 'next' }]), true, 'Real actions remain attached');
+      assert.equal(build(true, [{ key: 'bid:1' }], [{ key: 'bid:1' }]), true, 'Bidding stays visible');
+      assert.equal(build(false, []), true, 'Legacy prompt-only controls remain attached');
+  }
+  return { emptyStates: 4, emptyControlDrift: 0, realActionsPreserved: true, legacyPromptPreserved: true };
+}
 
 export function verifySeatRetention(retainSeatFrames) {
   assert.equal(typeof retainSeatFrames, "function", "The delivered renderer must retain frame objects across AI/human handoffs");

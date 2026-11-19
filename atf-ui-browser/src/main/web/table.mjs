@@ -870,7 +870,7 @@ async function render() {
   if (!match.header && match.history.rows.length) toolbar.append(button("Istoric", () => showHistory(match.history)));
   if (!match.header) controls.append(prompt);
   controls.append(actions);
-  center.append(controls);
+  if (!match.header || actions.childElementCount) center.append(controls);
 
   const hand = element("div", "", "hand");
   hand.setAttribute("role", "group");
