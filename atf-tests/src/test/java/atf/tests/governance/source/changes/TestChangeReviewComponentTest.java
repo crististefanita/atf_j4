@@ -33,7 +33,9 @@ class TestChangeReviewComponentTest {
                 "atf-tests/tools/source-input-identity.mjs",
                 "atf-tests/tools/prepare-android-e2e.mjs", "atf-tests/tools/apply-android-e2e.mjs",
                 "atf-ui-browser/tests/ro/cardtable/browser/WhistSurfaceContract.java",
-                "atf-ui-browser/tests/whist-surface-contract.test.mjs");
+                "atf-ui-browser/tests/whist-surface-contract.test.mjs",
+                "atf-ui-browser/tests/shared-presentation.test.mjs", "atf-ui-browser/tests/trick-playback.mjs",
+                "atf-ui-browser/tests/fixtures.mjs");
         for (String path : paths) repo.put(path, "// controlled native source boundary\n");
         AuditedAssertions.assertEquals(paths.stream().sorted().map(path -> uncovered("A", path, repo.base)).toList(), check(repo).diagnostics());
         repo.put(FEEDBACK, repo.control("NATIVE-SOURCE", "ACTIVE", repo.base, VALID, false, paths.toArray(String[]::new)));
