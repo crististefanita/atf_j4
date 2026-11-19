@@ -6,15 +6,23 @@ Jocul proiectează valorile vizibile confirmate; biblioteca le afișează. Etich
 
 ```mermaid
 flowchart LR
-    GAME[Stare confirmată a jocului] --> ADAPTER[Adaptorul conținutului de joc]
-    ADAPTER --> TABLE[ScoreTableContent]
-    ADAPTER --> HISTORY[HistoryContent]
-    TABLE --> ANDROID[ScoreTableView]
-    HISTORY --> SCROLL[ScoreHistoryView]
-    TABLE --> WEB[Proiecția browserului]
-    HISTORY --> WEB
-    SCROLL -->|identitatea rândului| ADAPTER
+    GAME[Stare confirmată a jocului] -->|furnizează valori vizibile| ADAPTER[Adaptorul conținutului de joc]
+    ADAPTER -->|construiește rânduri| TABLE[ScoreTableContent]
+    ADAPTER -->|construiește istoricul| HISTORY[HistoryContent]
+    TABLE -->|furnizează rânduri către| ANDROID[ScoreTableView]
+    HISTORY -->|furnizează grupuri către| SCROLL[ScoreHistoryView]
+    TABLE -->|furnizează rânduri către| WEB[Proiecția browserului]
+    HISTORY -->|furnizează grupuri către| WEB
+    SCROLL -->|deschide detalii după identitatea rândului prin| ADAPTER
 ```
+
+<details>
+<summary>Legendă</summary>
+
+- Adaptorul jocului deține valorile confirmate și identitățile rândurilor; widgeturile Android și browserul consumă același conținut neutru.
+- Callback-ul detaliilor întoarce identitatea rândului către adaptor. Widgeturile nu modifică jocul și nu calculează puncte.
+
+</details>
 
 ## Contracte
 

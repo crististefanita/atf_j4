@@ -22,4 +22,4 @@ Deciziile AI, seriile și Jocul la 0 se extind prin componente cu oracol de dome
 
 | ID | Lucrare rămasă | Criteriu de închidere |
 |---|---|---|
-| WEB-15 | Publicarea contractului de browser cu scară de text adaptivă sub o coordonată nouă. | Reîmpachetați execuția și testele comune după calificarea sursei; verificați aceiași octeți în consumatori fără modificarea artefactului Android. Pachetul calificat curent rămâne imuabil. |
+| WEB-15 | Finalizarea adoptării contractelor adaptive de prezentare în consumatorii rămași. | Reîmpachetați execuția și testele comune după calificarea sursei; verificați aceiași octeți în consumatori fără modificarea artefactului Android. Pachetul calificat curent rămâne imuabil. |

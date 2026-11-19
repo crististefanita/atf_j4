@@ -38,7 +38,7 @@ Scorul 1–100 exprimă ordinea recomandată de lucru, nu calitatea sau procentu
 | AI-02 | P2 | 82 | Măsoară ocaziile, conversiile la 500, efectul asupra clasamentului și latența pe loturi noi, cu joc natural separat de prefixul controlat. [Registru](ATF_Ai.md#joc-la-0) |
 | WEB-07 | P2 | 79 | Califică setările, reluarea, Joacă din nou și istoricul în APK și Chrome pe același Android, în RO/EN și cu text mărit. [Registru](ATF_UiBrowser.md#calificarea-pe-același-dispozitiv) |
 | WEB-11 | P2 | 78 | Califică rangurile și glifele într-o mână de 17 cărți, la text mărit pe Chrome Android. [Registru](ATF_UiBrowser.md#calificarea-pe-același-dispozitiv) |
-| WEB-15 | P2 | 77 | Împachetează și califică biblioteca de browser cu scară de text și testele comune înaintea adoptării la consumatori. [Registru](ATF_UiBrowser.md#adoptarea-pachetului-comun) |
+| WEB-15 | P2 | 77 | Finalizează calificarea adoptării în consumatorii rămași, păstrând hash-urile JAR-urilor de execuție/teste și adaptoarele specifice jocului. [Registru](ATF_UiBrowser.md#adoptarea-pachetului-comun) |
 | AI-03 | P2 | 76 | Extrageți gestionarea și reutilizarea mostrelor din MonteCarloAi fără să schimbați fațada; fixați ordinea aleatoare, replay-ul, anularea și bugetul prin componente. [Registru](ATF_Ai.md#evoluția-motorului) |
 
 ## Responsabilitatea schimbării
