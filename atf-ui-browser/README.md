@@ -12,6 +12,7 @@ Whist uses Java engine and portable table contracts in both APK and browser. Web
 |---|---|
 | Actor label | An optional consumer-owned `actorLabel` preserves the visible game action, including the human seat. Hidden headings are excluded before layout. |
 | Seat text | `SeatTypography` supplies roles; measured text fits horizontally without changing row height. |
+| Score text | `ScoreTypography` supplies logical sizes to native sp and Web rem adapters; accessibility scaling applies once. |
 | Frame identity | Prepared redraws commit geometry, facts and accessible actor state to existing seat objects. Incompatible tables keep fresh frames. |
 | Trick continuity | Native-style tables attach controls only for visible actions. Automatic-only and action-free states create no empty sibling or extra flex gap; real bidding controls and legacy prompts remain visible. |
 | Component boundary | Checks execute the delivered constructor and adapters. Native raster and painted geometry have separate platform acceptance. |
