@@ -67,7 +67,7 @@ export async function withBrowser(executable, profile, exercise) {
     "--user-data-dir=" + profile, "about:blank"], { windowsHide: true, stdio: "ignore" });
   let startupFailure;
   child.on("error", failure => startupFailure = failure);
-  let socket;
+  let socket, send;
   try {
     const port = await until(async () => {
       if (startupFailure) throw startupFailure;
@@ -94,7 +94,7 @@ export async function withBrowser(executable, profile, exercise) {
       if (message.error) reject(new Error(message.error.message));
       else resolve(message.result);
     });
-    const send = (method, params = {}) => new Promise((resolve, reject) => {
+    send = (method, params = {}) => new Promise((resolve, reject) => {
       const id = ++sequence;
       const timer = setTimeout(() => {
         calls.delete(id);
@@ -110,7 +110,15 @@ export async function withBrowser(executable, profile, exercise) {
     };
     return await exercise({ send, evaluate, version: version.Browser });
   } finally {
+    if (send && socket?.readyState === WebSocket.OPEN) {
+      try { await send("Browser.close"); } catch { /* The browser may close its socket before acknowledging shutdown. */ }
+    }
     socket?.close();
-    child.kill();
+    if (child.exitCode === null) child.kill();
+    await new Promise(resolve => {
+      const timer = setTimeout(resolve, 5000);
+      child.once("exit", () => { clearTimeout(timer); resolve(); });
+      if (child.exitCode !== null) { clearTimeout(timer); resolve(); }
+    });
   }
 }
