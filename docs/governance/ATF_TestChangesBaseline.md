@@ -1080,3 +1080,38 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Release note summaries</summary>
+
+```yaml
+testChanges:
+  - id: NOTE-SUMMARY-MAIN
+    status: VERIFIED
+    base: 1ff434dfd3aef176ced5340fe5a3d284192532a5
+    expires: 2026-12-19
+    reason: Accept one bounded opening paragraph while preserving canonical sections, Unicode limits and historical notes.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=ReleasePresentationGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest#translatedPresentationKeepsTheReleaseStructureAssetsAndOriginalPointCount
+      negative:
+        - atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest#missingEvidenceNonBulletProseAndUnrecordedChangesAreRejected
+    paths:
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java
+  - id: NOTE-SUMMARY-RO
+    status: VERIFIED
+    base: c990f0671bcc99cc98a39bf7dc45862e6f37c9ae
+    expires: 2026-12-19
+    reason: Accept one bounded opening paragraph while preserving canonical sections, Unicode limits and historical notes.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=ReleasePresentationGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest#translatedPresentationKeepsTheReleaseStructureAssetsAndOriginalPointCount
+      negative:
+        - atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest#missingEvidenceNonBulletProseAndUnrecordedChangesAreRejected
+    paths:
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java
+```
+
+</details>

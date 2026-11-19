@@ -299,6 +299,7 @@ The release page addresses users. Keep three bullet-based sections and link to t
 | Improvements compared to the previous version | Confirmed changes for the published binary with the version of comparison identified. |
 | Documentation | The link to reports and provenance in an identified commit. |
 
+- **Opening summary:** new publications begin with one paragraph of at most 400 Unicode characters. Keep each confirmed change in a separate bullet of at most 300 characters; validate this layout before creating a GitHub draft.
 - **Comparison:** when differences from the previous version are unverified, use **Overview** and describe only known capabilities. Do not invent history; collect the next release's changes during development.
 - **Audit:** counts, technical verdicts, untested-device limits and distribution diagnostics belong in the evidence dossier. Link to them without overloading product presentation.
 

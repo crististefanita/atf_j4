@@ -55,3 +55,12 @@ Android Download Manager transfer and certificate checks belong to the tested re
 ## Release qualification boundaries
 
 Native source and validator separation belongs to the [qualification contract](../testing/ATF_ReleaseQualification.md#native-execution-and-validator-provenance). Reuse remains conditional on unchanged runtime, scenario, APK and original evidence.
+
+## Qualification cost and invocation recovery
+
+Snapshot and cache validation consume time even when test execution is reused. Measure those costs separately from execution and lease waiting.
+
+- Checkpoint each accepted invocation with its source, compiled dependencies, identity, original comparisons and report hashes.
+- Resume unresolved invocations only after those immutable inputs are verified. Preserve rejected attempts as diagnostics.
+- Prove parity of the complete JUnit identity set against a full run; reject changed sources, missing cases, duplicate identities and altered evidence.
+- Keep timeout failures explicit until a real retry succeeds. A passing neighbouring case or a rewritten receipt is not replacement evidence.
