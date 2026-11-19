@@ -32,6 +32,7 @@ jobs:
       QUALIFIED_FINGERPRINT: ${{ inputs.fingerprint }}
       QUALIFIED_EOL: ${{ inputs.eol_recipe }}
       QUALIFIED_RELEASES: ${{ inputs.release_fingerprint }}
+      WHIST_PUBLICATION_TEST_ROOT: C:/wq/tmp
     steps:
       - name: Validate immutable request
         shell: pwsh
@@ -146,7 +147,7 @@ jobs:
       - name: Execute primary framework collection
         shell: pwsh
         env:
-          ATF_TEST_CHANGE_PROOF_ROOT: C:/wq/controls
+          ATF_TEST_CHANGE_PROOF_ROOT: C:/wq/controls/proofs
           ATF_TEST_CHANGE_BASE_REF: 1e078d06f4000d848675d87497302bad3052903d
         run: |
           foreach ($name in 'JAVA_TOOL_OPTIONS','_JAVA_OPTIONS','JDK_JAVA_OPTIONS') {
@@ -154,6 +155,12 @@ jobs:
           }
           & ./scripts/run-component-suites.ps1 -RunRoot C:/wq/framework -Groups atf-tests *> C:/wq/framework.log
           if ($LASTEXITCODE) { Get-Content C:/wq/framework.log -Tail 80; throw 'Framework component qualification failed' }
+      - name: Preserve full publication failure diagnostics
+        if: failure()
+        shell: pwsh
+        run: |
+          node --test --test-reporter=tap atf-tests/tools/publish-github-release.test.mjs *> C:/wq/publication-diagnostic.log
+          Get-Content C:/wq/publication-diagnostic.log
       - name: Retain original component evidence
         if: always()
         uses: actions/upload-artifact@v4
