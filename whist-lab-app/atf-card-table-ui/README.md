@@ -26,6 +26,7 @@
 | [CardFaceView](src/main/java/ro/cardtable/ui/cards/CardFaceView.java) | The hand and table draw the rank and symbol in the corner, the central symbol and the inverted corner. The face dimensions are scaled for the table, and the collection moves the cards' views off the table. |
 | [CardFaceMetrics](src/main/java/ro/cardtable/ui/cards/CardFaceMetrics.java) | Shared proportions, rank sizes and suit geometry. Each adapter applies the same face contract to hand, table and collection roles. |
 | [ScoreGridStyle](src/main/java/ro/cardtable/ui/table/ScoreGridStyle.java) | Keep the proportions, height and colours of the score table for the Android adapter and browser. |
+| [score](src/main/java/ro/cardtable/ui/score/README.md) | Neutral score and scrollable history widgets, immutable consumer content, measured columns and two-way pane synchronization. Game labels and scoring remain in adapters. |
 | [theme](src/main/java/ro/cardtable/ui/theme/TablePalette.java) and [widgets](src/main/java/ro/cardtable/ui/widgets/DropdownBackground.java) | Colors, checkboxes and drawing of the selector. |
 
 The game owns table composition, rules, history, winner selection and collection timing. The library measures card faces and the winning player frame, then applies the collection motion. The shared contract uses only visible seats and public data.

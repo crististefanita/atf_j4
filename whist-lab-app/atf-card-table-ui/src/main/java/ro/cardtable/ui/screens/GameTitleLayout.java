@@ -1,8 +1,8 @@
 package ro.cardtable.ui.screens;
 
 /** Horizontal space allocation for a leading action, title and optional trailing action. */
-record GameTitleLayout(int titleLeft, int titleWidth, boolean trailingOnTitleLine) {
-    static GameTitleLayout measure(int width, int leadingWidth, int gap, int titleWidth, int trailingWidth) {
+public record GameTitleLayout(int titleLeft, int titleWidth, boolean trailingOnTitleLine) {
+    public static GameTitleLayout measure(int width, int leadingWidth, int gap, int titleWidth, int trailingWidth) {
         int titleLeft = Math.min(width, leadingWidth + gap);
         int available = width - titleLeft;
         int wrappedTitleWidth = available - gap - trailingWidth;
