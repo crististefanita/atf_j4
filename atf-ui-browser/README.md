@@ -173,7 +173,7 @@ flowchart LR
 
 </details>
 
-### Pachetul calificat curent: 0.2.10
+### Pachetul calificat curent: 0.2.25
 
 Fișierul alăturat `browser-build.json` leagă această versiune de commitul sursă, inventarul intrărilor și hash-urile artefactelor.
 
