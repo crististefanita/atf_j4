@@ -174,12 +174,12 @@ flowchart LR
 
 </details>
 
-### Pachetul calificat curent: 0.2.26
+### Pachetul calificat curent: 0.2.27
 
 Fișierul alăturat `browser-build.json` leagă această versiune de commitul sursă, inventarul intrărilor și hash-urile artefactelor.
 
-- Runtime: [Card Table Browser 0.2.26](lib/atf-ui-browser-0.2.26.jar) · [SHA-256](lib/atf-ui-browser-0.2.26.jar.sha256)
-- Teste comune: [Testele Card Table Browser 0.2.26](lib/atf-ui-browser-0.2.26-tests.jar) · [SHA-256](lib/atf-ui-browser-0.2.26-tests.jar.sha256)
+- Runtime: [Card Table Browser 0.2.27](lib/atf-ui-browser-0.2.27.jar) · [SHA-256](lib/atf-ui-browser-0.2.27.jar.sha256)
+- Teste comune: [Testele Card Table Browser 0.2.27](lib/atf-ui-browser-0.2.27-tests.jar) · [SHA-256](lib/atf-ui-browser-0.2.27-tests.jar.sha256)
 - Proveniență: [browser-build.json](lib/browser-build.json)
 
 Contractul de viewport păstrează pe desktop cadrul logic de 414 × 896, îl scalează uniform după înălțimea și lățimea utilă a browserului și menține pragul de lizibilitate 0,68 numai când încap ambele dimensiuni. Browserul de telefon folosește viewport-ul CSS la scara 1:1. Consumatorii trebuie să adopte arhivele de execuție și teste din același receipt și să le verifice octeții.
@@ -275,3 +275,12 @@ Chenarul de atu încarcă local un subset Noto Sans Symbols 2 cu cele patru simb
 
 - `shared-presentation.test.mjs` este livrat în JAR-ul de teste. Setați `ATF_BROWSER_WEB_ROOT` către resursele Web din execuția extrasă, `ATF_BROWSER_RUNTIME_JAR` către JAR-ul de execuție livrat și `ATF_BROWSER_EXECUTABLE` către Edge sau Chrome, apoi rulați `node --test shared-presentation.test.mjs`. Profilele browserului folosesc rădăcina temporară externă; sunetul este oprit. Probele de tipografie folosesc conținut de joc controlat și DOM/CSS de producție, nu raster Android.
 - Închiderea browserului cere ieșirea normală și așteaptă procesul propriu. Curățarea profilului este asincronă, cu reîncercări limitate, pentru ca Windows să elibereze handle-urile înaintea ștergerii directorului.
+
+## Tipografia acțiunilor de rezultat
+
+Acțiunile scorului au roluri comune dedicate: acțiunile principale folosesc 24 de unități logice, iar cele secundare 21, cu 50% peste rolurile vechi 16/14. Android consumă sp, iar Web rem; mărirea accesibilă se aplică o singură dată.
+
+- Adaptorul nativ folosește `ScreenViews.scoreActionButton` sau `addScoreAction`. Etichetele împachetate folosesc înălțimea conținutului, cu țintă tactilă minimă de 48 de unități; controalele discrete cu înălțime fixă rămân separate.
+- Adaptorul Web folosește aceleași tokenuri `ScoreTypography` exportate. Ferestrele înguste împachetează etichetele complete și derulează pagina scorului; scalarea desktop aparține contractului comun de viewport.
+- Coloanele numerice, celulele istoricului, rangurile cărților, dialogurile generice și celelalte meniuri își păstrează rolurile. Adaptoarele jocurilor dețin textele localizate, valorile confirmate și callback-urile.
+- Testele consumatorilor execută rendererul livrat și compară rolurile reale din AAR/JAR. Acoperiți RO/EN, ferestre scunde, text mărit, acțiuni accesibile, ordinea neschimbată a callback-urilor și respingerea stilurilor vechi sau scalate dublu.

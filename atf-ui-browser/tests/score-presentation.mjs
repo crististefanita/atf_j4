@@ -1,5 +1,24 @@
 import assert from "node:assert/strict";
 
+/** One adapter contract for measured score actions; captions and callbacks remain game-owned. */
+export function verifyScoreActionTypography(tokens, rootPixels, buttons) {
+  assert.ok(Number.isFinite(rootPixels) && rootPixels > 0, 'A positive accessible root size is required');
+  assert.ok(Array.isArray(buttons) && buttons.length > 0, 'Score actions must be measured');
+  const rem = name => {
+    assert.match(tokens[name] ?? '', /^\d+(?:\.\d+)?rem$/, 'The delivered native/Web role must exist: ' + name);
+    return Number.parseFloat(tokens[name]);
+  };
+  const primary = rem('--score-text-action-primary'), secondary = rem('--score-text-action-secondary');
+  assert.equal(primary, rem('--score-text-primary') * 1.5, 'The primary score action gains exactly 50%');
+  assert.equal(secondary, rem('--score-text-quiet') * 1.5, 'The secondary score action gains exactly 50%');
+  for (const button of buttons) {
+    assert.equal(button.size, rootPixels * (button.quiet ? secondary : primary), 'One text scale: ' + button.label);
+    assert.ok(button.height >= 48, 'Touch target: ' + button.label);
+    assert.equal(button.overflow, false, 'Complete label: ' + button.label);
+  }
+  return {actions: buttons.length, primaryRem: primary, secondaryRem: secondary};
+}
+
 /** Executes the delivered renderers with game-owned captions; it never calculates a score. */
 export function verifyScorePresentation(scoreGrid, historyGrid, element) {
   let cases = 0;

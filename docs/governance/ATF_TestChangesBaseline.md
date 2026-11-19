@@ -1115,3 +1115,46 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Tipografia acțiunilor de rezultat</summary>
+
+```yaml
+testChanges:
+  - id: SCORE-ACTIONS-MAIN
+    status: VERIFIED
+    base: 30812f432d7e744e6f2acf711e30dbd1848fbacb
+    expires: 2026-12-19
+    reason: Mărește doar acțiunile de rezultat prin roluri comune și păstrează accesul în ferestre înguste, celelalte fonturi și ordinea callback-urilor.
+    proof: 'scripts/run-component-suites.ps1 -AllTestChangeControls'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#scoreTextAdapterKeepsLocalizedActionsAtLargerWebSizes
+      negative:
+        - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#scoreActionsRejectStaleRolesClippingAndRepeatedScaling
+    paths:
+      - atf-ui-browser/tests/shared-presentation.test.mjs
+      - atf-ui-browser/tests/score-presentation.mjs
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/nativeproof/SharedPresentationComponentTest.java
+      - whist-lab-app/atf-card-table-ui/build.gradle
+      - whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/score/ScoreTypographyComponentTest.java
+  - id: SCORE-ACTIONS-RO
+    status: VERIFIED
+    base: f680c257777611dc19d3cdf24a4295ed9b697029
+    expires: 2026-12-19
+    reason: Mărește doar acțiunile de rezultat prin roluri comune și păstrează accesul în ferestre înguste, celelalte fonturi și ordinea callback-urilor.
+    proof: 'scripts/run-component-suites.ps1 -AllTestChangeControls'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#scoreTextAdapterKeepsLocalizedActionsAtLargerWebSizes
+      negative:
+        - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#scoreActionsRejectStaleRolesClippingAndRepeatedScaling
+    paths:
+      - atf-ui-browser/tests/shared-presentation.test.mjs
+      - atf-ui-browser/tests/score-presentation.mjs
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/nativeproof/SharedPresentationComponentTest.java
+      - whist-lab-app/atf-card-table-ui/build.gradle
+      - whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/score/ScoreTypographyComponentTest.java
+```
+
+</details>

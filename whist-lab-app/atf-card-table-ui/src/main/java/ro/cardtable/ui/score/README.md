@@ -42,3 +42,12 @@ View-ul Android măsoară textul real. Fixture-urile JVM acoperă ferestre compa
 Creați conținutul dintr-un snapshot confirmat, furnizați un callback bazat pe identitatea stabilă a rândului și păstrați navigarea și persistența în afara widgetului. Adaptoarele browserului compilează aceleași clase portabile și le traduc în protocolul rendererului. Capacitatea coloanelor din browser trebuie verificată explicit înaintea adoptării altei familii de coloane.
 
 [Frontiera modulului și împachetare](../../../../../../../README.md) · [Strategia de componente](../../../../../../../../../docs/testing/README.md)
+
+## Tipografia acțiunilor de rezultat
+
+Acțiunile scorului au roluri comune dedicate: acțiunile principale folosesc 24 de unități logice, iar cele secundare 21, cu 50% peste rolurile vechi 16/14. Android consumă sp, iar Web rem; mărirea accesibilă se aplică o singură dată.
+
+- Adaptorul nativ folosește `ScreenViews.scoreActionButton` sau `addScoreAction`. Etichetele împachetate folosesc înălțimea conținutului, cu țintă tactilă minimă de 48 de unități; controalele discrete cu înălțime fixă rămân separate.
+- Adaptorul Web folosește aceleași tokenuri `ScoreTypography` exportate. Ferestrele înguste împachetează etichetele complete și derulează pagina scorului; scalarea desktop aparține contractului comun de viewport.
+- Coloanele numerice, celulele istoricului, rangurile cărților, dialogurile generice și celelalte meniuri își păstrează rolurile. Adaptoarele jocurilor dețin textele localizate, valorile confirmate și callback-urile.
+- Testele consumatorilor execută rendererul livrat și compară rolurile reale din AAR/JAR. Acoperiți RO/EN, ferestre scunde, text mărit, acțiuni accesibile, ordinea neschimbată a callback-urilor și respingerea stilurilor vechi sau scalate dublu.
