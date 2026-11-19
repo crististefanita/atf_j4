@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "kind": "live-source-components",
+  "apkQualification": false,
+  "sourceFingerprint": "b2dee080ac4aa37d7ff9a2406535a815c4be513bbb54b34221a9b80850146547",
+  "provenanceReceiptSha256": "241614f8e9e0c2f513db6820a6e08d0911bcb31319bc3f0a04ef828a6b4c8a21",
+  "inputManifest": "source-inputs.json",
+  "sourceStable": true,
+  "status": "PASS",
+  "stage": "isolated-staging-copy",
+  "inputCount": 1378,
+  "releaseFingerprint": "0c596423c6d671628e92fe2bf7e8fe13e587d7b026a8296c9d3595cf8bd28773",
+  "releaseInputManifest": "release-inputs.json",
+  "snapshotDifferences": [],
+  "results": [
+    {
+      "module": "atf-tests",
+      "suite": "atf.tests.suites.AtfComponentSuite",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "suite": "atf.tests.suites.AtfComponentSuite",
+        "tests": 519,
+        "outcomes": {
+          "PASS": 519
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "junitIdentitySha256": "5b9bfdfad72f4d8c302aa3a4f204f407a09129b196c3719eb971ae56db44e30d",
+        "provenanceSha256": "241614f8e9e0c2f513db6820a6e08d0911bcb31319bc3f0a04ef828a6b4c8a21",
+        "reportSha256": "386a953c82a13c77879ecd3889cab8ea5863a838537460e45b8713bb73226dcf"
+      }
+    }
+  ],
+  "reusedGroups": [],
+  "gradleBatch": null,
+  "androidComponentsReceipt": "source-component-run.json"
+}

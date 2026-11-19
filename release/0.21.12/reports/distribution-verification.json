@@ -1,0 +1,20 @@
+{
+  "observedAtUtc": "2026-11-19T20:36:06.695Z",
+  "authenticatedDownload": {
+    "authenticated": true,
+    "bytes": 1029553,
+    "url": "https://github.com/crististefanita/whist/releases/download/v0.21.12/WhistLab-0.21.12.apk",
+    "channel": "GitHub API authenticated",
+    "sha256": "1346b2d50f5b45118bbd3b0b3b162ce6c1906f8dd0507851d037c039dbc23707",
+    "httpStatus": 200,
+    "zipCrc": "PASS",
+    "authMode": "GITHUB_ACCOUNT"
+  },
+  "anonymousDirectDownload": {
+    "url": "https://github.com/crististefanita/whist/releases/download/v0.21.12/WhistLab-0.21.12.apk",
+    "bytes": 1029553,
+    "httpStatus": 200,
+    "sha256": "1346b2d50f5b45118bbd3b0b3b162ce6c1906f8dd0507851d037c039dbc23707",
+    "zipCrc": "PASS"
+  }
+}
