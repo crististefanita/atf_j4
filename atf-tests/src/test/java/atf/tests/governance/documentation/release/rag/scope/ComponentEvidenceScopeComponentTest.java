@@ -45,6 +45,8 @@ class ComponentEvidenceScopeComponentTest {
                 "A changed snapshot invalidates resumption.");
         AuditedAssertions.assertTrue(output.contains("durable Maven preparation keeps compilation when classpath is interrupted and rejects changed classes"),
                 "Maven preparation resumes from the verified compilation boundary.");
+        AuditedAssertions.assertTrue(output.contains("Web-only artifacts preserve independent native and API evidence while critical or unknown changes still rerun"),
+                "Browser delivery has no native/API compile edge; own sources, shared JVM libraries and unknown inputs still require execution.");
     }
 
     @Test void githubPublicationResumesByIdAndVerifiesDownloadsBeforeRotation() throws Exception {

@@ -54,6 +54,6 @@ export function componentEvidenceScope(group, releaseInputs, executionInputs) {
   const changed = changedInputs(releaseInputs, executionInputs);
   const outsideSuite = independentChange.get(group) ?? (() => false);
   const affected = changed.filter(file => !(outsideSuite(file)
-    || (independentChange.has(group) && (file === ragPolicy || file === documentationReview || isStandaloneGovernanceLauncher(file) || releaseTiming.test(file) || file.startsWith('.atf-signing/')))));
+    || (independentChange.has(group) && (file.startsWith('atf-ui-browser/') || file === ragPolicy || file === documentationReview || isStandaloneGovernanceLauncher(file) || releaseTiming.test(file) || file.startsWith('.atf-signing/')))));
   return {decision: affected.length ? 'RUN' : changed.length ? 'REUSE' : 'MATCH', changed, affected};
 }

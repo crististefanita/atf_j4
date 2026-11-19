@@ -251,7 +251,7 @@ The evaluator compares the added, deleted and modified files. [Scope suite](../.
 
 - Governance checks the complete inventory.
 - Shared-UI components have their own scope. Consumer-only changes can reuse the library report; library sources, tests, resources, compile configuration and audit bridge remain in scope.
-- Independent Maven modules can reuse results after Android-UI-only changes when dependencies are unchanged.
+- Independent Maven modules can reuse results after Android-UI-only or Web-only changes when dependencies are unchanged. Known native collections also exclude the separate browser module; governance still runs, and changes to their own inputs, JVM libraries or unknown paths require execution.
 - Game Gradle collections follow jointly compiled code and configuration. Documentation and other-suite-only files do not invalidate them; unknown paths conservatively select `RUN`.
 
 | Decision | Action |
@@ -418,6 +418,7 @@ $device = @{
 
 - `android-preflight.json` keeps the result, UTC observation and the cause of the refusal. The responsive launcher rechecks the device after Maven and restores the second evidence in `android-preflight-execution.json`.
 - Temporary-user preparation checks preflight freshness before creation. Durable cleanup verifies the creation identity and active recovery lease separately; it never treats recovery as a passing application test.
+- Android user inventories accept LF and CRLF transport line endings. Duplicate IDs, incomplete rows and unavailable services remain refusals; normalization never authorizes cleanup of an unidentified profile.
 
 ### Disposable-user recovery
 

@@ -38,7 +38,7 @@ function Read-AtfUserOwnership([string]$Path,[string]$Serial,[string]$RunRoot) {
 
 function ConvertFrom-AtfAndroidUsers([string]$Text) {
     if ($Text -notmatch '(?m)^\s*Users:') { throw 'ANDROID_USER_LIST_UNAVAILABLE' }
-    $rows = @([regex]::Matches($Text,'(?m)^\s*UserInfo\{([0-9]+):(.+):[0-9a-fA-F]+\}[^\r\n]*$') | ForEach-Object {
+    $rows = @([regex]::Matches($Text,'(?m)^\s*UserInfo\{([0-9]+):(.+):[0-9a-fA-F]+\}[^\r\n]*\r?$') | ForEach-Object {
         [pscustomobject]@{id=[long]$_.Groups[1].Value;name=$_.Groups[2].Value}
     })
     if (-not $rows.Count -or $rows.Count -ne [regex]::Matches($Text,'UserInfo\{').Count -or

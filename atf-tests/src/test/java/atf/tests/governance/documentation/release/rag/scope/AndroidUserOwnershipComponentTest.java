@@ -1,19 +1,26 @@
 package atf.tests.governance.documentation.release.rag.scope;
 
 import atf.testkit.AtfComponentTest;
+import atf.android.evidence.component.ComponentInputs;
+import atf.tests.reporting.GameReportAudit;
 import atf.tests.governance.support.GovernanceProject;
 import java.nio.file.Files;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static atf.testkit.assertions.AuditedAssertions.assertTrue;
 
 @AtfComponentTest
 class AndroidUserOwnershipComponentTest {
-    @Test void durableRecoveryPreservesOriginalAndForeignUsersWithMockTransport() throws Exception {
-        String output = NodeReleaseContracts.runContracts(Duration.ofSeconds(100), "android-user-ownership.test.mjs");
+    @RegisterExtension static final GameReportAudit AUDIT = new GameReportAudit();
+
+    @Test void durableRecoveryPreservesOriginalAndForeignUsersWithMockTransport(ComponentInputs inputs) throws Exception {
+        String output = NodeReleaseContracts.runContracts(Duration.ofSeconds(100),
+                value -> inputs.add("Original transport and ownership comparisons", value), "android-user-ownership.test.mjs");
         assertTrue(output.contains("16 durable ownership outcomes"), output);
         assertTrue(output.contains("Recovery adapter:"), output);
+        assertTrue(output.contains("User inventory observations:"), "The actual parser must publish LF/CRLF and rejection observations");
     }
 
     @Test void creationIntentAndReturnedIdentityPrecedePackageRegistration() throws Exception {

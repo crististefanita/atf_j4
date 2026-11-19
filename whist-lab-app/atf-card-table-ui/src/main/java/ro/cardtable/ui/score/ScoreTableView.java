@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.util.List;
+import java.util.stream.Collectors;
 import ro.cardtable.ui.table.ScoreGridStyle;
 import ro.cardtable.ui.score.ScoreTypography;
 
@@ -24,7 +25,7 @@ public class ScoreTableView extends LinearLayout {
         var shape = new GradientDrawable();
         shape.setColor(ScoreGridStyle.PAPER); shape.setCornerRadius(dp(12)); shape.setStroke(dp(1), ScoreGridStyle.RULE);
         setBackground(shape);
-        addRow(content.columns(), content.columns().stream().map(c -> new ScoreTableContent.Cell(c.label())).toList(), true, false, 0);
+        addRow(content.columns(), content.columns().stream().map(c -> new ScoreTableContent.Cell(c.label())).collect(Collectors.toList()), true, false, 0);
         int index = 0;
         for (var row : content.rows()) {
             var divider = new View(context); divider.setBackgroundColor(ScoreGridStyle.RULE);
@@ -38,7 +39,7 @@ public class ScoreTableView extends LinearLayout {
         var row = new LinearLayout(getContext()); row.setGravity(Gravity.CENTER_VERTICAL); row.setPadding(dp(8), 0, dp(8), 0);
         row.setBackgroundColor(header ? ScoreGridStyle.HEADER : highlighted ? ScoreGridStyle.HUMAN_ROW
                 : index % 2 == 1 ? ScoreGridStyle.STRIPE : ScoreGridStyle.PAPER);
-        row.setContentDescription(String.join(" · ", values.stream().map(ScoreTableContent.Cell::description).toList()));
+        row.setContentDescription(String.join(" · ", values.stream().map(ScoreTableContent.Cell::description).collect(Collectors.toList())));
         for (int column = 0; column < columns.size(); column++) {
             var data = values.get(column); var spec = columns.get(column);
             var cell = new TextView(getContext()); cell.setText(data.text()); cell.setContentDescription(data.description());

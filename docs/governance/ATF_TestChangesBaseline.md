@@ -1011,14 +1011,19 @@ testChanges:
     status: VERIFIED
     base: 1e078d06f4000d848675d87497302bad3052903d
     expires: 2026-12-19
-    reason: Preserve native score roles through the Web adapter and validate new release notes before GitHub writes; retain controlled early-clear and invalid-note rejection cases.
+    reason: Align score adapters and qualify Android API compatibility, complete launcher fixtures, transport line endings and independent component reuse without weakening artifact or unknown-input rejection.
     proof: 'mvn -o -pl atf-tests -am -Dtest=SharedPresentationComponentTest,ComponentEvidenceScopeComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
     checks:
       positive:
         - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#scoreTextAdapterKeepsLocalizedActionsAtLargerWebSizes
+        - atf.tests.governance.source.android.AndroidJavaApiGovernanceTest#androidProductionAvoidsTheJava16StreamTerminal
+        - atf.tests.governance.documentation.release.rag.scope.QualificationLauncherComponentTest#governancePassesWithAnIsolatedRootAndThePinnedInputManifest
       negative:
         - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#trickPlaybackRejectsPrematureClearingAndKeepsCollectionOrigins
         - atf.tests.governance.documentation.release.rag.scope.ComponentEvidenceScopeComponentTest#githubPublicationResumesByIdAndVerifiesDownloadsBeforeRotation
+        - atf.tests.governance.documentation.release.rag.scope.AndroidUserOwnershipComponentTest#durableRecoveryPreservesOriginalAndForeignUsersWithMockTransport
+        - atf.tests.governance.documentation.release.rag.scope.QualificationLauncherComponentTest#anInvalidArtifactStopsTheRealLauncherBeforeMaven
+        - atf.tests.governance.documentation.release.rag.scope.ComponentEvidenceScopeComponentTest#componentResumeImportsOnlyVerifiedEvidenceFromTheInterruptedSnapshot
     paths:
       - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java
       - atf-tests/tools/publish-github-release.test.mjs
@@ -1031,6 +1036,12 @@ testChanges:
       - whist-lab-app/atf-card-table-ui/build.gradle
       - whist-lab-app/app/build.gradle
       - config/gradle-audit-collections.properties
+      - scripts/AtfAndroidUserOwnership.ps1
+      - atf-tests/tools/android-user-ownership.test.mjs
+      - atf-tests/tools/component-evidence-scope.mjs
+      - atf-tests/tools/prepare-component-reuse.test.mjs
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/AndroidUserOwnershipComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/QualificationLauncherComponentTest.java
   - id: SCORE-TYPOGRAPHY-RO
     status: VERIFIED
     base: 910439dab4bbcd72afe2d0a18c4fb9f583d339c6
@@ -1040,9 +1051,14 @@ testChanges:
     checks:
       positive:
         - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#scoreTextAdapterKeepsLocalizedActionsAtLargerWebSizes
+        - atf.tests.governance.source.android.AndroidJavaApiGovernanceTest#androidProductionAvoidsTheJava16StreamTerminal
+        - atf.tests.governance.documentation.release.rag.scope.QualificationLauncherComponentTest#governancePassesWithAnIsolatedRootAndThePinnedInputManifest
       negative:
         - atf.tests.governance.documentation.release.rag.nativeproof.SharedPresentationComponentTest#trickPlaybackRejectsPrematureClearingAndKeepsCollectionOrigins
         - atf.tests.governance.documentation.release.rag.scope.ComponentEvidenceScopeComponentTest#githubPublicationResumesByIdAndVerifiesDownloadsBeforeRotation
+        - atf.tests.governance.documentation.release.rag.scope.AndroidUserOwnershipComponentTest#durableRecoveryPreservesOriginalAndForeignUsersWithMockTransport
+        - atf.tests.governance.documentation.release.rag.scope.QualificationLauncherComponentTest#anInvalidArtifactStopsTheRealLauncherBeforeMaven
+        - atf.tests.governance.documentation.release.rag.scope.ComponentEvidenceScopeComponentTest#componentResumeImportsOnlyVerifiedEvidenceFromTheInterruptedSnapshot
     paths:
       - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java
       - atf-tests/tools/publish-github-release.test.mjs
@@ -1055,6 +1071,12 @@ testChanges:
       - whist-lab-app/atf-card-table-ui/build.gradle
       - whist-lab-app/app/build.gradle
       - config/gradle-audit-collections.properties
+      - scripts/AtfAndroidUserOwnership.ps1
+      - atf-tests/tools/android-user-ownership.test.mjs
+      - atf-tests/tools/component-evidence-scope.mjs
+      - atf-tests/tools/prepare-component-reuse.test.mjs
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/AndroidUserOwnershipComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/QualificationLauncherComponentTest.java
 ```
 
 </details>

@@ -13,6 +13,24 @@ const inputManifest = 'source-inputs.json';
 const runReceipt = 'source-component-run.json';
 const provenanceReceipt = 'source-provenance.json';
 const extent = '<html><img src="data:image/png;base64,AA=="></html>';
+
+test('Web-only artifacts preserve independent native and API evidence while critical or unknown changes still rerun', () => {
+  const changed=new Map([['atf-ui-browser/lib/browser-build.json','a'.repeat(64)],
+    ['atf-ui-browser/lib/atf-ui-browser-1.2.3.jar','b'.repeat(64)],['atf-ui-browser/src/main/web/table.css','c'.repeat(64)]]);
+  for(const group of ['atf-validation','atf-test-android','whist-lab-app-rules','whist-lab-app-atf-card-table-ui',
+    ...['achievements','bidding','commands','display','history'].map(key=>'whist-lab-app-'+key)]) {
+    assert.equal(componentEvidenceScope(group,changed,new Map()).decision,'REUSE',group);
+    for(const critical of ['pom.xml','lib/atf-reporting-changed.jar','unclassified/input.bin'])
+      assert.equal(componentEvidenceScope(group,new Map([...changed,[critical,'d'.repeat(64)]]),new Map()).decision,'RUN',group+': '+critical);
+  }
+  assert.equal(componentEvidenceScope('atf-tests',changed,new Map()).decision,'RUN');
+  assert.equal(componentEvidenceScope('unregistered-suite',changed,new Map()).decision,'RUN');
+  for(const [group,file] of [['atf-validation','atf-validation/src/main/Api.java'],
+    ['atf-test-android','atf-test-android/src/main/Transport.java'],
+    ['whist-lab-app-atf-card-table-ui','whist-lab-app/atf-card-table-ui/src/main/Widget.java'],
+    ['whist-lab-app-display','whist-lab-app/app/src/main/Screen.java']])
+    assert.equal(componentEvidenceScope(group,new Map([...changed,[file,'e'.repeat(64)]]),new Map()).decision,'RUN',group);
+});
 const inputs = [
   {path: 'README.md', sha256: 'a'.repeat(64)},
   {path: 'whist-lab-app/app/src/main/Screen.java', sha256: 'b'.repeat(64)}

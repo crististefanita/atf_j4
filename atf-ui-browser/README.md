@@ -173,15 +173,15 @@ flowchart LR
 
 </details>
 
-### Current qualified package: 0.2.25
+### Current qualified package: 0.2.26
 
 The adjacent `browser-build.json` binds this release to its source commit, input inventory and artifact hashes.
 
-- Runtime: [Card Table Browser 0.2.25](lib/atf-ui-browser-0.2.25.jar) · [SHA-256](lib/atf-ui-browser-0.2.25.jar.sha256)
-- Shared tests: [Card Table Browser tests 0.2.25](lib/atf-ui-browser-0.2.25-tests.jar) · [SHA-256](lib/atf-ui-browser-0.2.25-tests.jar.sha256)
+- Runtime: [Card Table Browser 0.2.26](lib/atf-ui-browser-0.2.26.jar) · [SHA-256](lib/atf-ui-browser-0.2.26.jar.sha256)
+- Shared tests: [Card Table Browser tests 0.2.26](lib/atf-ui-browser-0.2.26-tests.jar) · [SHA-256](lib/atf-ui-browser-0.2.26-tests.jar.sha256)
 - Provenance: [browser-build.json](lib/browser-build.json)
 
-The viewport contract preserves a 414 × 896 logical frame on desktop, scales uniformly to fit the usable browser height and width, and retains a 0.68 readability floor only when both dimensions permit it. Phone browsers use their CSS viewport 1:1. Rentz and Hold’em consume the same runtime and test-archive bytes, verified against this receipt.
+The viewport contract preserves a 414 × 896 logical frame on desktop, scales uniformly to fit the usable browser height and width, and retains a 0.68 readability floor only when both dimensions permit it. Phone browsers use their CSS viewport 1:1. Consumers must adopt the runtime and test archive from the same receipt and verify their bytes.
 
 ```powershell
 .\atf-ui-browser\Package-CardTableBrowser.ps1 -WorkRoot $WorkRoot -Version $BrowserLibraryVersion

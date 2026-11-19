@@ -13,6 +13,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.Objects;
 import java.util.function.Consumer;
 import ro.cardtable.ui.table.ScoreGridStyle;
@@ -42,7 +43,7 @@ public class ScoreHistoryView extends ScrollView {
         for (var player : data.players()) {
             var name = text(player.label(), true, Gravity.CENTER_HORIZONTAL); heading(name); names.add(name);
             var group = column(); group.addView(name);
-            group.addView(cells(data.columns().stream().map(ScoreTableContent.Cell::new).toList(), true));
+            group.addView(cells(data.columns().stream().map(ScoreTableContent.Cell::new).collect(Collectors.toList()), true));
             addGroup(scoreHeadings, group, ScoreGridStyle.HEADER);
         }
         headings.addView(scoreHeadings, new HorizontalScrollView.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
@@ -78,7 +79,7 @@ public class ScoreHistoryView extends ScrollView {
         int labelWidth = desiredWidth(corner);
         for (var row : rowViews) labelWidth = Math.max(labelWidth, desiredWidth(row.label()));
         labelMinimum = labelWidth; nameMinimum = maxWidth(names);
-        columnMinima = columns.stream().map(ScoreHistoryView::maxWidth).toList();
+        columnMinima = columns.stream().map(ScoreHistoryView::maxWidth).collect(Collectors.toList());
     }
     public final HorizontalScrollView headingsView() { return headings; }
     public final ScrollView bodyView() { return rows; }
@@ -125,7 +126,7 @@ public class ScoreHistoryView extends ScrollView {
         }
         if (!captions) {
             group.setFocusable(true);
-            group.setContentDescription(String.join(" · ", values.stream().map(ScoreTableContent.Cell::description).toList()));
+            group.setContentDescription(String.join(" · ", values.stream().map(ScoreTableContent.Cell::description).collect(Collectors.toList())));
             for (int i = 0; i < group.getChildCount(); i++) group.getChildAt(i).setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
         }
         return group;

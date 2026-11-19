@@ -24,6 +24,7 @@ The project owns Android-boundary and adapter checks. Reusable contracts are req
 | Priority | Owner and gap | Verification level and closure criterion |
 |---|---|---|
 | P2 | Launcher coordination: entry points check preconditions inconsistently. | Controlled components for Java, Maven, Gradle, Node and Python must check required capabilities before costly operations and report missing capabilities with source identity. Distinguish the Python installation alias from an executable interpreter. For the [PowerShell ADB module](../../atf-test-android/tools/AndroidDeviceSetup.psm1), verify availability, refusal, timeout and process state separately from parsing and the Java client. |
+| P2 | Qualification cost: snapshot preparation repeatedly copies and hashes retained reports, and the framework suite remains a coarse reuse unit. | Measure source hashing, release hashing, copying, JVM preparation and execution separately. Qualify any finer reuse through immutable input ownership and negative controls for changed or missing bytes; never relabel a historical execution or omit an affected case. |
 
 [Inline-image retention governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseEvidenceRetentionGovernanceTest.java) separately checks for duplicated PNG files beside HTML. It does not prove data autonomy, image readability or APK integrity; the [adapter criterion](ATF_Reporting.md#rpt-android-html-only---audit-delivery-without-auxiliary-copies) remains separate.
 

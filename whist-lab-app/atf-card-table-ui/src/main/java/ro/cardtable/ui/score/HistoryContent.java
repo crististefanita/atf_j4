@@ -2,6 +2,7 @@ package ro.cardtable.ui.score;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.Objects;
 
 /** Pinned row labels and repeated player columns; column meanings belong to the consumer. */
@@ -17,7 +18,7 @@ public record HistoryContent(String corner, String legend, String detailsLabel, 
         public Row {
             if (Objects.requireNonNull(id).isBlank()) throw new IllegalArgumentException("Stable row identity required");
             Objects.requireNonNull(label); Objects.requireNonNull(description);
-            values = values.stream().map(List::copyOf).toList();
+            values = List.copyOf(values.stream().map(List::copyOf).collect(Collectors.toList()));
         }
     }
     public HistoryContent {
