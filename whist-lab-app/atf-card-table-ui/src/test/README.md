@@ -12,6 +12,6 @@ JVM tests check the geometry of the hand, presentation models and border of the 
 | Border | Production inventories, JVM and instrumentation exclude game dependencies. |
 | Score and history | Adapter-owned column roles, stable identities, immutable rows, measured numeric minima, short windows and bidirectional scroll recovery. No game scoring is inferred. |
 
-- Pregnancy `:atf-card-table-ui:testDebugUnitTest` is running on JVM.
-- Option `-Pcardui.only=component` configure the library and audit deck. The RAG launcher uses it when the library is the only Gradle selection.
+- Task `:atf-card-table-ui:testDebugUnitTest` runs on the JVM.
+- Option `-Pcardui.only=component` configures the library and audit module. The RAG launcher uses it when the library is the only Gradle selection.
 - Visual validation on device belongs to application flows. [Project collections](../../../../docs/testing/ATF_Collections.md)

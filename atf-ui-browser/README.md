@@ -8,13 +8,13 @@ Whist uses Java engine and portable table contracts in both APK and browser. Web
 
 ## What Android and Web share
 
-The header accepts an optional consumer-owned `actorLabel`; supplying it preserves the game's visible action, including the human seat. The shared seat renderer fits measured text horizontally without changing row height, using the portable `SeatTypography` roles. Header visibility honours the `hidden` attribute before layout.
-
-Prepared redraws retain the existing frame element for each stable seat identity. The measured geometry, current facts and accessible actor state are applied together at commit; an incompatible table keeps fresh frames. This continuity is component-tested independently of Android raster qualification.
-
-The trick center attaches controls only when the native-style table has visible actions. An empty control sibling must not add a flex gap when playback returns to the human turn; real bidding controls and legacy prompts retain their place.
-
-The component guard checks the delivered constructor's DOM invariant directly: automatic-only and action-free tables attach no empty control sibling. It does not reconstruct a pixel displacement from a guessed CSS gap. Platform observations measure the painted geometry separately.
+| Shared presentation contract | Responsibility |
+|---|---|
+| Actor label | An optional consumer-owned `actorLabel` preserves the visible game action, including the human seat. Hidden headings are excluded before layout. |
+| Seat text | `SeatTypography` supplies roles; measured text fits horizontally without changing row height. |
+| Frame identity | Prepared redraws commit geometry, facts and accessible actor state to existing seat objects. Incompatible tables keep fresh frames. |
+| Trick continuity | Native-style tables attach controls only for visible actions. Automatic-only and action-free states create no empty sibling or extra flex gap; real bidding controls and legacy prompts remain visible. |
+| Component boundary | Checks execute the delivered constructor and adapters. Native raster and painted geometry have separate platform acceptance. |
 
 The two interfaces share game rules and table portable calculations. Each adapter measures and draws with the tools of its platform.
 
@@ -254,12 +254,20 @@ node .\atf-ui-browser\pages\verify-card-adapter.mjs $Site $AdapterEvidence
 
 The trump tile loads a local subset of Noto Sans Symbols 2 containing the four suit symbols. [OFL licence](src/main/web/card-suits-OFL.txt)
 
-### Spațiul etichetei de acțiune
+### Action-label clearance
 
-| Contract | Responsabilitate |
+| Contract | Responsibility |
 |---|---|
-| Măsurare | Shell-ul transmite `actorClearance` pentru eticheta aflată deasupra chenarului. |
-| Probă DOM | Nod invizibil, măsurat în unități CSS și eliminat imediat; scalarea scenei nu schimbă rezerva. |
-| Adaptor | Poate exclude rezerva din banda densă fără să mute locurile comune. |
-| Compatibilitate | Jocurile care nu consumă parametrul păstrează geometria existentă. |
-| Componente | Etichetă vizibilă sau ascunsă, înălțimi diferite și eliminarea probei. |
+| Measurement | The shell supplies `actorClearance` for the label above the seat frame. |
+| DOM probe | An invisible node is measured in CSS units and removed immediately; scene scaling does not change the reservation. |
+| Adapter | A dense board may exclude the reserved band without moving common seat anchors. |
+| Compatibility | Games that do not consume the parameter retain their existing geometry. |
+| Components | Visible or hidden labels, different heights and probe removal. |
+
+### Score text and shared playback checks
+
+Web score captions, summaries and actions use the shared text scale once, with a default factor of 1.5. Scoring-detail and live-score dialogs have explicit presentation roles; unrelated dialogs retain their text size. A focusable scroll region keeps enlarged score columns accessible in narrow windows. Android widgets and game scoring are unchanged.
+
+The shared tests execute the real Web constructor and collection code with a controlled DOM and clock. Actor cues precede cards; measured faces retain their origins, dimensions and destination until collection finishes. Premature clearing is a negative control. Game-specific trick winners, awards and sequence rules remain in each consumer's tests.
+
+- `shared-presentation.test.mjs` is shipped in the test JAR. Set `ATF_BROWSER_WEB_ROOT` to the extracted runtime's Web resources and `ATF_BROWSER_EXECUTABLE` to Edge or Chrome, then run `node --test shared-presentation.test.mjs`. Browser profiles use the external temporary root; audio is muted. Typography checks use controlled game content and the production DOM/CSS, rather than an Android raster.

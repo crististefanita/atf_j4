@@ -1,7 +1,7 @@
 package atf.tests.governance.documentation.release.rag.nativeproof;
 
 import atf.testkit.AtfComponentTest;
-import atf.android.component.AndroidComponentAudit;
+import atf.tests.reporting.GameReportAudit;
 import atf.android.evidence.component.ComponentInputs;
 import atf.tests.governance.documentation.release.rag.scope.NodeReleaseContracts;
 import atf.tests.governance.support.GovernanceProject;
@@ -14,7 +14,7 @@ import static atf.testkit.assertions.AuditedAssertions.assertTrue;
 @AtfComponentTest
 class WhistSurfaceAdapterComponentTest {
     @org.junit.jupiter.api.extension.RegisterExtension
-    static final AndroidComponentAudit AUDIT = AndroidComponentAudit.extension();
+    static final GameReportAudit AUDIT = new GameReportAudit();
     @Test void webAndNativePortablePortsKeepMeasuredGeometryFacesAndGesturesAligned(ComponentInputs inputs) throws Exception {
         var root = GovernanceProject.locateProjectRoot();
         String output = NodeReleaseContracts.runNode(List.of("node", "--test",

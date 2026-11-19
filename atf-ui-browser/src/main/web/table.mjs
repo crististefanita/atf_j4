@@ -1,11 +1,11 @@
-import { fitTextWidth, isPhone, viewportGeometry, textScale } from "./viewport.mjs?v=0.2.14";
+import { fitTextWidth, isPhone, viewportGeometry, textScale } from "./viewport.mjs?v=0.2.21";
 import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
 import { bindHandFeedback } from "./hand-feedback.mjs";
 import { historyGrid } from "./records.mjs";
 import { fitSeatLine, fitSeatLines, retainSeatFrames, measureSeatActionClearance } from "./seat-presentation.mjs";
 import { historyFirst } from "./table-menu.mjs";
-import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.14";
+import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.21";
 
 const stage = document.querySelector("#table");
 const frame = document.querySelector("#frame");
@@ -786,9 +786,14 @@ function whistScore(match) {
     element("p", details.summary, "whist-score-status"), prompt);
   if (details.winner) page.append(element("p", details.winner, "whist-score-winner"));
   if (details.awards) page.append(element("p", details.awards, "whist-score-awards"));
-  page.append(scoreGrid(match.score.table, true),
+  const scoreTable = element("div", "", "score-table-scroll");
+  scoreTable.tabIndex = 0;
+  scoreTable.setAttribute("role", "region");
+  scoreTable.setAttribute("aria-label", match.score.title);
+  scoreTable.append(scoreGrid(match.score.table, true));
+  page.append(scoreTable,
     button(copy("scoringDetails", "Calculul punctajului"),
-      () => profileDialogs.message(copy("scoringDetails", "Calculul punctajului"), details.rules), "quiet"));
+      () => profileDialogs.message(copy("scoringDetails", "Calculul punctajului"), details.rules, "game-score-rules"), "quiet"));
   for (const move of match.actions) page.append(control(move));
   page.append(button(copy("history", "Istoric punctaj"), () => showHistory(match.history), "quiet"),
     button(copy("mainMenu", "Meniu principal"), menu, "quiet"));
