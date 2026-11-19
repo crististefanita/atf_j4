@@ -266,8 +266,10 @@ The trump tile loads a local subset of Noto Sans Symbols 2 containing the four s
 
 ### Score text and shared playback checks
 
-Web score captions, summaries and actions use the shared text scale once, with a default factor of 1.5. Scoring-detail and live-score dialogs have explicit presentation roles; unrelated dialogs retain their text size. A focusable scroll region keeps enlarged score columns accessible in narrow windows. Android widgets and game scoring are unchanged.
+- Web score captions, summaries and actions use the shared text scale once, with a default factor of 1.5. Scoring-detail and live-score dialogs have explicit presentation roles; unrelated dialogs retain their text size.
+- A focusable scroll region keeps enlarged score columns accessible in narrow windows. Android widgets and game scoring are unchanged.
 
-The shared tests execute the real Web constructor and collection code with a controlled DOM and clock. Actor cues precede cards; measured faces retain their origins, dimensions and destination until collection finishes. Premature clearing is a negative control. Game-specific trick winners, awards and sequence rules remain in each consumer's tests.
+- The shared tests execute the real Web constructor and collection code with a controlled DOM and clock. Actor cues precede cards; measured faces retain their origins, dimensions and destination until collection finishes.
+- Premature clearing is a negative control. Game-specific trick winners, awards and sequence rules remain in each consumer's tests.
 
 - `shared-presentation.test.mjs` is shipped in the test JAR. Set `ATF_BROWSER_WEB_ROOT` to the extracted runtime's Web resources and `ATF_BROWSER_EXECUTABLE` to Edge or Chrome, then run `node --test shared-presentation.test.mjs`. Browser profiles use the external temporary root; audio is muted. Typography checks use controlled game content and the production DOM/CSS, rather than an Android raster.

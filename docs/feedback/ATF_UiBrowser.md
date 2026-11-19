@@ -22,4 +22,4 @@ Extend coverage of AI decisions, streaks and playing for zero through component 
 
 | ID | Remaining work | Closure criterion |
 |---|---|---|
-| WEB-15 | Publish the text-scale-aware browser contract under a new library coordinate. | Repackage runtime and shared tests after source qualification; verify identical package bytes in consumers without changing the Android artifact. The currently qualified package remains immutable. |
+| WEB-15 | Complete adoption of adaptive presentation contracts in remaining consumers. | Repackage runtime and shared tests after source qualification; verify identical package bytes in consumers without changing the Android artifact. The currently qualified package remains immutable. |

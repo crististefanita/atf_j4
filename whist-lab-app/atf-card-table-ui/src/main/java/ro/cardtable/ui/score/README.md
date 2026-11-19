@@ -6,15 +6,23 @@ The game projects confirmed visible values; the library renders them. Column lab
 
 ```mermaid
 flowchart LR
-    GAME[Confirmed game state] --> ADAPTER[Game content adapter]
-    ADAPTER --> TABLE[ScoreTableContent]
-    ADAPTER --> HISTORY[HistoryContent]
-    TABLE --> ANDROID[ScoreTableView]
-    HISTORY --> SCROLL[ScoreHistoryView]
-    TABLE --> WEB[Browser projection]
-    HISTORY --> WEB
-    SCROLL -->|row identity| ADAPTER
+    GAME[Confirmed game state] -->|supplies visible values| ADAPTER[Game content adapter]
+    ADAPTER -->|builds rows| TABLE[ScoreTableContent]
+    ADAPTER -->|builds history| HISTORY[HistoryContent]
+    TABLE -->|supplies rows to| ANDROID[ScoreTableView]
+    HISTORY -->|supplies groups to| SCROLL[ScoreHistoryView]
+    TABLE -->|supplies rows to| WEB[Browser projection]
+    HISTORY -->|supplies groups to| WEB
+    SCROLL -->|opens details by row identity through| ADAPTER
 ```
+
+<details>
+<summary>Legend</summary>
+
+- The game adapter owns confirmed values and row identities; Android widgets and the browser consume the same neutral content.
+- A details callback returns the row identity to the adapter. The widgets do not mutate the game or calculate scores.
+
+</details>
 
 ## Contracts
 
