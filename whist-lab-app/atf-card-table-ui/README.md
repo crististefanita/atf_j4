@@ -26,6 +26,7 @@
 | [CardFaceView](src/main/java/ro/cardtable/ui/cards/CardFaceView.java) | Mâna și masa desenează rangul și simbolul în colț, simbolul central și colțul inversat. Dimensiunile feței se scalează pentru masa de joc, iar colectarea mută vederile cărților de pe masă. |
 | [CardFaceMetrics](src/main/java/ro/cardtable/ui/cards/CardFaceMetrics.java) | Reperul este cartea din mâna Android. Adaptorul Web preia dimensiunile și pozițiile și păstrează aceeași structură la depunere și colectare. |
 | [ScoreGridStyle](src/main/java/ro/cardtable/ui/table/ScoreGridStyle.java) | Păstrează proporțiile, înălțimea și culorile tabelului de scor pentru adaptorul Android și browser. |
+| [score](src/main/java/ro/cardtable/ui/score/README.md) | Widgeturi neutre pentru scor și istoric derulabil, conținut imuabil al consumatorului, coloane măsurate și sincronizare bidirecțională. Etichetele și punctajul rămân în adaptoare. |
 | [theme](src/main/java/ro/cardtable/ui/theme/TablePalette.java) și [widgets](src/main/java/ro/cardtable/ui/widgets/DropdownBackground.java) | Culori, chenare și desenul selectorului. |
 
 Aplicația deține compoziția mesei, regulile, istoricul, câștigătorul și momentul afișării levatei. Biblioteca măsoară fețele și chenarul câștigător, apoi aplică mișcarea. Contractul comun folosește numai locuri și date vizibile.

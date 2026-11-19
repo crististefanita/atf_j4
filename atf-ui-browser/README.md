@@ -8,6 +8,14 @@ Whist folosește motorul Java și contractele portabile ale mesei atât în APK,
 
 ## Ce folosesc împreună Android și Web
 
+| Contract comun de prezentare | Responsabilitate |
+|---|---|
+| Eticheta actorului | Un `actorLabel` opțional, furnizat de consumator, păstrează acțiunea vizibilă a jocului, inclusiv la locul uman. Antetele ascunse sunt excluse înainte de layout. |
+| Textul locului | `SeatTypography` furnizează rolurile; textul măsurat se încadrează orizontal fără schimbarea înălțimii rândului. |
+| Identitatea chenarului | Reafișările pregătite aplică geometria, valorile și actorul accesibil pe obiectele existente ale locurilor. Mesele incompatibile păstrează chenare noi. |
+| Continuitatea levatei | Mesele native atașează controale doar pentru acțiuni vizibile. Stările fără acțiuni sau doar automate nu creează vecini goi ori spațiu flex suplimentar; licitarea reală și mesajele vechi rămân vizibile. |
+| Limita componentelor | Probele execută constructorul și adaptoarele livrate. Rasterul nativ și geometria pictată au acceptanță separată pe platformă. |
+
 Cele două interfețe împart regulile jocului și calculele portabile ale mesei. Fiecare adaptor măsoară și desenează cu instrumentele platformei sale.
 
 ```mermaid
@@ -245,3 +253,21 @@ node .\atf-ui-browser\pages\verify-card-adapter.mjs $Site $AdapterEvidence
 | Raportare | Extent citește rezultatele fiecărui nivel și atașează capturile PNG inline. |
 
 Chenarul de atu încarcă local un subset Noto Sans Symbols 2 cu cele patru simboluri de suită. [Licența OFL](src/main/web/card-suits-OFL.txt)
+
+### Spațiul etichetei de acțiune
+
+| Contract | Responsabilitate |
+|---|---|
+| Măsurare | Shell-ul transmite `actorClearance` pentru eticheta aflată deasupra chenarului. |
+| Probă DOM | Nod invizibil, măsurat în unități CSS și eliminat imediat; scalarea scenei nu schimbă rezerva. |
+| Adaptor | Poate exclude rezerva din banda densă fără să mute locurile comune. |
+| Compatibilitate | Jocurile care nu consumă parametrul păstrează geometria existentă. |
+| Componente | Etichetă vizibilă sau ascunsă, înălțimi diferite și eliminarea probei. |
+
+### Textul scorului și verificările comune de redare
+
+Titlurile, rezumatele și acțiunile scorului Web folosesc o singură dată scara comună a textului, implicit 1,5. Dialogurile calculului și scorului curent au roluri explicite de prezentare; celelalte dialoguri își păstrează dimensiunea textului. O zonă derulabilă, accesibilă prin focus, păstrează coloanele mărite accesibile în ferestre înguste. Widgeturile Android și calculul jocului rămân neschimbate.
+
+Testele comune execută constructorul Web și colectarea reale, cu DOM și ceas controlate. Actorul este semnalizat înaintea cărții; fețele măsurate își păstrează originea, dimensiunile și destinația până la terminarea colectării. Ștergerea prematură este control negativ. Câștigătorii levatelor, premiile și regulile secvențelor rămân în testele fiecărui consumator.
+
+- `shared-presentation.test.mjs` este livrat în JAR-ul de teste. Setați `ATF_BROWSER_WEB_ROOT` către resursele Web din execuția extrasă și `ATF_BROWSER_EXECUTABLE` către Edge sau Chrome, apoi rulați `node --test shared-presentation.test.mjs`. Profilele browserului folosesc rădăcina temporară externă; sunetul este oprit. Probele de tipografie folosesc conținut de joc controlat și DOM/CSS de producție, nu raster Android.

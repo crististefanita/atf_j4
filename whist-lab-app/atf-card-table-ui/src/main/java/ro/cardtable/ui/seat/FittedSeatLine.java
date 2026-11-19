@@ -30,7 +30,7 @@ final class FittedSeatLine extends TextView {
         if (!fact.value().isEmpty())
             text.setSpan(new StyleSpan(Typeface.BOLD), fact.label().length() + 1, text.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return new FittedSeatLine(context, text, 11, color, compact);
+        return new FittedSeatLine(context, text, SeatTypography.FACT_SP, color, compact);
     }
 
     @Override protected void onMeasure(int widthSpec, int heightSpec) {

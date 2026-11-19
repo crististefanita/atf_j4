@@ -1,10 +1,11 @@
-import { fitTextWidth, isPhone, viewportGeometry, textScale } from "./viewport.mjs?v=0.2.14";
+import { fitTextWidth, isPhone, viewportGeometry, textScale } from "./viewport.mjs?v=0.2.21";
 import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
 import { bindHandFeedback } from "./hand-feedback.mjs";
 import { historyGrid } from "./records.mjs";
+import { fitSeatLine, fitSeatLines, retainSeatFrames, measureSeatActionClearance } from "./seat-presentation.mjs";
 import { historyFirst } from "./table-menu.mjs";
-import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.14";
+import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.21";
 
 const stage = document.querySelector("#table");
 const frame = document.querySelector("#frame");
@@ -640,6 +641,7 @@ async function placeTable(content = stage.firstElementChild) {
   const seatWidth = Math.min(116, Math.round(width * (stage.clientHeight < 760 ? 0.25 : 0.29)),
     Math.floor((width - 16) / 3));
   for (const seat of seats) seat.style.width = Math.max(1, seatWidth) + "px";
+  fitSeatLines(seats);
   try {
     const minHeight = board.style.minHeight;
     board.style.minHeight = "";
@@ -647,6 +649,7 @@ async function placeTable(content = stage.firstElementChild) {
     board.style.minHeight = minHeight;
     const layout = await call("/api/layout", {
       width, height, mode: state.view.header?.mode ?? "", seatHeight: Math.max(...seats.map(seat => seat.offsetHeight)),
+      actorClearance: Math.max(0, ...seats.map(measureSeatActionClearance)),
       fontScale: textScale(getComputedStyle(document.documentElement).fontSize),
       bidOptions: stage.dataset.playingSteps && !content.hasAttribute("data-preparing")
         ? 0 : board.querySelectorAll("[data-bid]").length,
@@ -783,9 +786,14 @@ function whistScore(match) {
     element("p", details.summary, "whist-score-status"), prompt);
   if (details.winner) page.append(element("p", details.winner, "whist-score-winner"));
   if (details.awards) page.append(element("p", details.awards, "whist-score-awards"));
-  page.append(scoreGrid(match.score.table, true),
+  const scoreTable = element("div", "", "score-table-scroll");
+  scoreTable.tabIndex = 0;
+  scoreTable.setAttribute("role", "region");
+  scoreTable.setAttribute("aria-label", match.score.title);
+  scoreTable.append(scoreGrid(match.score.table, true));
+  page.append(scoreTable,
     button(copy("scoringDetails", "Calculul punctajului"),
-      () => profileDialogs.message(copy("scoringDetails", "Calculul punctajului"), details.rules), "quiet"));
+      () => profileDialogs.message(copy("scoringDetails", "Calculul punctajului"), details.rules, "game-score-rules"), "quiet"));
   for (const move of match.actions) page.append(control(move));
   page.append(button(copy("history", "Istoric punctaj"), () => showHistory(match.history), "quiet"),
     button(copy("mainMenu", "Meniu principal"), menu, "quiet"));
@@ -797,16 +805,19 @@ function writeSeatFact(node, content) {
   const separator = content.lastIndexOf(" ");
   if (separator < 0) node.textContent = content;
   else node.replaceChildren(content.slice(0, separator + 1), element("b", content.slice(separator + 1)));
+  fitSeatLine(node);
 }
 
-function markSeat(node, active, bidding) {
+function markSeat(node, active, bidding, actorLabel) {
+  if (actorLabel !== undefined) node.dataset.actorLabel = actorLabel || "";
+  const suppliedLabel = actorLabel ?? node.dataset.actorLabel;
   node.classList.toggle("active", active);
   if (active) node.setAttribute("aria-current", "true");
   else node.removeAttribute("aria-current");
   const badge = node.querySelector(".seat-turn");
   if (badge) {
-    badge.hidden = !active || (bidding && node.classList.contains("south"));
-    badge.textContent = bidding ? copy("bidNow", "LICITEAZĂ") : copy("playNow", "JOACĂ ACUM");
+    badge.hidden = !active || (!suppliedLabel && bidding && node.classList.contains("south"));
+    badge.textContent = suppliedLabel || (bidding ? copy("bidNow", "LICITEAZĂ") : copy("playNow", "JOACĂ ACUM"));
   }
 }
 
@@ -833,8 +844,9 @@ async function render() {
 
   const bids = match.actions.filter(move => move.key.startsWith("bid:"));
   const board = element("div", "", "board");
-  for (const seat of match.seats) {
+  for (const [seatIndex, seat] of match.seats.entries()) {
     const position = element("div", "", "seat " + seat.anchor);
+    position.dataset.seat = String(seatIndex);
     position.append(element("strong", seat.name), element("span", seat.firstFact, "seat-bid"),
       element("span", seat.secondFact, "seat-won"));
     if (match.header) {
@@ -842,7 +854,7 @@ async function render() {
       writeSeatFact(position.querySelector(".seat-won"), seat.secondFact);
       position.append(element("span", "", "seat-turn"));
     }
-    markSeat(position, seat.active, bids.length > 0);
+    markSeat(position, seat.active, bids.length > 0, match.header?.actorLabel);
     board.append(position);
   }
   const visible = element("div", "", "cards-on-table");
@@ -864,7 +876,7 @@ async function render() {
   if (!match.header && match.history.rows.length) toolbar.append(button("Istoric", () => showHistory(match.history)));
   if (!match.header) controls.append(prompt);
   controls.append(actions);
-  center.append(controls);
+  if (!match.header || actions.childElementCount) center.append(controls);
 
   const hand = element("div", "", "hand");
   hand.setAttribute("role", "group");
@@ -914,6 +926,7 @@ async function render() {
   delete content.dataset.preparing;
   content.inert = false;
   content.append(errorBox);
+  retainSeatFrames(stage.querySelector(":scope > .match:not([data-preparing])"), content);
   stage.replaceChildren(content);
   refreshAutomationGate();
 }

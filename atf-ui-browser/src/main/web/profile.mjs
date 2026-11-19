@@ -122,10 +122,10 @@ export function createProfileDialogs(element, button, submit, copy = (_, text) =
     dialog.addEventListener("close", () => submit("/api/notice", { dismiss: "yes" }), { once: true });
   }
 
-  function message(title, paragraphs) {
+  function message(title, paragraphs, role = "game-rules") {
     const body = element("div", "", "whist-dialog-copy");
     for (const paragraph of paragraphs) body.append(element("p", paragraph));
-    show(title, body, copy("close", "Închide"), "game-rules");
+    show(title, body, copy("close", "Închide"), role);
   }
 
   function liveScore(data, table, showHistory) {

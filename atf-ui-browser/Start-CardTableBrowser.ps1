@@ -40,9 +40,14 @@ $inputs = @(
     Join-Path $ui 'animation/CollectionTarget.java'
     Join-Path $ui 'animation/TrickCollectionMotion.java'
     Join-Path $ui 'seat/SeatContent.java'
+    Join-Path $ui 'seat/SeatTypography.java'
     Join-Path $ui 'theme/TableColors.java'
     Join-Path $ui 'turn/TurnPacing.java'
     Join-Path $ui 'menu/TableMenuContent.java'
+    Join-Path $ui 'screens/GameTitleLayout.java'
+    foreach ($contract in 'ScoreTableContent','HistoryContent','HistoryGridMetrics','HistoryScrollSync') {
+        Join-Path $ui "score/$contract.java"
+    }
     Join-Path $checkout 'whist-lab-app/card-table-names/src/main/java'
 ) + $JavaInputs
 $sources = foreach ($inputPath in $inputs) {

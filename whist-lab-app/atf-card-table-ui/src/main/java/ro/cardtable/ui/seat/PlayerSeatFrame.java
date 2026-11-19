@@ -34,8 +34,8 @@ public final class PlayerSeatFrame {
         seat.setElevation(dp(active ? 1 : 0));
 
         int nameColor = active ? INK : TablePalette.IDLE_SEAT_TEXT;
-        TextView name = inlineFacts ? new FittedSeatLine(context, content.name(), 13, nameColor, compact)
-                : text(content.name(), 13, nameColor, true);
+        TextView name = inlineFacts ? new FittedSeatLine(context, content.name(), SeatTypography.NAME_SP, nameColor, compact)
+                : text(content.name(), SeatTypography.NAME_SP, nameColor, true);
         name.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         name.setGravity(Gravity.CENTER);
         name.setSingleLine(true);
@@ -56,8 +56,8 @@ public final class PlayerSeatFrame {
     private void addSeatFact(LinearLayout seat, String label, String value, boolean active) {
         LinearLayout row = new LinearLayout(context);
         int color = factColor(active);
-        TextView caption = text(label, 11, color, false);
-        TextView amount = text(value, 11, color, true);
+        TextView caption = text(label, SeatTypography.FACT_SP, color, false);
+        TextView amount = text(value, SeatTypography.FACT_SP, color, true);
         caption.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         amount.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         amount.setGravity(Gravity.END);

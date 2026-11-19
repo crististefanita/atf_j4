@@ -10,6 +10,7 @@ Testele JVM verifică geometria mâinii, modelele de prezentare și frontiera bi
 | Locuri și meniu | Conținutul modelului de prezentare, inclusiv editarea numelui și o înălțime comună a badge-ului pentru etichetele celor două faze. |
 | Realizări | Ordinea catalogului, cheile de restaurare și calculul detaliului la deschidere. |
 | Frontieră | Inventarele de producție, JVM și instrumentare exclud dependențele de joc. |
+| Scor și istoric | Rolurile coloanelor furnizate de adaptor, identități stabile, rânduri imuabile, minime numerice măsurate, ferestre joase și recuperarea derulării bidirecționale. Nu deduc reguli de punctaj. |
 
 - Sarcina `:atf-card-table-ui:testDebugUnitTest` rulează pe JVM.
 - Opțiunea `-Pcardui.only=component` configurează biblioteca și puntea auditului. Lansatorul RAG o folosește când biblioteca este singura selecție Gradle.
