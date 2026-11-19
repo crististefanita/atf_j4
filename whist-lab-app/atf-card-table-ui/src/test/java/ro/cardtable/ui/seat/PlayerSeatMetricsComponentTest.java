@@ -5,6 +5,11 @@ import org.junit.Test;
 
 /** Pure layout contract for phase-stable action badges in the shared table UI. */
 public final class PlayerSeatMetricsComponentTest extends atf.gradle.audit.GradleAuditedTest {
+    @Test public void nativeAndBrowserTextRolesKeepTheSameNominalSizes() {
+        atf.gradle.audit.GradleInputs.fixture("Native seat text roles", "name sp", 13, "fact sp", 11);
+        assertEquals("Name typography is supplied once", 13, SeatTypography.NAME_SP);
+        assertEquals("Fact typography is supplied once", 11, SeatTypography.FACT_SP);
+    }
     @Test public void oneBadgeSlotUsesTheTallerMeasuredPhaseLabel() {
         atf.gradle.audit.GradleInputs.fixture("Measured phase badge heights", "bidding", 13, "playing", 24);
         assertEquals("The slot uses the taller playing label", 24,

@@ -20,6 +20,7 @@ $testInputs = @(
     Join-Path $tests 'hand-presentation.mjs'
     Join-Path $tests 'menu-presentation.mjs'
     Join-Path $tests 'score-presentation.mjs'
+    Join-Path $tests 'seat-presentation.mjs'
     Join-Path $tests 'viewport-contract.mjs'
     Join-Path $tests 'card-typography.mjs'
     Join-Path $checkout 'whist-lab-app/atf-card-table-ui/src/test/resources/card-typography.tsv'

@@ -8,6 +8,8 @@ Whist uses Java engine and portable table contracts in both APK and browser. Web
 
 ## What Android and Web share
 
+The header accepts an optional consumer-owned `actorLabel`; supplying it preserves the game's visible action, including the human seat. The shared seat renderer fits measured text horizontally without changing row height, using the portable `SeatTypography` roles. Header visibility honours the `hidden` attribute before layout.
+
 The two interfaces share game rules and table portable calculations. Each adapter measures and draws with the tools of its platform.
 
 ```mermaid

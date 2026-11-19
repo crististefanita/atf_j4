@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 /** Executes the delivered renderers with game-owned captions; it never calculates a score. */
 export function verifyScorePresentation(scoreGrid, historyGrid, element) {
   let cases = 0;
-  for (const captions of [["Δ", "Σ"], ["B", "P"]]) for (const players of [3, 4, 5, 6]) {
+  for (const captions of [["Δ:", "Σ:"], ["B", "P"]]) for (const players of [3, 4, 5, 6]) {
     const names = Array.from({length: players}, (_, i) => "Player " + i);
     const rows = names.map((name, i) => [name, String(i * 25 - 50), String(100 - i * 50)]);
     const score = scoreGrid({headings: ["Player", ...captions], rows}, true);

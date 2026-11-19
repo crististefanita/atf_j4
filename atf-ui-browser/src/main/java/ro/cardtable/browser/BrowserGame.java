@@ -137,7 +137,12 @@ public interface BrowserGame {
     }
 
     record Header(String mode, String title, String progress, String bids, String trump, String trumpDescription,
-                  float titleSize, float progressSize, float bidSize) { }
+                  float titleSize, float progressSize, float bidSize, String actorLabel) {
+        public Header(String mode, String title, String progress, String bids, String trump, String trumpDescription,
+                float titleSize, float progressSize, float bidSize) {
+            this(mode, title, progress, bids, trump, trumpDescription, titleSize, progressSize, bidSize, null);
+        }
+    }
 
     record Score(String title, History table) { }
 

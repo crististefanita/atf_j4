@@ -3,6 +3,7 @@ import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
 import { bindHandFeedback } from "./hand-feedback.mjs";
 import { historyGrid } from "./records.mjs";
+import { fitSeatLine, fitSeatLines } from "./seat-presentation.mjs";
 import { historyFirst } from "./table-menu.mjs";
 import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.14";
 
@@ -640,6 +641,7 @@ async function placeTable(content = stage.firstElementChild) {
   const seatWidth = Math.min(116, Math.round(width * (stage.clientHeight < 760 ? 0.25 : 0.29)),
     Math.floor((width - 16) / 3));
   for (const seat of seats) seat.style.width = Math.max(1, seatWidth) + "px";
+  fitSeatLines(seats);
   try {
     const minHeight = board.style.minHeight;
     board.style.minHeight = "";
@@ -797,16 +799,19 @@ function writeSeatFact(node, content) {
   const separator = content.lastIndexOf(" ");
   if (separator < 0) node.textContent = content;
   else node.replaceChildren(content.slice(0, separator + 1), element("b", content.slice(separator + 1)));
+  fitSeatLine(node);
 }
 
-function markSeat(node, active, bidding) {
+function markSeat(node, active, bidding, actorLabel) {
+  if (actorLabel !== undefined) node.dataset.actorLabel = actorLabel || "";
+  const suppliedLabel = actorLabel ?? node.dataset.actorLabel;
   node.classList.toggle("active", active);
   if (active) node.setAttribute("aria-current", "true");
   else node.removeAttribute("aria-current");
   const badge = node.querySelector(".seat-turn");
   if (badge) {
-    badge.hidden = !active || (bidding && node.classList.contains("south"));
-    badge.textContent = bidding ? copy("bidNow", "LICITEAZĂ") : copy("playNow", "JOACĂ ACUM");
+    badge.hidden = !active || (!suppliedLabel && bidding && node.classList.contains("south"));
+    badge.textContent = suppliedLabel || (bidding ? copy("bidNow", "LICITEAZĂ") : copy("playNow", "JOACĂ ACUM"));
   }
 }
 
@@ -842,7 +847,7 @@ async function render() {
       writeSeatFact(position.querySelector(".seat-won"), seat.secondFact);
       position.append(element("span", "", "seat-turn"));
     }
-    markSeat(position, seat.active, bids.length > 0);
+    markSeat(position, seat.active, bids.length > 0, match.header?.actorLabel);
     board.append(position);
   }
   const visible = element("div", "", "cards-on-table");
