@@ -31,7 +31,7 @@ test('the real Web score renderer enlarges text once and preserves actions at na
   const executable=process.env.ATF_BROWSER_EXECUTABLE??'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
   assert.ok(fs.existsSync(executable),'Supply ATF_BROWSER_EXECUTABLE for the Chromium component renderer');
   const work=fs.mkdtempSync(path.join(os.tmpdir(),'score-adapter-'));
-  t.after(()=>fs.rmSync(work,{recursive:true,force:true,maxRetries:10,retryDelay:200}));
+  t.after(()=>fs.promises.rm(work,{recursive:true,force:true,maxRetries:15,retryDelay:200}));
   const css=fs.readFileSync(path.join(web,'table.css'),'utf8');
   const score=fragment('function whistScore(', 'function writeSeatFact(');
   const grid=fragment('function scoreGrid(', 'function showHistory(');

@@ -273,3 +273,4 @@ Chenarul de atu încarcă local un subset Noto Sans Symbols 2 cu cele patru simb
 - Ștergerea prematură este control negativ. Câștigătorii levatelor, premiile și regulile secvențelor rămân în testele fiecărui consumator.
 
 - `shared-presentation.test.mjs` este livrat în JAR-ul de teste. Setați `ATF_BROWSER_WEB_ROOT` către resursele Web din execuția extrasă și `ATF_BROWSER_EXECUTABLE` către Edge sau Chrome, apoi rulați `node --test shared-presentation.test.mjs`. Profilele browserului folosesc rădăcina temporară externă; sunetul este oprit. Probele de tipografie folosesc conținut de joc controlat și DOM/CSS de producție, nu raster Android.
+- Închiderea browserului cere ieșirea normală și așteaptă procesul propriu. Curățarea profilului este asincronă, cu reîncercări limitate, pentru ca Windows să elibereze handle-urile înaintea ștergerii directorului.
