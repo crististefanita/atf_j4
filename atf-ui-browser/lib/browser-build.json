@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "version": "0.2.16",
-  "sourceCommit": "312241fe16273dbe9c2999342db614f45b6c3144",
-  "inputSha256": "2e35ed3279a1ef6288ee8ed2b73fb3644d37bb402a9fffc3ae2bfa0a422d3bba",
+  "version": "0.2.17",
+  "sourceCommit": "ad01c06493389f6d8d42ef332e155c644be81c6b",
+  "inputSha256": "2455015543213194cd7fa677ae61ac6228eddaded69822661b423ef1d5615dae",
   "inputs": [
     {
       "path": "atf-ui-browser/Package-CardTableBrowser.ps1",
@@ -90,7 +90,7 @@
     },
     {
       "path": "atf-ui-browser/src/main/web/table.mjs",
-      "sha256": "4c1cf85edb0ce2410c95ea42c78f9a0195daa17e4f2ed4fd8fb8c3169174cf4a"
+      "sha256": "7afe51de690c5459df29541fd06a3ddfcdc690f2b911ac3a752a8cac09a9b166"
     },
     {
       "path": "atf-ui-browser/src/main/web/viewport.mjs",
@@ -122,7 +122,7 @@
     },
     {
       "path": "atf-ui-browser/tests/seat-presentation.mjs",
-      "sha256": "30eb814fd8342121a9f2414e54546c7079ee42b2b064a8def2920e1576477a3a"
+      "sha256": "60bad16b953b72493279a159f9bf2a072ac58f1b9e2c51ca7d0c6f1cf7f48891"
     },
     {
       "path": "atf-ui-browser/tests/trump-text-fit.mjs",
@@ -263,24 +263,24 @@
   ],
   "files": [
     {
-      "path": "atf-ui-browser-0.2.16.jar",
-      "bytes": 155871,
-      "sha256": "bb3b72397825c245380ce3b3cc75c79778aee4360a0289b832917cb38ec116d8"
+      "path": "atf-ui-browser-0.2.17.jar",
+      "bytes": 155881,
+      "sha256": "11896cd672530c66aa29468cf6c4cabc09575e39574362117b70531dfd605fd7"
     },
     {
-      "path": "atf-ui-browser-0.2.16.jar.sha256",
+      "path": "atf-ui-browser-0.2.17.jar.sha256",
       "bytes": 65,
-      "sha256": "ac6ba3c7ab070e3dca0e05e949759dd14939067c9b2da2ad4c43925ca7e5f0a4"
+      "sha256": "c9535fd3057cd0b0f208c0e020b1f437f5bcdcc52071f927c2b8e448d049f5c3"
     },
     {
-      "path": "atf-ui-browser-0.2.16-tests.jar",
-      "bytes": 15066,
-      "sha256": "2b6e0637bec0a829660c3e61d6621fe8855e74cf3127fede6e9f4cf2d29f2df3"
+      "path": "atf-ui-browser-0.2.17-tests.jar",
+      "bytes": 15714,
+      "sha256": "5c0b6567ade1e41bd6ec9ea93b124ee6dd6c67764787e466b6a2fbb031b85bda"
     },
     {
-      "path": "atf-ui-browser-0.2.16-tests.jar.sha256",
+      "path": "atf-ui-browser-0.2.17-tests.jar.sha256",
       "bytes": 65,
-      "sha256": "602aae22255fe1129ec4392e64b441c07561d9a86fee7a21273c1aed88cfd08b"
+      "sha256": "da124feb72ffca935c0971b3f06da673760ebdc5e1f84ab409e06d85c564a38b"
     }
   ]
 }
