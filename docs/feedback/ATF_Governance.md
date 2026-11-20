@@ -84,3 +84,12 @@ Reject missing or stale source-control evidence before copying caches, compiling
 - Measure rejected preparation separately from accepted execution. Do not replace a failed original report with a passing neighbour or edit an execution receipt.
 
 - Make the review base an explicit input for local and isolated launches. Check the control plan before dependency preparation; an incompatible historical base must fail with the same diagnostic before compilation.
+
+## Published audit commit admission
+
+The publication flow can advertise a prepared dossier commit before its manifest contains the qualified source commit. Final governance rejects this link, but the public release then needs a metadata correction.
+
+- Validate the audit commit before publishing its URL: require the qualified source, identical APK identity and canonical report hash, with a direct report link in the committed index.
+- Cover prepared manifests with an absent source, another source commit, missing report bytes and a changed report hash through component tests.
+- Preserve original execution receipts and published assets when correcting presentation metadata. Check the final GitHub release body and the committed dossier independently.
+- Reuse the existing compiled governance selection for a metadata correction; do not repeat unchanged component or Android execution.

@@ -14,4 +14,4 @@ Shared table menus and history adapters are refreshed. Web resources load throug
 
 ## Documentation
 
-- [Extent](https://github.com/crististefanita/whist/blob/9de575e7789ae2548219ecd9c286f96b0069f95f/release/0.21.13/reports/README.md)
+- [Extent](https://github.com/crististefanita/whist/blob/77a205cf6b22f0b64c4e5400c1af6210e8f7a677/release/0.21.13/reports/README.md)
