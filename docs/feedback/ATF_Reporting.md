@@ -77,3 +77,7 @@ Măsurarea justifică investigarea reducerii redundanței; nu dovedește că toa
 - [Contractul Android](../reporting/ATF_Android.md) deține asocierea acțiune–observație–comparație și distincția dintre rezultatul funcțional și publicare.
 
 [Contractul Android](../reporting/ATF_Android.md) · [Auditul publicării](../reporting/ATF_Audit.md) · [Retenție](../learning/ATF_Retention.md)
+
+## Calificarea rămasă a producătorilor
+
+Pentru fiecare producător rămas, includeți Overview-ul standard și structura în engleză în acceptanța HTML-ului autonom. Păstrați dovezile în limba originală a aplicației, PNG-urile inline la cazul proprietar și refuzați cadrele lipsă sau atribuite greșit. Contractul publisherului browser aparține suitei focalizate de raportare; nu implică acceptanța altor producători și nu modifică dovezile release-urilor sigilate.

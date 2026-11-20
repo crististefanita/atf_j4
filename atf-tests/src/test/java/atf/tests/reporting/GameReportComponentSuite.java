@@ -10,7 +10,8 @@ import atf.testkit.scope.TestRunScope;
 /** Offline consumer policy, evidence and physical-JAR publication contracts. */
 @Suite
 @SelectClasses({GameReportPolicyContractTest.class, GameEvidenceBodiesContractTest.class, GameReportPublicationContractTest.class,
-        GameReportTextAuditContractTest.class, atf.tests.contracts.AndroidPhaseTraceReplayContractTest.class})
+        GameReportTextAuditContractTest.class, atf.tests.contracts.AndroidPhaseTraceReplayContractTest.class,
+        atf.tests.reporting.browser.BrowserExtentPublicationComponentTest.class})
 @AtfComponentTest
 @ConfigurationParameter(key = TestRunScope.CONFIGURATION_PARAMETER, value = "suite")
 public class GameReportComponentSuite { }

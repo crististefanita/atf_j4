@@ -54,3 +54,7 @@ Matricea comună acoperă 3–6 locuri, ferestre compacte și înalte, font măr
 ## Acceptanța acțiunilor de rezultat
 
 Rolurile comune și componentele adaptoarelor califică textul logic și contractul callback-urilor. Acceptanța raster nativă trebuie să observe suplimentar etichetele împachetate complete, derularea verticală și ultima acțiune pe APK-uri Whist și Rentz identificate, cu RO/EN și text mărit. O comparație de surse sau AAR nu certifică singură lipsa tăierii pe Android.
+
+## Formatul următoarei versiuni comune
+
+Folosiți coordonate cu două segmente 0.x pentru următoarele pachete Browser și Android UI nou publicate. Coordonatele deja publicate cu trei segmente și hash-urile lor rămân imuabile. Înaintea următoarei împachetări, aliniați ambele puncte de intrare și adăugați controale de componentă pentru noul format, reutilizarea imuabilă a versiunilor vechi și refuzul suprascrierii unei coordonate existente cu alți octeți.
