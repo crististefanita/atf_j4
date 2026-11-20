@@ -19,12 +19,52 @@
     ],
     "platform": "android",
     "apkName": "WhistLab-0.21.13.apk",
-    "apkRelativePath": "WhistLab-0.21.13.apk"
+    "apkRelativePath": "WhistLab-0.21.13.apk",
+    "apkBytes": 1029553,
+    "apkSha256": "375bdf8220897a7e34aad2aff5839a6945dd552c89c730283be8b3f2d963f9c8",
+    "apkCrc32": "b765c902",
+    "signingCertificate": "Android Debug",
+    "productionManagedKey": false,
+    "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3"
   },
   "source": {
-    "sourceCommit": null
+    "sourceCommit": "964d3f69120242814e3b2843b004f9db5760dd23",
+    "inputManifest": "reports/apk-inputs.json",
+    "workingTreeFingerprint": "6b04c761d52075380bc9ad31d047997cd0798946d95771b504d7074086d4704d",
+    "fingerprintFormat": "SHA-256 of UTF-8 ordinal-sorted path TAB sha256 LF records"
   },
   "qualification": {
-    "state": "PENDING"
-  }
+    "state": "PENDING",
+    "platforms": {
+      "android": {
+        "implemented": true,
+        "artifactKind": "apk",
+        "gates": {
+          "apkBuild": {
+            "status": "PASS",
+            "receipt": "reports/diagnostics/build.log"
+          },
+          "apkIdentity": {
+            "status": "PASS",
+            "receipt": "reports/diagnostics/apk-identity.json"
+          },
+          "signing": {
+            "status": "PASS",
+            "receipt": "reports/diagnostics/signing-compatibility.json"
+          },
+          "androidComponents": {
+            "status": "NOT_RUN"
+          },
+          "distributionDownload": {
+            "status": "NOT_RUN"
+          }
+        }
+      }
+    },
+    "auditedGroups": {},
+    "e2eGroups": {},
+    "schemaVersion": 2,
+    "uniqueJunitInvocations": []
+  },
+  "evidenceRetention": {}
 }
