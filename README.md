@@ -6,7 +6,7 @@ Proiectul reunește Whist Lab, un joc local de levate pentru 3–6 jucători, ș
 
 ## Jocul
 
-- **[Descarcă APK 0.22](https://github.com/crististefanita/whist/releases/download/v0.22/WhistLab-0.22.apk)**
+- **[Descarcă APK 0.22](https://github.com/crististefanita/whist/releases/download/v0.22.1/WhistLab-0.22.1.apk)**
 - **[Joacă Whist online](https://crististefanita.github.io/whist/)**
 
 ## Harta modulelor
@@ -46,7 +46,7 @@ flowchart LR
 
 ### Motorul și platformele
 
-Motorul validează comenzile, calculează scorul și furnizează starea. Android și iOS îl integrează prin buildurile native. Web îl apelează prin adaptorul JVM sau îl compilează pentru GitHub Pages. [Traseul Android–Web](atf-ui-browser/README.md#ce-folosesc-împreună-android-și-web)
+Motorul validează comenzile, calculează scorul și furnizează starea. Android și iOS îl integrează prin buildurile native. Web îl apelează prin adaptorul JVM sau îl compilează pentru GitHub Pages. [Traseul Android–Web](atf-ui-browser/README.md#what-android-and-web-share)
 
 ```mermaid
 flowchart LR
@@ -69,7 +69,7 @@ flowchart LR
 - Motorul deține regulile, sesiunea, scorul și deciziile AI. Politica AI primește mâna proprie și informația publică a mesei.
 - Android păstrează adaptarea la ecrane, preferințele și checkpoint-ul. Biblioteca vizuală comună oferă prezentarea mesei și emite intențiile de interacțiune.
 - SwiftUI apelează puntea restrânsă către motorul tradus cu J2ObjC. Ținta iOS are o calificare proprie pe simulator. [Ghidul iOS](docs/platform/ATF_iOSDelivery.md)
-- Diagrama arată dependențele buildurilor native. [Adaptorul Web](atf-ui-browser/README.md#traseele-de-execuție-web) explică traseul separat al aceluiași motor și al contractelor portabile de afișare.
+- Diagrama arată dependențele buildurilor native. [Adaptorul Web](atf-ui-browser/README.md#web-execution-paths) explică traseul separat al aceluiași motor și al contractelor portabile de afișare.
 
 </details>
 
@@ -81,7 +81,7 @@ flowchart LR
 | Audit și execuție | [`test-audit`](whist-lab-app/test-audit/README.md) capturează comparațiile Gradle. [`lib`](lib/README.md) păstrează bibliotecile cu proveniență, iar [`scripts`](scripts/README.md) pregătește rulările izolate. |
 | Livrare | [Catalogul](release/README.md) identifică versiunea disponibilă și dosarul de calificare. |
 
-Declarațiile de mai jos provin din [setările Gradle](whist-lab-app/settings.gradle) și [POM-ul rădăcină](pom.xml). Verificarea confruntă inventarele, dependențele directe și configurațiile lor. [Guvernanța documentației](docs/governance/ATF_Documentation.md#readme-ul-principal)
+Declarațiile de mai jos provin din [setările Gradle](whist-lab-app/settings.gradle) și [POM-ul rădăcină](pom.xml). Verificarea confruntă inventarele, dependențele directe și configurațiile lor. [Guvernanța documentației](docs/governance/ATF_Documentation.md#main-readme)
 
 <details>
 <summary>Declarațiile verificate din Maven și Gradle</summary>

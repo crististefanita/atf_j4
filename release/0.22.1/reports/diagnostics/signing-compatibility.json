@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "upgradeCompatibility": "PASS",
+  "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3",
+  "previousVersion": "0.22",
+  "previousApkSha256": "70cd42e55afc63cf7d3039eb37ab4ba7786d61a87e7503748ae0c32969a95916",
+  "apkSha256": "cf3510909002e7190ad0dfab3305cfced84bd7d435b1b4190f6b7ad9e727f740",
+  "nativeExecution": "NOT_RUN"
+}

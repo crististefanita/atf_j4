@@ -2,22 +2,22 @@
 
 ## Pe scurt
 
-Catalogul identifică ediția Android curentă și păstrează o singură ediție anterioară pentru proveniență.
+Catalogul identifică ediția Android curentă și păstrează o singură ediție publicată anterioară pentru proveniență.
 
 ## Versiunea curentă
 
-[0.22 — APK, verificări și proveniență](0.22/README.md) este ediția Android publicată curentă. Linkul APK se află în README-ul principal.
+[0.22.1 — APK de mentenanță verificat](0.22.1/README.md) este publicată, iar descărcarea APK-ului autentificată și checksum-ul au fost verificate. README-ul principal duce la activul APK fixat.
 
 ## Versiunea anterioară
 
-[0.21.13 — APK și dovezi](0.21.13/README.md) rămâne disponibilă pentru proveniență și comparații.
+[0.22 — APK și dovezi](0.22/README.md) este ediția publicată anterioară.
 
 ## Versiuni disponibile
 
 | Versiune | Stare | Dosar |
 |---|---|---|
-| 0.22 | Publicată · APK verificat | [APK și dovezi](0.22/README.md) |
-| 0.21.13 | Ediția anterioară | [APK și dovezi](0.21.13/README.md) |
+| 0.22.1 | Publicată; descărcare autentificată verificată | [APK și dovezi](0.22.1/README.md) |
+| 0.22 | Ediție publicată anterioară | [APK și dovezi](0.22/README.md) |
 
 ## Publicare și verificare
 
