@@ -1225,6 +1225,7 @@ testChanges:
       negative:
         - atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#invalidStylesAreAtomicAndClearingRestoresTheBaseline
     paths:
+      - config/gradle-audit-collections.properties
       - atf-ui-browser/Package-CardTableBrowser.ps1
       - atf-ui-browser/Start-CardTableBrowser.ps1
       - atf-ui-browser/pages/src/main/java/ro/cardtable/browser/PageJson.java
@@ -1261,6 +1262,7 @@ testChanges:
       negative:
         - atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#invalidStylesAreAtomicAndClearingRestoresTheBaseline
     paths:
+      - config/gradle-audit-collections.properties
       - atf-ui-browser/Package-CardTableBrowser.ps1
       - atf-ui-browser/Start-CardTableBrowser.ps1
       - atf-ui-browser/pages/src/main/java/ro/cardtable/browser/PageJson.java

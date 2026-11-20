@@ -72,10 +72,12 @@ test('history appearance matches the native policy at narrow and enlarged text p
           colors:groups.map(n=>hex(getComputedStyle(n).borderLeftColor)),lastPlayerVisible:last.right<=edge.right+1&&last.left>=edge.left-1};
         wrapper.scrollLeft=0;const legacy=historyGrid({...data,appearance:{}},element);wrapper.append(legacy);
         result.legacyWeight=getComputedStyle(legacy.querySelector('thead th')).fontWeight;
+        const dialog=element('dialog');dialog.id='history';dialog.append(element('h2','History'));document.body.append(dialog);
+        result.legacyTitleWeight=getComputedStyle(dialog.querySelector('h2')).fontWeight;dialog.remove();
         const first=table.querySelector('tbody tr').textContent;result.signedValues=first.includes('−120')&&first.includes('−20');legacy.remove();
         result.viewport={width:innerWidth,scale:visualViewport.scale};return result;
       })()`);
-      verifyHistoryMeasurements(measured,policies.regular);assert.equal(measured.legacyWeight,'700');assert.equal(measured.signedValues,true);
+      verifyHistoryMeasurements(measured,policies.regular);assert.equal(measured.legacyWeight,'700');assert.equal(measured.legacyTitleWeight,'500');assert.equal(measured.signedValues,true);
       assert.deepEqual(measured.viewport,{width,scale:1});observations.push({language,players,width,root,...measured});
       if(process.env.ATF_COMPONENT_CAPTURE_DIR&&players===4&&width===414&&[16,32].includes(root)){
         fs.mkdirSync(process.env.ATF_COMPONENT_CAPTURE_DIR,{recursive:true});const png=await send('Page.captureScreenshot',{format:'png'});
