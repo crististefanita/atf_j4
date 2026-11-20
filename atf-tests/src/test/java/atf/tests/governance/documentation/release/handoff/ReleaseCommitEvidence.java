@@ -2,6 +2,7 @@ package atf.tests.governance.documentation.release.handoff;
 
 import atf.android.process.CommandProcess;
 import atf.tests.distribution.ReleasePaths;
+import atf.tests.distribution.ReleaseVersion;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,12 +29,12 @@ public final class ReleaseCommitEvidence {
     private ReleaseCommitEvidence() { }
 
     public static String publishedNotes(Path root, String version, String commit) throws Exception {
-        require(commit.matches("[0-9a-f]{40}") && version.matches("[0-9]+\\.[0-9]+\\.[0-9]+"), "IDENTITY", commit);
+        require(commit.matches("[0-9a-f]{40}") && ReleaseVersion.isValid(version), "IDENTITY", commit);
         return text(blob(root, commit, "release/" + version + "/release-notes.md"));
     }
 
     public static String verify(Path root, String version, String commit, JsonNode published) throws Exception {
-        require(commit.matches("[0-9a-f]{40}") && version.matches("[0-9]+\\.[0-9]+\\.[0-9]+"), "IDENTITY", commit);
+        require(commit.matches("[0-9a-f]{40}") && ReleaseVersion.isValid(version), "IDENTITY", commit);
         require(text(git(root, "cat-file", "-t", commit)).strip().equals("commit"), "COMMIT", commit);
         String prefix = "release/" + version + "/";
         String index = text(blob(root, commit, prefix + "reports/README.md"));

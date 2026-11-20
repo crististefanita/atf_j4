@@ -3,7 +3,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {readApkArtifact, regularFile, strictJson} from './evaluate-release-rag.mjs';
 
-const versionPattern = /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?$/;
+import {releaseVersionPattern as versionPattern} from './release-version.mjs';
 
 export async function checkReleaseArtifacts(projectRoot) {
   const root = await fs.realpath(projectRoot);

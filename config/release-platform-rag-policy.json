@@ -1,5 +1,11 @@
 {
   "schemaVersion": 1,
+  "releaseVersioning": {
+    "sinceRelease": "0.22",
+    "newReleaseFormat": "MAJOR.MINOR",
+    "newReleasePattern": "0\\.(?:0|[1-9][0-9]*)",
+    "retainHistoricalPatchNames": true
+  },
   "evidenceStatuses": [
     "PASS",
     "FAIL",

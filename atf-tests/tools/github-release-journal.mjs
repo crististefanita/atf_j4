@@ -4,10 +4,10 @@ import {randomUUID} from 'node:crypto';
 import {digest, regularFile, strictJson} from './evaluate-release-rag.mjs';
 import {gitCommit, githubId, githubRepository} from './github-release-api.mjs';
 import {validateReleaseNotes} from './release-notes-layout.mjs';
+import {publishedVersionPattern as versionName} from './release-version.mjs';
 
 export const publicationJournalName = 'github-publication.json';
 const sha256 = /^[a-f0-9]{64}$/;
-const versionName = /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/;
 const accessModes = ['AUTHENTICATED', 'ANONYMOUS'];
 
 export function sameBytes(bytes, asset) {
@@ -53,6 +53,7 @@ export async function loadPublication(candidate, verdictFile) {
       || !notes.bytes.toString('utf8').trim()) throw Error('GITHUB_CANDIDATE_ASSETS');
   validateReleaseNotes(notes.bytes.toString('utf8'));
   return {
+    manifest: manifest.value,
     identity: {repository, tag, commit, accessMode, manifestSha256: manifest.sha256, assets: [apkFile.asset, checksum.asset]},
     notes: notes.bytes.toString('utf8').trimEnd(),
     payloads: new Map([[apk, apkFile.bytes], [checksum.asset.name, checksum.bytes]])

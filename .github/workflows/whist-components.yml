@@ -19,6 +19,10 @@ on:
         description: Retained release inventory SHA-256
         required: true
         type: string
+      review_base:
+        description: Git base for source-bound positive and negative controls
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -32,6 +36,7 @@ jobs:
       QUALIFIED_FINGERPRINT: ${{ inputs.fingerprint }}
       QUALIFIED_EOL: ${{ inputs.eol_recipe }}
       QUALIFIED_RELEASES: ${{ inputs.release_fingerprint }}
+      ATF_TEST_CHANGE_BASE_REF: ${{ inputs.review_base }}
       WHIST_PUBLICATION_TEST_ROOT: C:/wq/tmp
     steps:
       - name: Validate immutable request
@@ -40,6 +45,7 @@ jobs:
           if ($env:QUALIFIED_SOURCE -cnotmatch '^[a-f0-9]{40}$' -or
               $env:QUALIFIED_FINGERPRINT -cnotmatch '^[a-f0-9]{64}$' -or
               $env:QUALIFIED_RELEASES -cnotmatch '^[a-f0-9]{64}$' -or
+              $env:ATF_TEST_CHANGE_BASE_REF -cnotmatch '^[a-f0-9]{40}$' -or
               $env:QUALIFIED_EOL -cnotmatch '^[A-Za-z0-9+/=]{1,60000}$') {
             throw 'Invalid immutable qualification request'
           }
@@ -142,13 +148,12 @@ jobs:
           foreach ($name in 'JAVA_TOOL_OPTIONS','_JAVA_OPTIONS','JDK_JAVA_OPTIONS') {
             Remove-Item "Env:$name" -ErrorAction SilentlyContinue
           }
-          & ./scripts/run-component-suites.ps1 -RunRoot C:/wq/controls -AllTestChangeControls -TestChangeBaseRef 1e078d06f4000d848675d87497302bad3052903d *> C:/wq/controls.log
+          & ./scripts/run-component-suites.ps1 -RunRoot C:/wq/controls -AllTestChangeControls -TestChangeBaseRef $env:ATF_TEST_CHANGE_BASE_REF *> C:/wq/controls.log
           if ($LASTEXITCODE) { Get-Content C:/wq/controls.log -Tail 80; throw 'Test change controls failed' }
       - name: Execute primary framework collection
         shell: pwsh
         env:
           ATF_TEST_CHANGE_PROOF_ROOT: C:/wq/controls/proofs
-          ATF_TEST_CHANGE_BASE_REF: 1e078d06f4000d848675d87497302bad3052903d
         run: |
           foreach ($name in 'JAVA_TOOL_OPTIONS','_JAVA_OPTIONS','JDK_JAVA_OPTIONS') {
             Remove-Item "Env:$name" -ErrorAction SilentlyContinue

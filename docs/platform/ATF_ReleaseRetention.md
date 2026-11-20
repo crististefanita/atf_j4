@@ -6,6 +6,14 @@ Git și GitHub păstrează versiunea publicată curentă și predecesoarea imedi
 
 ## Structură activă
 
+Edițiile noi ale aplicației folosesc `0.<minor>` pentru numele Android, dosar, tag și numele APK-ului. Creșteți `versionCode` la fiecare APK livrat; păstrați identitățile istorice cu trei componente.
+
+| Limită | Contract |
+|---|---|
+| Ordonare | Comparați numeric valorile major, minor și patch-ul istoric opțional; patch-ul absent înseamnă zero. Numele echivalente numeric nu pot ocupa ambele poziții ale catalogului. |
+| Livrare nouă | [Politica versiunilor](../../config/release-platform-rag-policy.json) și [guvernanța de componentă](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/versioning/ReleaseVersionComponentTest.java) impun convenția aplicației cu două componente. |
+| Recuperare | Publicarea, reconstrucția Git și proiecția locală acceptă aceeași identitate, păstrând manifestele și hash-urile istorice. |
+
 ```text
 release/
   README.md
@@ -87,6 +95,8 @@ Un candidat necomis este marcat `PREPARED`; hash-ul snapshot-ului nu este prezen
 - La publicare, operatorul fixează URL-ul documentației la commit-ul efectiv, generează `release-notes.md` și înregistrează canalul verificat. Nu folosiți un commit fictiv sau verdictul unei descărcări încă neefectuate.
 - Un release GitHub folosește `publication.state: PUBLISHED`, manifestul `github-release.json` și același commit sursă în `targetCommit`. Un APK publicat prin Site folosește `publication.state: PUBLISHED_SITE` și dovada descărcării anonime din `reports/distribution-verification.json`; nu se inventează un release GitHub.
 - Ambele tranziții înregistrează `source.sourceCommit`, înlocuiesc `evidenceUrlTemplate` cu `evidenceUrl` și cer note finale cu APK-ul și checksum-ul canalului publicat.
+
+Un dosar `QUALIFIED` este un snapshot trecut, legat de sursă, care așteaptă publicarea. Înregistrează commitul real al sursei și păstrează adresa dovezilor ca șablon; nu are înregistrare de release publicat. Înaintea creării draftului, [admiterea auditului](../../atf-tests/tools/publication-audit.mjs) citește obiectele Git indicate și verifică sursa, identitatea APK-ului, hash-ul raportului canonic și linkul direct din index.
 
 `versionName` identifică ediția cerută, iar `versionCode` crește la fiecare APK livrat. După resetarea numerotării vizibile, [codul Android](https://developer.android.com/studio/publish/versioning) și certificatul de semnare păstrează calea de actualizare; promovarea GitHub se marchează explicit drept ultimul release.
 

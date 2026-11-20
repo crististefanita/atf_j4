@@ -5,10 +5,10 @@ import {digest, regularFile, strictJson} from './evaluate-release-rag.mjs';
 import {catalogVersions} from './github-release-retention.mjs';
 import {gitBlob} from './git-snapshot-blobs.mjs';
 import {within} from './release-timing.mjs';
+import {publishedVersionPattern as versionPattern} from './release-version.mjs';
 
 const manifestName = 'release-validation.json';
 const projectionKind = 'ATF_LOCAL_PUBLISHED_RELEASE';
-const versionPattern = /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/;
 
 function requirePublication(proof) {
   if (proof.status !== 'PASS' || !proof.publication

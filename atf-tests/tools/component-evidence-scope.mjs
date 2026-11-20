@@ -26,6 +26,7 @@ const standaloneGovernanceLaunchers = new Set([
 ]);
 export const isStandaloneGovernanceLauncher = file => standaloneGovernanceLaunchers.has(file);
 const releaseTiming = /^scripts\/(?:AtfQualificationTiming|Measure-AtfReleaseCommand)\.ps1$/;
+const componentQualificationWorkflow = '.github/workflows/whist-components.yml';
 const releaseRulesDocs = /^docs\/game\/ATF_Rules(?:Ro|En)\.md$/;
 const androidUi = file => file.startsWith('whist-lab-app/app/')
     || file.startsWith('whist-lab-app/atf-card-table-ui/')
@@ -54,6 +55,6 @@ export function componentEvidenceScope(group, releaseInputs, executionInputs) {
   const changed = changedInputs(releaseInputs, executionInputs);
   const outsideSuite = independentChange.get(group) ?? (() => false);
   const affected = changed.filter(file => !(outsideSuite(file)
-    || (independentChange.has(group) && (file.startsWith('atf-ui-browser/') || file === ragPolicy || file === documentationReview || isStandaloneGovernanceLauncher(file) || releaseTiming.test(file) || file.startsWith('.atf-signing/')))));
+    || (independentChange.has(group) && (file.startsWith('atf-ui-browser/') || file === ragPolicy || file === documentationReview || file === componentQualificationWorkflow || isStandaloneGovernanceLauncher(file) || releaseTiming.test(file) || file.startsWith('.atf-signing/')))));
   return {decision: affected.length ? 'RUN' : changed.length ? 'REUSE' : 'MATCH', changed, affected};
 }

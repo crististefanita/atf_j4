@@ -7,6 +7,7 @@ import {assertAncestor, commitId, gitBlob, readGitBlobs, trackedEntries} from '.
 import {applyEol, eolRecipe} from './git-snapshot-eol.mjs';
 import {syncLocalRelease} from './local-release-sync.mjs';
 import {within, writeTimingReceipt, QualificationTiming} from './release-timing.mjs';
+import {releaseVersionPattern} from './release-version.mjs';
 
 const kind = 'ATF_RELEASE_GIT_SNAPSHOT';
 const hashPattern = /^[a-f0-9]{64}$/;
@@ -121,7 +122,7 @@ export async function verifyGitSnapshot({repository, candidate, qualifiedRoot, p
   const manifest = manifestDoc.value;
   const identity = {releaseVersion: manifest.release?.versionName, sourceCommit: manifest.source?.sourceCommit,
     sourceFingerprint: manifest.source?.workingTreeFingerprint};
-  if (!/^[0-9a-f]{40}$/.test(identity.sourceCommit ?? '') || !/^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$/.test(identity.releaseVersion ?? ''))
+  if (!/^[0-9a-f]{40}$/.test(identity.sourceCommit ?? '') || !releaseVersionPattern.test(identity.releaseVersion ?? ''))
     throw Error('GIT_SNAPSHOT_IDENTITY');
   const input = await strictJson(await regularFile(candidate, manifest.source.inputManifest));
   const expected = componentInputMap(input.value.files);

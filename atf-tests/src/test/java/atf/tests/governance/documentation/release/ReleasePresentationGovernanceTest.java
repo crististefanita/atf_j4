@@ -139,6 +139,20 @@ class ReleasePresentationGovernanceTest {
         AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, true));
     }
 
+    @Test void aQualifiedUnpublishedDossierBindsItsSourceWithoutClaimingDelivery() throws Exception {
+        var candidate = JSON.readTree("""
+                {"publication":{"state":"QUALIFIED"},"qualification":{"state":"PASS"},
+                 "source":{"sourceCommit":"%s","workingTreeFingerprint":"%s"}}
+                """.formatted("a".repeat(40), "b".repeat(64)));
+        AuditedAssertions.assertTrue(ReleaseHandoffState.prepared(candidate, false));
+        AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, true));
+        ((com.fasterxml.jackson.databind.node.ObjectNode) candidate.path("source")).putNull("sourceCommit");
+        AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, false));
+        ((com.fasterxml.jackson.databind.node.ObjectNode) candidate.path("source")).put("sourceCommit", "a".repeat(40));
+        ((com.fasterxml.jackson.databind.node.ObjectNode) candidate.path("qualification")).put("state", "FAIL");
+        AuditedAssertions.assertThrows(IllegalArgumentException.class, () -> ReleaseHandoffState.prepared(candidate, false));
+    }
+
     @Test void unboundEvidenceIsOnlyAcceptedAsAnExplicitLocalTemplate() throws Exception {
         String repository = "https://github.com/example/game";
         String template = repository + "/blob/{evidenceCommit}/release/1.2.0/reports/README.md";

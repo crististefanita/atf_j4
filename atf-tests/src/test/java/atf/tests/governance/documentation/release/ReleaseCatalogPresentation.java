@@ -2,6 +2,7 @@ package atf.tests.governance.documentation.release;
 
 import atf.tests.distribution.ApkDownloadTarget;
 import atf.tests.distribution.ReleaseDownloadSelection;
+import atf.tests.distribution.ReleaseVersion;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -87,7 +88,7 @@ final class ReleaseCatalogPresentation {
         String target = publication.path("targetUrl").asText();
         if (target.isBlank()) return null;
         String expected = releaseDownload(repository, version, true);
-        require(publication.path("state").asText().equals("PREPARED")
+        require(java.util.Set.of("PREPARED", "QUALIFIED").contains(publication.path("state").asText())
                 && publication.path("accessMode").asText().equals("AUTHENTICATED")
                 && expected.endsWith("/" + apkName) && target.equals(expected), "PLANNED-AUTHENTICATED-URL",
                 Path.of("release-validation.json"));
@@ -103,7 +104,7 @@ final class ReleaseCatalogPresentation {
         String advertised = index.path("candidateVersion").asText(index.path("currentVersion").asText());
         require(guide.contains("(release/README.md)"), "CATALOG", file);
         require(!guide.contains("](" + repository + "/releases/latest)"), "UNPINNED", file);
-        require(advertised.matches("(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?"), "VERSION", file);
+        require(ReleaseVersion.isValid(advertised), "VERSION", file);
 
         var download = Pattern.compile("\\[(?:Download|Descarcă) APK ([^]]+)\\]\\(([^)]+)\\)").matcher(guide);
         require(download.find() && advertised.equals(download.group(1)) && expected.equals(download.group(2)), "DOWNLOAD", file);

@@ -105,6 +105,8 @@ Evaluatorul RAG consumă dovezile deja produse și emite un verdict read-only.
 - Verdictul păstrează planul exact, în Base64 UTF-8, în `qualificationPlan.contentBase64`; hash-ul lui permite revizuirea fără o copie temporară externă.
 - Lacunele nerezolvate sunt urmărite în [registrul de feedback](../feedback/README.md#todo-uri-prioritizate).
 
+Înaintea publicării, [admiterea auditului](../../atf-tests/tools/publication-audit.mjs) citește prin Git commitul exact al dosarului. Un snapshot `QUALIFIED`, legat de sursă, păstrează dovezile trecute fără să declare livrarea; sursa lipsă, alt APK, raportul modificat și indexul indirect opresc fluxul înaintea oricărei modificări GitHub.
+
 Planul fixează versiunea, canalul (`LOCAL`, `TEST` sau `PRODUCTION`), riscul, platformele, grupurile componente, schimbarea fluxului utilizatorului și decizia E2E cu motiv.
 
 ### Regresiile evaluatorului

@@ -15,7 +15,7 @@ export function matchesDocumentationEditionsPolicy(value) {
     && isDeepStrictEqual({...value}, documentationEditionsPolicy);
 }
 const COMMIT = /^[a-f0-9]{40}$/;
-const ARCHIVED = /^release\/\d+\.\d+\.\d+(?:-[\w.-]+)?\/.+\.md$/;
+const ARCHIVED = /^release\/\d+\.\d+(?:\.\d+)?(?:-[\w.-]+)?\/.+\.md$/;
 const FENCE = /^\s*(~{3,}|\x60{3,})(\w*)\s*$/;
 const LINK = /!?\[(?:[^[\]]|\[[^[\]]*\])*\]\(((?:[^()]|\([^()]*\))*)\)/g;
 const REPO_LINK = /^https:\/\/github\.com\/crististefanita\/whist\/blob\/(?:main|main_RO)\//;

@@ -85,6 +85,8 @@ Respingeți probele de control al sursei lipsă sau expirate înainte de copiere
 
 - Faceți baza de revizie un parametru explicit în lansările locale și izolate. Verificați planul controalelor înaintea dependențelor; o bază istorică incompatibilă trebuie respinsă cu același diagnostic înaintea compilării.
 
+Fluxul izolat primește acum explicit baza reviziei. Admiterea probelor de control al sursei lipsă înaintea pregătirii dependențelor rămâne deschisă; alegerea bazei corecte nu închide singură această limită.
+
 ## Admiterea commitului auditului publicat
 
 Fluxul de publicare poate afișa un commit pregătit înainte ca manifestul să conțină commitul sursei calificate. Guvernanța finală respinge acest link, dar ediția publică necesită apoi corectarea metadatelor.

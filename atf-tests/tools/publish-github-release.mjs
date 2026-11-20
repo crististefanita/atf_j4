@@ -6,6 +6,7 @@ import {evidenceFreshness, observationDeadline} from './release-evidence-freshne
 import {githubReleaseApi, githubId, gitCommit} from './github-release-api.mjs';
 import {catalogVersions, expectedEdition} from './github-release-retention.mjs';
 import {loadPublication, publicationJournalName, sameBytes, withPublicationJournal} from './github-release-journal.mjs';
+import {verifyPublicationAudit} from './publication-audit.mjs';
 
 const downloadPrefix = repository => 'https://github.com/' + repository + '/releases/download/';
 
@@ -236,6 +237,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     if (within(project, journalDir) || within(candidateDir, journalDir)
         || path.join(journalDir, publicationJournalName) === verdictFile) throw Error('OUTPUT_MUST_BE_OUTSIDE_INPUTS');
     const candidate = await loadPublication(candidateDir, verdictFile);
+    verifyPublicationAudit(project, candidate);
     const result = await runGithubPublication({mode, candidate, journalDir, token: process.env.GH_TOKEN || process.env.GITHUB_TOKEN});
     console.log(JSON.stringify(result, null, 2));
   } catch (error) {
