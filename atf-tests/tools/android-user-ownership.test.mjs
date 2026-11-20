@@ -130,7 +130,8 @@ test('the recovery adapter uses the active lease and reports recovery without an
   const checkout=path.join(root,'checkout'), scripts=path.join(checkout,'scripts');
   fs.mkdirSync(scripts,{recursive:true});
   for(const file of ['Invoke-AtfAndroidDisposableUser.ps1','AtfAndroidUserOwnership.ps1',
-    'AtfAndroidPreflight.ps1','AtfAndroidPackageRegistration.ps1','AtfAndroidUserReadiness.ps1','AtfDeviceLease.ps1']){
+    'AtfAndroidPreflight.ps1','AtfAndroidPackageRegistration.ps1','AtfAndroidUserReadiness.ps1','AtfDeviceLease.ps1',
+    'AtfLocalPaths.ps1']){
     fs.copyFileSync(fileURLToPath(new URL('../../scripts/'+file,import.meta.url)),path.join(scripts,file));
   }
   const module=path.join(checkout,'atf-test-android/tools/AndroidDeviceSetup.psm1');

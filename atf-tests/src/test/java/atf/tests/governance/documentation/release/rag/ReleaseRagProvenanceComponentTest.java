@@ -123,6 +123,20 @@ class ReleaseRagProvenanceComponentTest {
         AuditedAssertions.assertTrue(details(verdict, "MAIN_README_SURFACE").stream().anyMatch(value -> value.contains("linia 2")));
     }
 
+    @Test void aMalformedReleaseVersionPatternBlocksPolicyWithoutCrashingTheEvaluator() throws Exception {
+        RagCandidateFixture fixture = create(temporary);
+        Path policyFile = fixture.project().resolve("config/release-platform-rag-policy.json");
+        ObjectNode policy = (ObjectNode) JSON.readTree(policyFile.toFile());
+        ((ObjectNode) policy.path("releaseVersioning")).put("newReleasePattern", "[");
+        JSON.writeValue(policyFile.toFile(), policy);
+
+        int exit = evaluate(fixture, fixture.output());
+        JsonNode verdict = JSON.readTree(fixture.output().toFile());
+        AuditedAssertions.assertEquals(2, exit);
+        AuditedAssertions.assertEquals("BLOCKED", check(verdict, "RAG_POLICY"));
+        AuditedAssertions.assertEquals("PASS", check(verdict, "SOURCE_SNAPSHOT"));
+    }
+
     @Test void componentReportsFromAnotherSourceInventoryCannotQualifyTheApk() throws Exception {
         RagCandidateFixture fixture = create(temporary);
         Path inputs = fixture.candidate().resolve("reports/component/source-inputs.json");
@@ -141,7 +155,7 @@ class ReleaseRagProvenanceComponentTest {
 
     @Test void reusesAnOriginalReceiptOnlyOutsideItsSuiteInputs() throws Exception {
         RagCandidateFixture fixture = create(temporary);
-        String added = "whist-lab-app/app/src/main/java/ro/whistlab/app/Screen.java";
+        String added = "whist-lab-app/app/src/main/java/ro/whistlab/app/screens/Screen.java";
         Path file = fixture.source().resolve(added);
         Files.createDirectories(file.getParent());
         Files.writeString(file, "class Screen {}\n");

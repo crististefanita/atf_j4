@@ -31,10 +31,24 @@ class ComponentEvidenceScopeComponentTest {
                 "A change limited to Gradle reporting must select offline qualification.");
         AuditedAssertions.assertTrue(output.contains("a bidding change requires the native bidding and AutoGame selections"),
                 "The Extent component group must include the executable RAG selection contract");
+        AuditedAssertions.assertTrue(output.contains("a changed app package reruns its declared owner while unchanged suites reuse hash-bound evidence"),
+                "Ownership follows the declared app collection and retains evidence only for unaffected suites.");
+        AuditedAssertions.assertTrue(output.contains("package ownership covers product, score and test sources and rejects an unmapped package conservatively"),
+                "Product and test packages share one configured owner map, while unmapped packages fail closed.");
+        AuditedAssertions.assertTrue(output.contains("shared Gradle dependencies invalidate their consumers and unknown paths fail closed"),
+                "Shared dependency edges and unclassified paths cannot silently reuse evidence.");
+        AuditedAssertions.assertTrue(output.contains("the version metadata exemption must reproduce the exact baseline build bytes"),
+                "A release version-only diff is exempt only when the prior build bytes reconstruct exactly.");
+    }
+
+    @Test void sharedDependenciesAndUnknownInputsCannotReuseTheirConsumers() throws Exception {
+        String output = runContracts(PROCESS_TIMEOUT, "release-test-scope.test.mjs");
+        AuditedAssertions.assertTrue(output.contains("shared Gradle dependencies invalidate their consumers and unknown paths fail closed"),
+                "Shared dependency and unowned path changes rerun all affected component selections.");
     }
 
     @Test void componentResumeImportsOnlyVerifiedEvidenceFromTheInterruptedSnapshot() throws Exception {
-        String output = runContracts(PUBLICATION_TIMEOUT, "prepare-component-reuse.test.mjs");
+        String output = runContracts(PUBLICATION_TIMEOUT, "prepare-component-reuse.test.mjs", "qualification-temp-root.test.mjs");
         AuditedAssertions.assertTrue(output.contains("documentation and separate test-harness changes reuse unaffected Gradle game components"),
                 "The Extent component group must include the precise dependency-scope regression");
         AuditedAssertions.assertTrue(output.contains("after interruption only the completed successful suites are imported"),
@@ -47,6 +61,12 @@ class ComponentEvidenceScopeComponentTest {
                 "Maven preparation resumes from the verified compilation boundary.");
         AuditedAssertions.assertTrue(output.contains("Web-only artifacts preserve independent native and API evidence while critical or unknown changes still rerun"),
                 "Browser delivery has no native/API compile edge; own sources, shared JVM libraries and unknown inputs still require execution.");
+        AuditedAssertions.assertTrue(output.contains("the current published release admits reuse for an exact Android version-only build edit"),
+                "Reuse checks the verified release baseline and exact app build reconstruction before skipping a suite.");
+        AuditedAssertions.assertTrue(output.contains("a build configuration edit cannot borrow the version-only reuse exception"),
+                "Other Android build-file changes select the affected app collections.");
+        AuditedAssertions.assertTrue(output.contains("an explicit qualification temp root selects that machine path while validating OS temp variables too"),
+                "External staging roots are configurable and still validated before work begins.");
     }
 
     @Test void githubPublicationResumesByIdAndVerifiesDownloadsBeforeRotation() throws Exception {

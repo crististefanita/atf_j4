@@ -1,9 +1,20 @@
 {
   "schemaVersion": 1,
   "releaseVersioning": {
-    "sinceRelease": "0.22",
-    "newReleaseFormat": "MAJOR.MINOR",
-    "newReleasePattern": "0\\.(?:0|[1-9][0-9]*)",
+    "sinceRelease": "0.22.1",
+    "activeMajor": 0,
+    "newReleaseFormat": "0.x.y",
+    "maintenanceIncrement": "increase-y",
+    "featureOrContractIncrement": "increase-x-and-reset-y-to-zero",
+    "transitionRules": {
+      "maintenanceOrRefactor": "patch-only",
+      "behaviorChange": "minor-and-reset-patch",
+      "structuralOrReleaseChange": "minor-and-reset-patch",
+      "majorReleaseRequires": "explicit-policy-change"
+    },
+    "stableMajorReservedUntil": "1.0.0",
+    "legacyTwoPartOrdering": "0.x-is-equivalent-to-0.x.0",
+    "newReleasePattern": "^0\\.(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)$",
     "retainHistoricalPatchNames": true
   },
   "evidenceStatuses": [
@@ -88,7 +99,12 @@
       "baseline": "release/index.json",
       "sourceDiff": "sha256-path-inventory",
       "recomputedAtEvaluation": true,
-      "changedFlowRequiresSelectedE2e": true
+      "changedFlowRequiresSelectedE2e": true,
+      "componentOwnership": "config/gradle-app-collections.properties",
+      "unchangedSuiteInputsMayReuse": true,
+      "dependencyChangesInvalidateConsumers": true,
+      "unknownInputsFailClosed": true,
+      "versionMetadataReuseRequiresExactReconstruction": true
     },
     "requiredComponentGroup": "atf-tests",
     "requiredComponentGroupsByPlatform": {

@@ -6,12 +6,14 @@ Git and GitHub retain the current published release and its immediate predecesso
 
 ## Active structure
 
-New application releases use `0.<minor>` for the Android name, dossier, tag and asset filename. Increment Android `versionCode` for every delivered APK; keep historical three-part identities unchanged.
+New application releases use `0.<minor>.<patch>` for the Android name, dossier, tag and asset filename. Increment Android `versionCode` for every delivered APK; keep historical names unchanged.
 
 | Boundary | Contract |
 |---|---|
 | Ordering | Compare numeric major, minor and optional historical patch values; an absent patch means zero. Numerically equivalent names cannot occupy both catalog slots. |
-| New delivery | [Version policy](../../config/release-platform-rag-policy.json) and [component governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/versioning/ReleaseVersionComponentTest.java) enforce the two-part application convention. |
+| New delivery | [Version policy](../../config/release-platform-rag-policy.json) and [component governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/versioning/ReleaseVersionComponentTest.java) enforce `0.x.y` and the increment allowed by the declared change risk. |
+| Maintenance or refactor | Increase `y` by one and keep `x`; `0.22` is the legacy spelling of `0.22.0`, so its next maintenance release is `0.22.1`. |
+| Behavior or structural change | Increase `x` by one and set `y` to zero. Stay on major zero; adopting `1.0.0` requires an explicit policy update and release review. |
 | Recovery | Publication, Git reconstruction and the local projection accept the same identity while retaining historical manifests and hashes. |
 
 ```text

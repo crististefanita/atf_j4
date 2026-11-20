@@ -2,7 +2,10 @@
 
 function Get-AtfQualificationTempRoot([string]$SourceRoot) {
     $checker = Join-Path $PSScriptRoot '../atf-tests/tools/qualification-temp-root.mjs'
-    $result = & node $checker $SourceRoot ([IO.Path]::GetTempPath()) 2>&1
+    $temp = if (-not [string]::IsNullOrWhiteSpace($env:WHIST_QUALIFICATION_TEMP_ROOT)) {
+        $env:WHIST_QUALIFICATION_TEMP_ROOT
+    } else { [IO.Path]::GetTempPath() }
+    $result = & node $checker $SourceRoot $temp 2>&1
     if ($LASTEXITCODE -ne 0) { throw ($result -join [Environment]::NewLine) }
     $result
 }

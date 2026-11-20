@@ -2,13 +2,15 @@
 param(
     [string]$Repository = '',
     [string]$SourceRoot = (Split-Path -Parent $PSScriptRoot),
-    [string]$AndroidSdk = 'C:\tools\whist-android-sdk'
+    [string]$AndroidSdk = $(if ($env:ANDROID_SDK_ROOT) { $env:ANDROID_SDK_ROOT } else { $env:ANDROID_HOME })
 )
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'AtfLocalPaths.ps1')
+$AndroidSdk = Get-AtfAndroidSdkRoot $AndroidSdk
 Import-Module (Join-Path $PSScriptRoot 'CardTableLibraryVersion.psm1') -Force
 $source = [IO.Path]::GetFullPath($SourceRoot)
 if (!$Repository) {
-    $archive = if ($env:WHIST_EVIDENCE_ROOT) { $env:WHIST_EVIDENCE_ROOT } else { 'C:\work\whist_back' }
+    $archive = Get-AtfEvidenceRoot
     $Repository = Join-Path $archive 'libraries/card-table-ui'
 }
 $repositoryRoot = [IO.Path]::GetFullPath($Repository)

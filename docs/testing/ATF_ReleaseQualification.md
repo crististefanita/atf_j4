@@ -183,11 +183,56 @@ Calculate the selection before the build, from the snapshots copied by the inven
 - When reassessing a retained version, the base is the previous edition of the same catalogue.
 - The base shall be published and qualified, with the inventory of sources linked by hash to the manifest.
 
+The checked-in `main` snapshot is the release source of truth. Selection compares its pinned files with the latest published source inventory in `release/index.json`; ownership is derived from declared module boundaries, not release labels or a manually chosen list.
+
+#### Component ownership and evidence reuse
+
+A suite is reusable only when its original passing receipt, report and source inventory are valid and the complete set of inputs owned by that suite has the same hashes as the candidate. An unchanged module therefore does not rerun just because another module, documentation or an independent test harness changed.
+
+```mermaid
+flowchart LR
+    DIFF[Candidate diff] -->|classify| OWNER{Known owner?}
+    OWNER -->|single package| GROUP[Owning suite]
+    OWNER -->|shared dependency| USERS[Dependent suites]
+    OWNER -->|unknown path| ALL[All suites]
+    GROUP -->|hash inputs| HASH{Inputs unchanged?}
+    USERS -->|hash inputs| HASH
+    ALL -->|fail closed| RUN[Run selected suites]
+    HASH -->|valid evidence| REUSE[Reuse receipt and Extent]
+    HASH -->|changed or stale| RUN
+    RUN -->|bind report| SEAL[Candidate snapshot]
+    REUSE -->|preserve provenance| SEAL
+```
+
+<details>
+<summary>Legend — suite ownership and evidence decisions</summary>
+
+Each arrow names the decision it represents. Reuse still requires matching input hashes and a valid original receipt.
+</details>
+
+| Input boundary | Selection rule |
+|---|---|
+| App package declared in `config/gradle-app-collections.properties` | Run its owning collection and framework governance; keep other app collections reusable when their inputs match. |
+| Shared game core, names, Android UI module, Gradle configuration or common library | Invalidate every suite that consumes that dependency. |
+| Maven infrastructure, release policy, suite ownership or evidence tooling | Run `atf-tests`; product suites remain eligible for reuse when their inputs are unchanged. |
+| New, unknown or ambiguously owned path | Fail closed and run every component group. |
+| `versionCode`/`versionName` only | Reuse product evidence only when the published baseline is qualified and exact reconstruction proves that replacing those two fields restores the original build-file hash. Governance still runs. |
+
+Reuse is decided per suite, not per release. A passing run from another source fingerprint is insufficient: the original receipt must match the suite input hashes, Extent bytes, outcome counts and source provenance. Missing, failed, stale or mismatched evidence selects a fresh run.
+
 ```powershell
 $ProjectRoot = (Get-Location).Path
 node .\atf-tests\tools\plan-release-tests.mjs $ProjectRoot $SourceSnapshotDir `
   $SourceInputsFile $ReleaseVersion $SelectionFile
 ```
+
+Configure machine-specific paths per workstation and keep generated files outside the source tree.
+
+- `WHIST_EVIDENCE_ROOT` selects the default report and archive root.
+- `WHIST_QUALIFICATION_TEMP_ROOT` selects the isolated source and build workspace.
+- `ANDROID_SDK_ROOT` or `ANDROID_HOME` identifies the Android SDK.
+- If unset, evidence uses the current user's local application data and qualification uses the operating system's temporary root.
+- Launchers reject a temporary root inside any checkout.
 
 `$SourceInputsFile` is the JSON list from [Get-AtfSourceInputs.ps1](../../scripts/Get-AtfSourceInputs.ps1), outside snapshot and checkout. `$SelectionFile` is a new external output file. The result lists added, modified and deleted paths, applied rules, mandatory suites and required E2E groups. [Selector rules](../../atf-tests/tools/release-test-scope.mjs)
 
@@ -197,7 +242,7 @@ node .\atf-tests\tools\plan-release-tests.mjs $ProjectRoot $SourceSnapshotDir `
 | Editorial change | Run governance and reuse compatible evidence for other suites. E2E can remain `NOT_RUN` with a reason. |
 | Bidding change, table, score, profile or other identified flow | Select the native samples indicated in `requiredE2eGroups`. Component tests shall remain mandatory for their contracts. |
 | Product path or unclassified shared entry | Select all the flow samples provided by the selector and check the component perimeter. |
-| Android version increment | E2E exemption applies only if replacing exactly `versionName` and `versionCode` reproduces the published build-file hash. Check component evidence against its own inputs separately. |
+| Android version increment | E2E exemption applies only if replacing exactly `versionName` and `versionCode` reproduces the published build-file hash. Check component evidence against its own inputs separately. Maintenance increments `y`; behavior or structural changes increment `x` and reset `y` to zero. Major `1` requires an explicit policy change. |
 
 In the `schemaVersion: 2` qualification plan, keep `releaseVersion`, `scope`, `componentGroups` and `userFlowChanged` from the selection.
 

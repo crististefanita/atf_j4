@@ -14,6 +14,7 @@ param(
     [string]$OwnershipJournal = ''
 )
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'AtfLocalPaths.ps1')
 . (Join-Path $PSScriptRoot 'AtfAndroidPreflight.ps1')
 . (Join-Path $PSScriptRoot 'AtfAndroidPackageRegistration.ps1')
 . (Join-Path $PSScriptRoot 'AtfAndroidUserReadiness.ps1')
@@ -41,7 +42,7 @@ $cleanupFile = Join-Path $run 'data-isolation-cleanup.json'
 $leaseReceipt = Join-Path $run 'device-lease.json'
 $packageName = 'ro.whistlab.app'
 if (-not $OwnershipJournal) {
-    $evidence = if ($env:WHIST_EVIDENCE_ROOT) { $env:WHIST_EVIDENCE_ROOT } else { 'C:\work\whist_back' }
+    $evidence = Get-AtfEvidenceRoot
     $store = Join-Path $evidence '.imp/local/android-ownership'
     $OwnershipJournal = Join-Path $store ($LeaseId + '.json')
 }

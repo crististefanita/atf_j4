@@ -60,14 +60,16 @@ export function deriveReleaseTestScope(previous, candidate, componentGroups, met
   });
   const e2eGroups = [...new Set(changes.flatMap(row => row.e2eGroups))].sort();
   const components = componentGroups.map(group => {
-    const {decision, affected} = componentEvidenceScope(group, candidate, previous);
-    return {group, decision, affectedInputs: affected};
+    const {decision, reason, affected, affectedGroups} = componentEvidenceScope(group, candidate, previous,
+      {androidVersionMetadataOnly: metadataOnly});
+    return {group, decision, reason, affectedGroups, affectedInputs: affected};
   });
   return {
     kind: !changes.length ? 'UNCHANGED' : changes.some(row => row.rule === 'documentation') && changes.every(row =>
       ['documentation', 'android-version-metadata'].includes(row.rule))
       ? 'DOCUMENTATION_ONLY' : e2eGroups.length ? 'USER_FLOW' : 'MAINTENANCE',
     userFlowChanged: e2eGroups.length > 0,
+    androidVersionMetadataOnly: metadataOnly,
     changes, componentGroups: [...componentGroups], components,
     runComponentGroups: components.filter(row => row.decision === 'RUN').map(row => row.group),
     requiredE2eGroups: e2eGroups

@@ -9,11 +9,12 @@ param(
     [string]$MavenCache = (Join-Path $env:USERPROFILE '.m2/repository')
 )
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'AtfLocalPaths.ps1')
 . (Join-Path $PSScriptRoot 'AtfQualificationSnapshot.ps1')
 . (Join-Path $PSScriptRoot 'AtfQualificationTiming.ps1')
 $sourceRoot = [IO.Path]::GetFullPath($SourceRoot)
 if ([string]::IsNullOrWhiteSpace($RunRoot)) {
-    $evidenceRoot = if ($env:WHIST_EVIDENCE_ROOT) { $env:WHIST_EVIDENCE_ROOT } else { 'C:\work\whist_back' }
+    $evidenceRoot = Get-AtfEvidenceRoot
     $RunRoot = Join-Path $evidenceRoot ('atf-governance\' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N').Substring(0,8))
 }
 $RunRoot = [IO.Path]::GetFullPath($RunRoot)

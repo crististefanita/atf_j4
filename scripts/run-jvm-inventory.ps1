@@ -3,9 +3,11 @@ param(
     [string]$ProjectRoot = (Split-Path -Parent $PSScriptRoot),
     [string]$JavaHome = $env:JAVA_HOME,
     [string]$MavenCache = (Join-Path $env:USERPROFILE '.m2/repository'),
-    [string]$ScratchRoot = $(if ($env:WHIST_EVIDENCE_ROOT) { $env:WHIST_EVIDENCE_ROOT } else { 'C:\work\whist_back' })
+    [string]$ScratchRoot = ''
 )
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'AtfLocalPaths.ps1')
+$ScratchRoot = Get-AtfEvidenceRoot $ScratchRoot
 $toolRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).ProviderPath
 $project = (Resolve-Path -LiteralPath $ProjectRoot).ProviderPath
 . (Join-Path $PSScriptRoot 'AtfStandaloneJava.ps1')

@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import {releaseVersionPattern, publishedVersionPattern, releaseVersionAtLeast} from './release-version.mjs';
+import {releaseVersionPattern, publishedVersionPattern, releaseVersionAtLeast, releaseIncrementAllowed} from './release-version.mjs';
 import {catalogVersions} from './github-release-retention.mjs';
 import {loadPublication} from './github-release-journal.mjs';
 import {digest, strictJson} from './evaluate-release-rag.mjs';
@@ -32,6 +32,18 @@ test('invalid version shapes cannot enter a catalog or published asset path', ()
   }
   assert.equal(releaseVersionPattern.test('0.22-rc.1'), true);
   assert.equal(publishedVersionPattern.test('0.22-rc.1'), false);
+});
+
+test('release risk determines patch versus minor increments while the major remains zero', () => {
+  assert.equal(releaseIncrementAllowed('0.22', '0.22.1', 'maintenanceOrRefactor'), true);
+  assert.equal(releaseIncrementAllowed('0.22.1', '0.22.2', 'maintenanceOrRefactor'), true);
+  assert.equal(releaseIncrementAllowed('0.22', '0.23.0', 'behaviorChange'), true);
+  assert.equal(releaseIncrementAllowed('0.22', '0.23.0', 'structuralOrReleaseChange'), true);
+  for (const [current, candidate, risk] of [
+    ['0.22', '0.23.0', 'maintenanceOrRefactor'], ['0.22', '0.22.2', 'maintenanceOrRefactor'],
+    ['0.22.1', '0.24.0', 'behaviorChange'], ['0.22.1', '1.0.0', 'structuralOrReleaseChange'],
+    ['0.22', '0.22.1', 'unknown']
+  ]) assert.equal(releaseIncrementAllowed(current, candidate, risk), false, `${current} -> ${candidate} (${risk})`);
 });
 
 test('two-part publication keeps the exact APK name and checksum', async t => {

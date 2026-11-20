@@ -22,7 +22,7 @@ class ReleaseVersionComponentTest {
     @org.junit.jupiter.api.extension.RegisterExtension
     static final GameReportAudit AUDIT = new GameReportAudit();
 
-    @Test void theApplicationUsesTheDeclaredTwoPartReleaseConvention(ComponentInputs inputs) throws Exception {
+    @Test void theApplicationUsesTheDeclaredPatchReleaseConvention(ComponentInputs inputs) throws Exception {
         var root = GovernanceProject.locateProjectRoot();
         var policy = new ObjectMapper().readTree(root.resolve("config/release-platform-rag-policy.json").toFile())
                 .required("releaseVersioning");
@@ -32,10 +32,14 @@ class ReleaseVersionComponentTest {
         String version = matcher.group(1);
         inputs.add("Application version", version);
         inputs.add("Version policy", policy.toPrettyString());
-        assertEquals("MAJOR.MINOR", policy.required("newReleaseFormat").asText());
+        assertEquals("0.x.y", policy.required("newReleaseFormat").asText());
         assertTrue(policy.required("retainHistoricalPatchNames").asBoolean());
         assertTrue(ReleaseVersion.atLeast(version, policy.required("sinceRelease").asText()));
-        assertTrue(version.matches(policy.required("newReleasePattern").asText()), "New application releases use two numeric components");
+        assertTrue(version.matches(policy.required("newReleasePattern").asText()), "New application releases use three numeric components");
+        var transitions = policy.required("transitionRules");
+        assertEquals("patch-only", transitions.required("maintenanceOrRefactor").asText());
+        assertEquals("minor-and-reset-patch", transitions.required("behaviorChange").asText());
+        assertEquals("explicit-policy-change", transitions.required("majorReleaseRequires").asText());
     }
 
     @ParameterizedTest
@@ -63,9 +67,17 @@ class ReleaseVersionComponentTest {
         assertThrows(IllegalArgumentException.class, () -> new ApkDownloadTarget("example/game", null, 1, "a".repeat(64)));
     }
 
-    @Test void releaseAdaptersAcceptTwoPartNamesAndRejectForeignAuditCommits(ComponentInputs inputs) throws Exception {
+    @Test void aChangeRiskCannotClaimAnIncorrectVersionIncrement(ComponentInputs inputs) throws Exception {
+        String output = NodeReleaseContracts.runContracts(Duration.ofMinutes(2), "release-version.test.mjs");
+        inputs.add("Version transition checks", output);
+        assertTrue(output.contains("release risk determines patch versus minor increments while the major remains zero"), output);
+    }
+
+    @Test void releaseAdaptersKeepLegacyTwoPartNamesAndPublishThePatchIdentity(ComponentInputs inputs) throws Exception {
         var target = new ApkDownloadTarget("example/game", "0.22", 1, "a".repeat(64));
         assertEquals("https://github.com/example/game/releases/download/v0.22/WhistLab-0.22.apk", target.publicUrl());
+        var patchTarget = new ApkDownloadTarget("example/game", "0.22.1", 46, "b".repeat(64));
+        assertEquals("https://github.com/example/game/releases/download/v0.22.1/WhistLab-0.22.1.apk", patchTarget.publicUrl());
         String output = NodeReleaseContracts.runContracts(Duration.ofMinutes(2),
                 value -> inputs.add("Original release-adapter comparisons", value),
                 "release-version.test.mjs", "publication-audit.test.mjs");

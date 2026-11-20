@@ -14,7 +14,7 @@ import {readVisualContractSources} from './visual-contract-sources.mjs';
 import {catalogVersions, expectedEdition, githubRetentionPolicy, githubRetentionProblems} from './github-release-retention.mjs';
 import {documentationEditionsPolicy, matchesDocumentationEditionsPolicy, verifyReviewedDocumentation} from './documentation-editions.mjs';
 
-import {releaseVersionPattern as VERSION, releaseVersionAtLeast} from './release-version.mjs';
+import {releaseVersionPattern as VERSION, releaseVersionAtLeast, releaseIncrementAllowed} from './release-version.mjs';
 const HASH = /^[0-9a-f]{64}$/;
 const COMMIT = /^[0-9a-f]{40}$/;
 const STATUSES = new Set(['PASS', 'FAIL', 'BLOCKED', 'NOT_RUN', 'NOT_APPLICABLE', 'NOT_IMPLEMENTED']);
@@ -237,7 +237,12 @@ const scopePolicy = {
   baseline: 'release/index.json',
   sourceDiff: 'sha256-path-inventory',
   recomputedAtEvaluation: true,
-  changedFlowRequiresSelectedE2e: true
+  changedFlowRequiresSelectedE2e: true,
+  componentOwnership: 'config/gradle-app-collections.properties',
+  unchangedSuiteInputsMayReuse: true,
+  dependencyChangesInvalidateConsumers: true,
+  unknownInputsFailClosed: true,
+  versionMetadataReuseRequiresExactReconstruction: true
 };
 
 async function verifyGovernanceReleaseSnapshot(project, inputs) {
@@ -366,7 +371,27 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
   const planCitation = pointer => ({...citation('$report.qualificationPlan.contentBase64', planDoc.sha256, pointer,
     planDoc.lines.get(pointer) ?? 1), embedded: true, encoding: 'base64-utf8'});
 
-  const policyContract = policy.schemaVersion === 1
+  const releaseVersioning = policy.releaseVersioning;
+  let currentReleasePattern = null;
+  try {
+    if (typeof releaseVersioning?.newReleasePattern === 'string') {
+      currentReleasePattern = new RegExp(releaseVersioning.newReleasePattern);
+    }
+  } catch { /* Invalid policy is reported as a failed RAG_POLICY check below. */ }
+  const releaseVersioningContract = releaseVersioning?.sinceRelease === '0.22.1'
+      && releaseVersioning?.activeMajor === 0
+      && releaseVersioning?.newReleaseFormat === '0.x.y'
+      && releaseVersioning?.maintenanceIncrement === 'increase-y'
+      && releaseVersioning?.featureOrContractIncrement === 'increase-x-and-reset-y-to-zero'
+      && isDeepStrictEqual({...releaseVersioning?.transitionRules}, {
+        maintenanceOrRefactor: 'patch-only', behaviorChange: 'minor-and-reset-patch',
+        structuralOrReleaseChange: 'minor-and-reset-patch', majorReleaseRequires: 'explicit-policy-change'
+      })
+      && releaseVersioning?.stableMajorReservedUntil === '1.0.0'
+      && releaseVersioning?.legacyTwoPartOrdering === '0.x-is-equivalent-to-0.x.0'
+      && currentReleasePattern !== null
+      && currentReleasePattern.test(releaseVersioning.sinceRelease);
+  const policyContract = policy.schemaVersion === 1 && releaseVersioningContract
       && (!releaseVersionAtLeast(manifest.release?.versionName ?? '0.0.0', '0.21.10')
         || policy.localReleaseProjection?.entrypoint === 'atf-tests/tools/verify-release-git-snapshot.mjs'
           && policy.localReleaseProjection?.requiredOption === '--local-release'
@@ -438,7 +463,9 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       [citation('config/release-platform-rag-policy.json', policyDoc.sha256, '/ragEvaluator', policyDoc.lines.get('/ragEvaluator') ?? 1)]);
 
   const version = plan.releaseVersion;
-  const validPlan = plan.schemaVersion === 2 && VERSION.test(version ?? '')
+  const versionUsesCurrentFormat = !releaseVersionAtLeast(version ?? '', policy.releaseVersioning?.sinceRelease ?? '999.999.999')
+      || Boolean(currentReleasePattern?.test(version ?? ''));
+  const validPlan = plan.schemaVersion === 2 && VERSION.test(version ?? '') && versionUsesCurrentFormat
       && ['LOCAL', 'TEST', 'PRODUCTION'].includes(plan.channel)
       && ['maintenanceOrRefactor', 'behaviorChange', 'structuralOrReleaseChange'].includes(plan.changeRisk)
       && Array.isArray(plan.declaredPlatforms) && plan.declaredPlatforms.length === 1 && plan.declaredPlatforms[0] === 'android'
@@ -544,6 +571,16 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
   recordCheck('DIFF_SCOPE', Boolean(testScope) && diffProblems.length === 0,
       diffProblems.length ? 'Selecția declarată nu se poate justifica prin diff.' : 'Selecția a fost recalculată din inventarele surselor.',
       diffEvidence, diffProblems);
+
+  const versionTransitionApplies = releaseVersionAtLeast(version ?? '', policy.releaseVersioning?.sinceRelease ?? '999.999.999');
+  const versionTransitionOkay = !versionTransitionApplies || Boolean(testScope
+      && releaseIncrementAllowed(testScope.scope.baselineVersion, version, plan.changeRisk));
+  recordCheck('VERSION_TRANSITION', versionTransitionOkay,
+      versionTransitionOkay ? 'Versiunea respectă incrementul permis de risc față de ultima versiune calificată.'
+        : 'Versiunea nu respectă incrementul patch/minor permis de risc sau baza nu a putut fi recalculată.',
+      diffEvidence, versionTransitionOkay ? [] : [
+        `baseline=${testScope?.scope?.baselineVersion ?? 'missing'}, candidate=${version ?? 'missing'}, risk=${plan.changeRisk ?? 'missing'}`
+      ]);
 
   const readmePolicy = policy.ragEvaluator?.publicReadmeSurface;
   let readmeOkay = false;
@@ -761,8 +798,10 @@ export async function evaluateRelease({projectRoot, candidateDir, sourceRoot, pl
       if (name === 'atf-tests' && testScope?.catalogued === false) {
         await verifyGovernanceReleaseSnapshot(project, origin.releaseInputs);
       }
-      const scope = componentEvidenceScope(name, releaseSet, origin.sourceSet);
+      const scope = componentEvidenceScope(name, releaseSet, origin.sourceSet,
+        {androidVersionMetadataOnly: testScope?.androidVersionMetadataOnly === true});
       result.sourceEvidence = {decision: scope.decision, originalSourceFingerprint: origin.sourceFingerprint,
+        reason: scope.reason, affectedGroups: scope.affectedGroups,
         changedInputCount: scope.changed.length, affectedInputs: scope.affected.slice(0, 30),
         ...(origin.releaseFingerprint ? {releaseFingerprint: origin.releaseFingerprint} : {})};
       if (scope.decision === 'RUN') {

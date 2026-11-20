@@ -5,6 +5,7 @@ import {componentEvidenceScope} from './component-evidence-scope.mjs';
 import {
   componentInputMap, digest, inlinePngCount, regularFile, strictJson, verifyComponentExecution, verifyComponentOrigin, verifyReleaseInputs
 } from './evaluate-release-rag.mjs';
+import {isOnlyAndroidVersionChange} from './release-test-scope.mjs';
 
 const inputManifest = 'source-inputs.json';
 const provenanceReceipt = 'source-provenance.json';
@@ -15,7 +16,7 @@ const reusePlan = 'component-reuse.json';
 const groupPattern = /^[a-z0-9][a-z0-9-]{0,79}$/;
 const shaPattern = /^[0-9a-f]{64}$/;
 
-export async function prepareComponentReuse(runRoot, previousRoot, groups, {resume = false} = {}) {
+export async function prepareComponentReuse(runRoot, previousRoot, groups, {resume = false, sourceRoot = null} = {}) {
   if (!groups.length || new Set(groups).size !== groups.length || groups.some(group => !groupPattern.test(group))) {
     throw Error('INVALID_COMPONENT_GROUPS');
   }
@@ -24,14 +25,16 @@ export async function prepareComponentReuse(runRoot, previousRoot, groups, {resu
   if (target === previous) throw Error('REUSE_SOURCE_EQUALS_DESTINATION');
   const currentInputs = await strictJson(await regularFile(target, inputManifest));
   const current = componentInputMap(currentInputs.value);
+  const previousInputs = await strictJson(await regularFile(previous, inputManifest));
+  const previousSource = componentInputMap(previousInputs.value);
   const currentRelease = await readReleaseInputs(target, '');
   if (resume) {
-    const previousInputs = await strictJson(await regularFile(previous, inputManifest));
     const previousRelease = await readReleaseInputs(previous, '');
     if (previousInputs.sha256 !== currentInputs.sha256 || !currentRelease || previousRelease?.sha256 !== currentRelease.sha256) {
       throw Error('COMPONENT_RESUME_INPUTS_CHANGED');
     }
   }
+  const androidVersionMetadataOnly = await verifyAndroidVersionMetadataOnly(previous, sourceRoot, previousSource, current);
   const previousPlan = await readPreviousPlan(previous);
   const origins = new Map();
   const published = new Set();
@@ -53,8 +56,9 @@ export async function prepareComponentReuse(runRoot, previousRoot, groups, {resu
       const html = report.toString('utf8');
       if (!/<html\b/i.test(html.slice(0, 8192)) || inlinePngCount(html) === 0) throw Error('INVALID_EXTENT');
       verifyComponentExecution(origin, group, execution.value, execution.value?.tests, digest(report));
-      const scope = componentEvidenceScope(group, current, origin.sourceSet);
-      const decision = {group, decision: scope.decision, changedInputs: scope.changed, affectedInputs: scope.affected};
+      const scope = componentEvidenceScope(group, current, origin.sourceSet, {androidVersionMetadataOnly});
+      const decision = {group, decision: scope.decision, reason: scope.reason,
+        affectedGroups: scope.affectedGroups, changedInputs: scope.changed, affectedInputs: scope.affected};
       if (scope.decision === 'RUN') {
         decisions.push(decision);
         continue;
@@ -84,9 +88,46 @@ export async function prepareComponentReuse(runRoot, previousRoot, groups, {resu
   }
   const planFile = path.join(target, reusePlan);
   const pending = planFile + '.writing';
-  await fs.writeFile(pending, JSON.stringify({schemaVersion: 1, decisions}, null, 2) + '\n', {flag: 'wx'});
+  await fs.writeFile(pending, JSON.stringify({schemaVersion: 2,
+    comparison: {baselineRelease: await findBaselineVersion(previous), androidVersionMetadataOnly}, decisions}, null, 2) + '\n', {flag: 'wx'});
   await fs.rename(pending, planFile);
   return decisions;
+}
+
+async function findBaselineManifest(previousRoot) {
+  let directory = previousRoot;
+  for (let depth = 0; depth < 5; depth++, directory = path.dirname(directory)) {
+    const candidate = path.join(directory, 'release-validation.json');
+    try {
+      const entry = await fs.lstat(candidate);
+      if (entry.isFile() && !entry.isSymbolicLink()) return candidate;
+    } catch (error) { if (error.code !== 'ENOENT') throw error; }
+    if (directory === path.dirname(directory)) break;
+  }
+  return null;
+}
+
+async function findBaselineVersion(previousRoot) {
+  const manifest = await findBaselineManifest(previousRoot);
+  if (!manifest) return null;
+  return (await strictJson(manifest)).value.release?.versionName ?? null;
+}
+
+async function verifyAndroidVersionMetadataOnly(previousRoot, sourceRoot, previousSource, currentSource) {
+  const build = 'whist-lab-app/app/build.gradle';
+  if (!sourceRoot || previousSource.get(build) === currentSource.get(build)) return false;
+  const baselineManifest = await findBaselineManifest(previousRoot);
+  if (!baselineManifest) return false;
+  try {
+    const baseline = (await strictJson(baselineManifest)).value;
+    if (!['PUBLISHED', 'PUBLISHED_SITE'].includes(baseline.publication?.state)
+        || baseline.qualification?.state !== 'PASS') return false;
+    const buildText = await fs.readFile(await regularFile(await fs.realpath(sourceRoot), build), 'utf8');
+    const version = [...buildText.matchAll(/^\s*versionName\s+"([^"]+)"/gm)];
+    return digest(buildText) === currentSource.get(build) && version.length === 1
+        && isOnlyAndroidVersionChange(previousSource, currentSource, buildText,
+      baseline.release, version[0][1], digest);
+  } catch { return false; }
 }
 
 async function readPreviousPlan(root) {
@@ -134,10 +175,15 @@ async function readReleaseInputs(root, prefix) {
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    const [runRoot, previousRoot, ...groups] = process.argv.slice(2);
-    const resume = groups[0] === '--resume';
-    if (resume) groups.shift();
-    await prepareComponentReuse(runRoot, previousRoot, groups, {resume});
+    const [runRoot, previousRoot, ...arguments_] = process.argv.slice(2);
+    let resume = false, sourceRoot = null;
+    for (let index = 0; index < arguments_.length;) {
+      if (arguments_[index] === '--resume') { resume = true; arguments_.splice(index, 1); }
+      else if (arguments_[index] === '--source-root' && arguments_[index + 1]) {
+        sourceRoot = arguments_[index + 1]; arguments_.splice(index, 2);
+      } else index++;
+    }
+    await prepareComponentReuse(runRoot, previousRoot, arguments_, {resume, sourceRoot});
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;

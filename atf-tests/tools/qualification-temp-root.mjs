@@ -34,14 +34,17 @@ function requireExternal(directory, source, name) {
 try {
   const [source, systemTemp] = process.argv.slice(2);
   const physicalSource = physicalDirectory(source, 'SourceRoot');
-  const locations = [['TMP', process.env.TMP], ['TEMP', process.env.TEMP], ['GetTempPath', systemTemp]];
+  const configured = process.env.WHIST_QUALIFICATION_TEMP_ROOT?.trim();
+  const locations = [['WHIST_QUALIFICATION_TEMP_ROOT', configured], ['TMP', process.env.TMP],
+    ['TEMP', process.env.TEMP], ['GetTempPath', systemTemp]];
   let workRoot;
   for (const [name, directory] of locations) {
     if (name !== 'GetTempPath' && !directory?.trim()) continue;
     const physical = physicalDirectory(directory, name);
     requireExternal(directory, source, name);
     requireExternal(physical, physicalSource, name);
-    if (name === 'GetTempPath') workRoot = physical;
+    if (name === 'GetTempPath' && !configured) workRoot = physical;
+    if (name === 'WHIST_QUALIFICATION_TEMP_ROOT' && configured) workRoot = physical;
   }
   process.stdout.write(workRoot);
 } catch (error) {

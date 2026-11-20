@@ -185,8 +185,7 @@ function mockGithub(active, previous) {
 }
 
 async function fixture(t) {
-  const parent = process.env.WHIST_PUBLICATION_TEST_ROOT
-    || (process.platform === 'win32' ? 'C:/work/whist_back' : os.tmpdir());
+  const parent = process.env.WHIST_PUBLICATION_TEST_ROOT || process.env.WHIST_EVIDENCE_ROOT || os.tmpdir();
   const root = await fs.mkdtemp(path.join(parent, 'github-publication-test-'));
   t.after(() => fs.rm(root, {recursive: true, force: true}));
   const directory = path.join(root, 'journal'), candidateDir = path.join(root, 'candidate');

@@ -9,13 +9,14 @@ param(
     [string]$JavaHome = $env:JAVA_HOME,
     [string]$MavenCache = (Join-Path $env:USERPROFILE '.m2/repository'),
     [string]$Maven = 'mvn',
-    [string]$AndroidSdk = 'C:\tools\whist-android-sdk',
+    [string]$AndroidSdk = $(if ($env:ANDROID_SDK_ROOT) { $env:ANDROID_SDK_ROOT } else { $env:ANDROID_HOME }),
     [ValidateRange(2,2147483647)][int]$InputPartCharacters = 16384,
     [string]$TestChangeControl = '',
     [switch]$AllTestChangeControls,
     [string]$TestChangeBaseRef = $env:ATF_TEST_CHANGE_BASE_REF
 )
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'AtfLocalPaths.ps1')
 . (Join-Path $PSScriptRoot 'AtfComponentJvm.ps1')
 Assert-AtfComponentJavaEnvironment
 . (Join-Path $PSScriptRoot 'AtfQualificationSnapshot.ps1')
@@ -46,7 +47,7 @@ if ($TestChangeControl -or $AllTestChangeControls) {
     if ($LASTEXITCODE -ne 0 -or $dirty) { throw 'Proba testChanges cere un checkout curat.' }
 }
 if (-not $RunRoot) {
-    $archive = if ($env:WHIST_EVIDENCE_ROOT) { $env:WHIST_EVIDENCE_ROOT } else { 'C:\work\whist_back' }
+    $archive = Get-AtfEvidenceRoot
     $RunRoot = Join-Path $archive ('component-suites/' + (Get-Date -Format 'yyyyMMdd-HHmmss') + '-' + [guid]::NewGuid().ToString('N').Substring(0,8))
 }
 $RunRoot = [IO.Path]::GetFullPath($RunRoot)
@@ -245,7 +246,7 @@ try {
         $reuseTool = Join-Path $stage 'atf-tests/tools/prepare-component-reuse.mjs'
         $reuseExit = Invoke-AtfQualificationPhase $timing 'components.reuse-check' {
             $recovery = @(if ($ResumeFrom) { '--resume' })
-            & node $reuseTool $RunRoot ([IO.Path]::GetFullPath($ReuseFrom)) @recovery @selectedGroups | Out-Host
+            & node $reuseTool $RunRoot ([IO.Path]::GetFullPath($ReuseFrom)) @recovery @('--source-root',$stage) @selectedGroups | Out-Host
             $LASTEXITCODE
         } -ExitCode
         if ($reuseExit -ne 0) { throw 'Verificarea dovezilor anterioare a eșuat.' }
@@ -281,6 +282,7 @@ try {
                 $results += @(Invoke-MavenSelections $mavenSelections $stage $provenanceFile)
             }
             if ($gradleSelections.Count) {
+                $AndroidSdk = Get-AtfAndroidSdkRoot $AndroidSdk
                 $env:ANDROID_HOME = [IO.Path]::GetFullPath($AndroidSdk)
                 $env:ANDROID_SDK_ROOT = $env:ANDROID_HOME
                 if (-not (Test-Path -LiteralPath (Join-Path $AndroidSdk 'platforms/android-36/android.jar') -PathType Leaf)) {
