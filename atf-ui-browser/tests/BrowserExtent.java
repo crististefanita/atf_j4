@@ -1,5 +1,6 @@
 import atf.reporting.contract.AtfAssertion;
 import atf.reporting.contract.AtfReportStatus;
+import atf.reporting.configuration.ReportingSettings;
 import atf.reporting.evidence.ReportScreenshotPolicy;
 import atf.reporting.evidence.profile.ReportEvidenceProfile;
 import atf.reporting.extent.session.ExtentReportSession;
@@ -35,7 +36,10 @@ class BrowserExtent {
         readCases(mapper, directory, "paired-android.json", "android-comparison", checks);
         if (checks.isEmpty()) throw new IllegalArgumentException("No recorded cases");
         var profile = ReportEvidenceProfile.forScreenshotPolicy(ReportScreenshotPolicy.EACH_CHECKPOINT);
-        try (var session = new ExtentReportSession(report)) {
+        // Keep standard comparison previews; original bodies must remain complete in their disclosures.
+        var settings = new ReportingSettings(ReportingSettings.DEFAULT_ASSERTION_MAX_DISPLAY_CHARACTERS,
+                ReportingSettings.DISABLE_BODY_DISPLAY_LIMIT);
+        try (var session = new ExtentReportSession(report, settings)) {
             for (var check : checks) {
                 var test = check.result();
                 String title = test.required("name").asText();
