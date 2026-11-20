@@ -1,0 +1,11 @@
+{
+  "version": "0.22.1",
+  "mode": "changes",
+  "previousVersion": "0.22",
+  "points": [
+    "Select and rerun component tests by source ownership and exact input hashes.",
+    "Reuse unchanged component evidence with its original source provenance.",
+    "Keep maintenance changes on the patch version line and record the diff-derived E2E decision."
+  ],
+  "evidenceUrl": "https://github.com/crististefanita/whist/blob/main/release/0.22.1/reports/README.md"
+}

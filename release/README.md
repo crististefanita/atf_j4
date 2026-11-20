@@ -2,22 +2,22 @@
 
 ## Overview
 
-The catalog identifies the current Android edition and retains one previous edition for provenance.
+The catalog identifies the current Android edition and retains one preceding published edition for provenance.
 
 ## Current version
 
-[0.22 — APK, checks and provenance](0.22/README.md) is the current published Android edition. The APK link is in the main README.
+[0.22.1 — qualified Android maintenance edition](0.22.1/README.md) is qualified and awaiting authenticated GitHub publication. The main README links to its pinned APK asset.
 
 ## Previous version
 
-[0.21.13 — APK and evidence](0.21.13/README.md) remains available for provenance and comparisons.
+[0.22 — APK and evidence](0.22/README.md) is the preceding published edition.
 
 ## Available versions
 
 | Version | State | Dossier |
 |---|---|---|
-| 0.22 | Published · APK verified | [APK and evidence](0.22/README.md) |
-| 0.21.13 | Previous edition | [APK and evidence](0.21.13/README.md) |
+| 0.22.1 | Qualified; publication pending | [APK and evidence](0.22.1/README.md) |
+| 0.22 | Previous published edition | [APK and evidence](0.22/README.md) |
 
 ## Publication and verification
 

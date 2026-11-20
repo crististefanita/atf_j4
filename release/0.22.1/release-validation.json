@@ -1,0 +1,439 @@
+{
+  "schemaVersion": 2,
+  "publication": {
+    "state": "QUALIFIED",
+    "channel": "TEST",
+    "repository": "crististefanita/whist",
+    "accessMode": "AUTHENTICATED",
+    "targetUrl": "https://github.com/crististefanita/whist/releases/download/v0.22.1/WhistLab-0.22.1.apk"
+  },
+  "release": {
+    "applicationId": "ro.whistlab.app",
+    "versionName": "0.22.1",
+    "versionCode": 46,
+    "minSdk": 24,
+    "targetSdk": 36,
+    "artifactKind": "apk",
+    "platforms": [
+      "android"
+    ],
+    "platform": "android",
+    "apkName": "WhistLab-0.22.1.apk",
+    "apkRelativePath": "WhistLab-0.22.1.apk",
+    "apkBytes": 1029553,
+    "apkSha256": "cf3510909002e7190ad0dfab3305cfced84bd7d435b1b4190f6b7ad9e727f740",
+    "apkCrc32": "dfd68ab9",
+    "signingCertificate": "Android Debug",
+    "productionManagedKey": false,
+    "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3"
+  },
+  "source": {
+    "sourceCommit": "a58a1233c49de858378e6c03ef92cbcc1f56fc5b",
+    "inputManifest": "reports/apk-inputs.json",
+    "workingTreeFingerprint": "a6dc2e2c8e594700dddea1a117c5f7960d148848df7f5e1b35938dad9ef56317",
+    "fingerprintFormat": "SHA-256 of UTF-8 ordinal-sorted path TAB sha256 LF records"
+  },
+  "qualification": {
+    "state": "PASS",
+    "schemaVersion": 2,
+    "uniqueJunitInvocations": 1521,
+    "platforms": {
+      "android": {
+        "implemented": true,
+        "artifactKind": "apk",
+        "gates": {
+          "apkBuild": {
+            "status": "PASS",
+            "receipt": "reports/diagnostics/build.log"
+          },
+          "apkIdentity": {
+            "status": "PASS",
+            "receipt": "reports/diagnostics/apk-identity.json"
+          },
+          "signing": {
+            "status": "PASS",
+            "receipt": "reports/diagnostics/signing-compatibility.json"
+          },
+          "androidComponents": {
+            "status": "PASS",
+            "receipt": "reports/component/source-component-run.json"
+          }
+        }
+      }
+    },
+    "auditedGroups": {
+      "atf-validation": {
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 19,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "reports/component/atf-validation/component-report.html",
+        "componentEvidenceOrigin": "4b7af0039f21df8a259e9b43bb6c7794d1cdcd9001dc0d3bdc55ede2a49baf67"
+      },
+      "atf-test-android": {
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 277,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "reports/component/atf-test-android/component-report.html",
+        "componentEvidenceOrigin": "4b7af0039f21df8a259e9b43bb6c7794d1cdcd9001dc0d3bdc55ede2a49baf67"
+      },
+      "atf-tests": {
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 555,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "reports/component/atf-tests/component-report.html",
+        "componentEvidenceOrigin": "8407653d61bdc5ef1536639e048076e665bb628a59a47d530d49d7cd7a6c497b"
+      },
+      "whist-lab-app-achievements": {
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 28,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "reports/component/whist-lab-app-achievements/component-report.html",
+        "componentEvidenceOrigin": "2027424d1e3b28bf061341ff995245e11a114e83f9d6dc4e98d93e62705c74cf"
+      },
+      "whist-lab-app-bidding": {
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 255,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "reports/component/whist-lab-app-bidding/component-report.html",
+        "componentEvidenceOrigin": "2027424d1e3b28bf061341ff995245e11a114e83f9d6dc4e98d93e62705c74cf"
+      },
+      "whist-lab-app-commands": {
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 123,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "reports/component/whist-lab-app-commands/component-report.html",
+        "componentEvidenceOrigin": "2027424d1e3b28bf061341ff995245e11a114e83f9d6dc4e98d93e62705c74cf"
+      },
+      "whist-lab-app-display": {
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 107,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "reports/component/whist-lab-app-display/component-report.html",
+        "componentEvidenceOrigin": "2027424d1e3b28bf061341ff995245e11a114e83f9d6dc4e98d93e62705c74cf"
+      },
+      "whist-lab-app-history": {
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 61,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "reports/component/whist-lab-app-history/component-report.html",
+        "componentEvidenceOrigin": "2027424d1e3b28bf061341ff995245e11a114e83f9d6dc4e98d93e62705c74cf"
+      },
+      "whist-lab-app-atf-card-table-ui": {
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 56,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "reports/component/whist-lab-app-atf-card-table-ui/component-report.html",
+        "componentEvidenceOrigin": "4b7af0039f21df8a259e9b43bb6c7794d1cdcd9001dc0d3bdc55ede2a49baf67"
+      },
+      "whist-lab-app-rules": {
+        "protocol": "ATF_J24_COMPONENT_EXTENT",
+        "tests": 40,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "report": "reports/component/whist-lab-app-rules/component-report.html",
+        "componentEvidenceOrigin": "4b7af0039f21df8a259e9b43bb6c7794d1cdcd9001dc0d3bdc55ede2a49baf67"
+      }
+    },
+    "e2eGroups": {}
+  },
+  "evidenceRetention": {
+    "canonicalReport": "reports/component/atf-tests/component-report.html",
+    "canonicalReportSha256": "2fb5f470b6c33d732f29fb500caf8c93caf4b45150c2f065adca447acb7b8b50"
+  },
+  "integrity": {
+    "schemaVersion": 1,
+    "kind": "OBSERVED_PAYLOAD_HASHES",
+    "observedUtc": "2026-11-20T16:59:10.656Z",
+    "files": [
+      {
+        "path": "README.md",
+        "bytes": 658,
+        "sha256": "100e75b186712cd2d1691dc9bc7118e257f7f2a6d2eac5ee33dc9287416a929f"
+      },
+      {
+        "path": "WhistLab-0.22.1.apk",
+        "bytes": 1029553,
+        "sha256": "cf3510909002e7190ad0dfab3305cfced84bd7d435b1b4190f6b7ad9e727f740"
+      },
+      {
+        "path": "WhistLab-0.22.1.apk.sha256",
+        "bytes": 86,
+        "sha256": "b867b38674795c9c25bb8b8ae1d4b31d86c600a13b83e3d80dced392eef69d26"
+      },
+      {
+        "path": "WhistLab-0.22.apk",
+        "bytes": 1029553,
+        "sha256": "70cd42e55afc63cf7d3039eb37ab4ba7786d61a87e7503748ae0c32969a95916"
+      },
+      {
+        "path": "WhistLab-0.22.apk.sha256",
+        "bytes": 84,
+        "sha256": "5391eeefd97686a79d26a6606f94828534fb8777bb7be16c358de9dab1b83458"
+      },
+      {
+        "path": "release-notes.md",
+        "bytes": 391,
+        "sha256": "e77c6480b454b525a1fba6ad4cfe9c9ecf095772cdf6e077b25195b435ae71c1"
+      },
+      {
+        "path": "release-presentation.json",
+        "bytes": 461,
+        "sha256": "b65a0444d11da38ec2456fb756c53b75966369217c8d9ec7f3f6c7f25fb01f50"
+      },
+      {
+        "path": "reports/README.md",
+        "bytes": 2619,
+        "sha256": "d6a726f069d62fe79dab2446be1b222bb598d078e4b4b46589be40e09c8e8cd9"
+      },
+      {
+        "path": "reports/apk-inputs.json",
+        "bytes": 253686,
+        "sha256": "9dcc2b73176fb7f392bdd52df9264a7cf73a1b4fd817da3bff530c4d00501a94"
+      },
+      {
+        "path": "reports/component/atf-test-android/component-report.html",
+        "bytes": 26229476,
+        "sha256": "b926b12ba65649a0db3c57649c3d436cf8c596625ca8d13d7dc6b3b1db59650c"
+      },
+      {
+        "path": "reports/component/atf-test-android/execution.json",
+        "bytes": 545,
+        "sha256": "a8c75f260f7804bf84eb4b5af32c5567d2f72b9bb4b57c8aa13cb38242d0d6af"
+      },
+      {
+        "path": "reports/component/atf-tests/component-report.html",
+        "bytes": 11067026,
+        "sha256": "2fb5f470b6c33d732f29fb500caf8c93caf4b45150c2f065adca447acb7b8b50"
+      },
+      {
+        "path": "reports/component/atf-tests/component-whist-extent-b060dfe7-89f5-4e81-8818-2a99f10fbf7e.html.timing.json",
+        "bytes": 372,
+        "sha256": "da7e96f63c695ad2b92278c4d813dc4a9cd2ab81311b13585550692e78e5b641"
+      },
+      {
+        "path": "reports/component/atf-tests/execution.json",
+        "bytes": 539,
+        "sha256": "379eef68cf7a910a99ebf59ae5284c67fb77a17f4f718cc039288058943bcf6f"
+      },
+      {
+        "path": "reports/component/atf-validation/component-report.html",
+        "bytes": 2664338,
+        "sha256": "2948d993e753e0519275be3a67f4091672443b08490f1b5e2f49b987c43c32ad"
+      },
+      {
+        "path": "reports/component/atf-validation/execution.json",
+        "bytes": 549,
+        "sha256": "65143ba58c9b6a360b721ffa92d321ece2ca7c23952ebeb640e7d9c38a3ff596"
+      },
+      {
+        "path": "reports/component/component-reuse.json",
+        "bytes": 42531,
+        "sha256": "e55efab00dc25abd66f085c91afb0fe585c12c38582f65d45303bc5bf0ffeb2d"
+      },
+      {
+        "path": "reports/component/release-inputs.json",
+        "bytes": 25412,
+        "sha256": "b5aed6dcbf046f3d88fdf8707607c54852b365a4fce79fd313a9f806bd6c0851"
+      },
+      {
+        "path": "reports/component/snapshots/2027424d1e3b28bf061341ff995245e11a114e83f9d6dc4e98d93e62705c74cf/release-inputs.json",
+        "bytes": 32927,
+        "sha256": "48c8dd4a133eceb0913993f0cd886c24813e51e3d86c496d3475f39f8a170c80"
+      },
+      {
+        "path": "reports/component/snapshots/2027424d1e3b28bf061341ff995245e11a114e83f9d6dc4e98d93e62705c74cf/source-component-run.json",
+        "bytes": 4657,
+        "sha256": "adf11678611c04bafa4133385db1d0904e6912525240820f87104a5d3584da48"
+      },
+      {
+        "path": "reports/component/snapshots/2027424d1e3b28bf061341ff995245e11a114e83f9d6dc4e98d93e62705c74cf/source-inputs.json",
+        "bytes": 218149,
+        "sha256": "1893ad1c98345a6c821e7ced87f955306dc1d7ab37d9dc3ff80a3e8d567c1615"
+      },
+      {
+        "path": "reports/component/snapshots/2027424d1e3b28bf061341ff995245e11a114e83f9d6dc4e98d93e62705c74cf/source-provenance.json",
+        "bytes": 1259,
+        "sha256": "2027424d1e3b28bf061341ff995245e11a114e83f9d6dc4e98d93e62705c74cf"
+      },
+      {
+        "path": "reports/component/snapshots/4b7af0039f21df8a259e9b43bb6c7794d1cdcd9001dc0d3bdc55ede2a49baf67/release-inputs.json",
+        "bytes": 29335,
+        "sha256": "b6c46e4beac4f3fa394fa2f5ae54a0a3fee6522d962bc58713e7190fa18756fe"
+      },
+      {
+        "path": "reports/component/snapshots/4b7af0039f21df8a259e9b43bb6c7794d1cdcd9001dc0d3bdc55ede2a49baf67/source-component-run.json",
+        "bytes": 8533,
+        "sha256": "4358b4a6a8bb667be86a7d29448b3bc6a5b92566c64aa0135c588ba37d0e39b9"
+      },
+      {
+        "path": "reports/component/snapshots/4b7af0039f21df8a259e9b43bb6c7794d1cdcd9001dc0d3bdc55ede2a49baf67/source-inputs.json",
+        "bytes": 217153,
+        "sha256": "a694dcc2d772d09582af1eaa74fdf11763dabe9d70047002f340607aa78d728c"
+      },
+      {
+        "path": "reports/component/snapshots/4b7af0039f21df8a259e9b43bb6c7794d1cdcd9001dc0d3bdc55ede2a49baf67/source-provenance.json",
+        "bytes": 1259,
+        "sha256": "4b7af0039f21df8a259e9b43bb6c7794d1cdcd9001dc0d3bdc55ede2a49baf67"
+      },
+      {
+        "path": "reports/component/snapshots/8407653d61bdc5ef1536639e048076e665bb628a59a47d530d49d7cd7a6c497b/release-inputs.json",
+        "bytes": 25412,
+        "sha256": "b5aed6dcbf046f3d88fdf8707607c54852b365a4fce79fd313a9f806bd6c0851"
+      },
+      {
+        "path": "reports/component/snapshots/8407653d61bdc5ef1536639e048076e665bb628a59a47d530d49d7cd7a6c497b/source-component-run.json",
+        "bytes": 1758,
+        "sha256": "d3128ce8ca16d7dbfd9d90c7436967c29e07ddbf1f0709f50d11c95e039bce9d"
+      },
+      {
+        "path": "reports/component/snapshots/8407653d61bdc5ef1536639e048076e665bb628a59a47d530d49d7cd7a6c497b/source-inputs.json",
+        "bytes": 218398,
+        "sha256": "e12312cd6de01f9c78301aacc52100b682df2085c9f3ae2a26552615bdbbe916"
+      },
+      {
+        "path": "reports/component/snapshots/8407653d61bdc5ef1536639e048076e665bb628a59a47d530d49d7cd7a6c497b/source-provenance.json",
+        "bytes": 1259,
+        "sha256": "8407653d61bdc5ef1536639e048076e665bb628a59a47d530d49d7cd7a6c497b"
+      },
+      {
+        "path": "reports/component/snapshots/e970b73ada4d49200614de1cd4237d2e9feb299408f3da159862b736acb67066/release-inputs.json",
+        "bytes": 32927,
+        "sha256": "48c8dd4a133eceb0913993f0cd886c24813e51e3d86c496d3475f39f8a170c80"
+      },
+      {
+        "path": "reports/component/snapshots/e970b73ada4d49200614de1cd4237d2e9feb299408f3da159862b736acb67066/source-component-run.json",
+        "bytes": 1483,
+        "sha256": "b16912f32d77708cae1d7a3724ce4261b83dbefb9bfa0b513c383cc1acf87d67"
+      },
+      {
+        "path": "reports/component/snapshots/e970b73ada4d49200614de1cd4237d2e9feb299408f3da159862b736acb67066/source-inputs.json",
+        "bytes": 218149,
+        "sha256": "f58319ace90786631adbc62f2fa02a50403c799713589666977d39b52586bc04"
+      },
+      {
+        "path": "reports/component/snapshots/e970b73ada4d49200614de1cd4237d2e9feb299408f3da159862b736acb67066/source-provenance.json",
+        "bytes": 1259,
+        "sha256": "e970b73ada4d49200614de1cd4237d2e9feb299408f3da159862b736acb67066"
+      },
+      {
+        "path": "reports/component/source-component-run.json",
+        "bytes": 1758,
+        "sha256": "d3128ce8ca16d7dbfd9d90c7436967c29e07ddbf1f0709f50d11c95e039bce9d"
+      },
+      {
+        "path": "reports/component/source-inputs.json",
+        "bytes": 218398,
+        "sha256": "e12312cd6de01f9c78301aacc52100b682df2085c9f3ae2a26552615bdbbe916"
+      },
+      {
+        "path": "reports/component/source-provenance.json",
+        "bytes": 1259,
+        "sha256": "8407653d61bdc5ef1536639e048076e665bb628a59a47d530d49d7cd7a6c497b"
+      },
+      {
+        "path": "reports/component/whist-lab-app-achievements/component-report.html",
+        "bytes": 3374901,
+        "sha256": "0030f983b3f3ad6f4bf09ea95bc5cc67c7fff9c1a66c00cd1f144bcba605f08f"
+      },
+      {
+        "path": "reports/component/whist-lab-app-achievements/execution.json",
+        "bytes": 395,
+        "sha256": "096405c55dc091208002d8f50f68461aa547bc132f2371fe5f69ba26b2464be4"
+      },
+      {
+        "path": "reports/component/whist-lab-app-atf-card-table-ui/component-report.html",
+        "bytes": 4193082,
+        "sha256": "bb0327031d215c1c45717f9d205ba4f7803adc839e36edfbc24940d497aec598"
+      },
+      {
+        "path": "reports/component/whist-lab-app-atf-card-table-ui/execution.json",
+        "bytes": 400,
+        "sha256": "b6de9145cead2c18f7d0ef72904ced88e610c5c70a6b8d93961c201b1d571ac1"
+      },
+      {
+        "path": "reports/component/whist-lab-app-bidding/component-report.html",
+        "bytes": 17079738,
+        "sha256": "605bd98a4d15de0d6ffaeb17d824eff926957b3961b9f093354da7a0a3851816"
+      },
+      {
+        "path": "reports/component/whist-lab-app-bidding/execution.json",
+        "bytes": 392,
+        "sha256": "67bdfc947ca4283f8e33a74e865442e704645369757481ccc381de652556fbd1"
+      },
+      {
+        "path": "reports/component/whist-lab-app-commands/component-report.html",
+        "bytes": 21335257,
+        "sha256": "975dc5a5e6c72b832fd4bc937e60377d0a8c0c6063ca0da3703adea23c4735b5"
+      },
+      {
+        "path": "reports/component/whist-lab-app-commands/execution.json",
+        "bytes": 393,
+        "sha256": "085bea53f4f976feacc67a7e955164f0963182bcc3c3b6c16346c1483c018e98"
+      },
+      {
+        "path": "reports/component/whist-lab-app-display/component-report.html",
+        "bytes": 37138888,
+        "sha256": "2aa7496119fd04afa5ac82f581fb2d4aa988f8efaefd75fb0c0010c30b1bc2cc"
+      },
+      {
+        "path": "reports/component/whist-lab-app-display/execution.json",
+        "bytes": 392,
+        "sha256": "62c827cf99585d624735c4da28f1c38be7ff2e504aeb2f79fe0088c25903c16c"
+      },
+      {
+        "path": "reports/component/whist-lab-app-history/component-report.html",
+        "bytes": 19248845,
+        "sha256": "77767305aacbe2d0aefe307d10f7a5a33ea5ecec0a017314cbdc25ab200b8811"
+      },
+      {
+        "path": "reports/component/whist-lab-app-history/execution.json",
+        "bytes": 390,
+        "sha256": "6790eb6695bafb2775acb94c0dd644ecbb0658075c3192bbe924fa708b75bc2f"
+      },
+      {
+        "path": "reports/component/whist-lab-app-rules/component-report.html",
+        "bytes": 3140006,
+        "sha256": "1fdbf7d9f849c2f89a38c85d342a142b97861c716357582e26e711562b48fc72"
+      },
+      {
+        "path": "reports/component/whist-lab-app-rules/execution.json",
+        "bytes": 397,
+        "sha256": "7ff8b531f437d5a8a3068d3382b962827c15369c46e3cb0b1c3c1d1a6a1e9819"
+      },
+      {
+        "path": "reports/diagnostics/apk-identity.json",
+        "bytes": 724,
+        "sha256": "d282b474b6238c2d966bceb3f4d8a6c298375862ec6167dfddc479eee3b572f7"
+      },
+      {
+        "path": "reports/diagnostics/build.log",
+        "bytes": 6000,
+        "sha256": "ab609b65b7d81293870f1494385108598b7d819c5fd08c6bf928321311a262b3"
+      },
+      {
+        "path": "reports/diagnostics/signing-compatibility.json",
+        "bytes": 383,
+        "sha256": "d89cb1fd29e1f4867fe2817b150e540074e984964fc5a3fd5b5f0737b7fc2db5"
+      }
+    ]
+  }
+}
