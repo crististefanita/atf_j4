@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "publication": {
-    "state": "PREPARED",
+    "state": "PUBLISHED",
     "channel": "TEST",
     "repository": "crististefanita/whist",
     "accessMode": "AUTHENTICATED",
@@ -28,7 +28,7 @@
     "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3"
   },
   "source": {
-    "sourceCommit": null,
+    "sourceCommit": "7732c4f883ee7ea0e2b2b3ad629e479bb836357f",
     "inputManifest": "reports/apk-inputs.json",
     "workingTreeFingerprint": "c13130ae3ae7b8b594361e7d1021a6a3d6ed67f3086067941760f67ac15ab548",
     "fingerprintFormat": "SHA-256 of UTF-8 ordinal-sorted path TAB sha256 LF records"
@@ -57,7 +57,8 @@
             "receipt": "reports/component/snapshots/4b7af0039f21df8a259e9b43bb6c7794d1cdcd9001dc0d3bdc55ede2a49baf67/source-component-run.json"
           },
           "distributionDownload": {
-            "status": "NOT_RUN"
+            "status": "PASS",
+            "receipt": "reports/distribution-verification.json"
           }
         }
       }
@@ -236,7 +237,7 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-20T11:39:07.067Z",
+    "observedUtc": "2026-11-20T11:56:58.619Z",
     "files": [
       {
         "path": "README.md",
@@ -254,19 +255,24 @@
         "sha256": "4cd16ff6570c3b8ecceaeda14872b1a84bd394ca47ce3284f671d48946650547"
       },
       {
-        "path": "release-notes.template.md",
-        "bytes": 670,
-        "sha256": "a8b1834e5d3d7adf1fd2a81a83668acc45bef14339ac84f98100141a563ee7bd"
+        "path": "github-release.json",
+        "bytes": 840,
+        "sha256": "f8ff3b411480cd23e421c8130fa92a2ff9bced7795a9533f7e2fd3bddcf74129"
+      },
+      {
+        "path": "release-notes.md",
+        "bytes": 694,
+        "sha256": "b9045220f0fc173be2db3596884e3edb758c86a99ac206029af73d87a95dc01c"
       },
       {
         "path": "release-presentation.json",
-        "bytes": 374,
-        "sha256": "aec5bc665f082253b89e4dc075d4f924fbdb6cf268e6382c780b52f1e7cd17f7"
+        "bytes": 390,
+        "sha256": "8a4c7c7540b0d3e7a909646f373aeed53a551f7cbbe5377e19fc0424ef429bf6"
       },
       {
         "path": "reports/README.md",
-        "bytes": 3694,
-        "sha256": "2f1e426674d2df4d03f9c38b2ccc8505f8d03dda5d00c324e0fb6daf2d05355d"
+        "bytes": 3695,
+        "sha256": "c90e1c4853926f3e25a066f25ca6d4590eb60f47dcbfda15152c7878f3a2a608"
       },
       {
         "path": "reports/apk-inputs.json",
@@ -487,6 +493,11 @@
         "path": "reports/diagnostics/signing-compatibility.json",
         "bytes": 386,
         "sha256": "5845256e7ac790fd87d8c67e66326c5b95ab59f84d9561d65e7cc51e5b484a38"
+      },
+      {
+        "path": "reports/distribution-verification.json",
+        "bytes": 1478,
+        "sha256": "92e4dc84ba485bc6a5a1ff7fb0fedbd4094890f82aeb1cfe8bc7cafb3cbe61fc"
       },
       {
         "path": "reports/e2e/history-release-sanity/execution.json",
