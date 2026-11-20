@@ -79,6 +79,22 @@ test('editorial additions and removals run governance and preserve reusable evid
   assert.deepEqual(selection.components.map(row => row.decision), ['RUN', 'REUSE', 'REUSE', 'REUSE']);
 });
 
+test('Markdown guides embedded in source directories run governance without replaying product suites', () => {
+  const guides = [
+    'whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/score/README.md',
+    'whist-lab-app/app/src/main/java/ro/whistlab/app/bidding/README.md'
+  ];
+  const previous = new Map(guides.map(file => [file, 'old']));
+  const candidate = new Map(guides.map(file => [file, 'new']));
+  const selection = deriveReleaseTestScope(previous, candidate, groups);
+  assert.equal(selection.kind, 'DOCUMENTATION_ONLY');
+  assert.deepEqual(selection.runComponentGroups, ['atf-tests']);
+  assert.deepEqual(selection.requiredE2eGroups, []);
+  assert.ok(selection.changes.every(change => change.rule === 'documentation'));
+  assert.ok(selection.components.filter(row => row.group !== 'atf-tests')
+    .every(row => row.decision === 'REUSE'));
+});
+
 test('a qualification policy edit affects governance and leaves the game build evidence reusable', () => {
   const file = 'config/release-platform-rag-policy.json';
   const selection = deriveReleaseTestScope(new Map([[file, 'old']]), new Map([[file, 'new']]), groups);

@@ -41,6 +41,8 @@ class ComponentEvidenceScopeComponentTest {
                 "A release version-only diff is exempt only when the prior build bytes reconstruct exactly.");
         AuditedAssertions.assertTrue(output.contains("qualification path and UI export helpers require offline governance without native replay"),
                 "Qualification-only helpers must not turn a documentation and governance release into seven Android E2E flows.");
+        AuditedAssertions.assertTrue(output.contains("Markdown guides embedded in source directories run governance without replaying product suites"),
+                "Documentation placed below a source root must not invalidate the owning product suite or select native flows.");
     }
 
     @Test void sharedDependenciesAndUnknownInputsCannotReuseTheirConsumers() throws Exception {

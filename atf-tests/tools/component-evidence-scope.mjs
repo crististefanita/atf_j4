@@ -4,6 +4,8 @@ import {fileURLToPath} from 'node:url';
 
 export const nonBuildDocumentation = file => file === 'README.md'
     || (/^(?:docs\/|lib\/README\.)/.test(file) && file.endsWith('.md'))
+    || (file.endsWith('.md') && file.includes('/src/')
+        && !/\/src\/main\/(?:assets|res)\//.test(file))
     || (!file.includes('/src/') && file.endsWith('/README.md'));
 
 export function changedInputs(candidate, previous) {
