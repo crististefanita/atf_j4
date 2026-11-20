@@ -20,6 +20,9 @@ final class BrowserReportFixture {
     static final String LAST = "Last recorded component";
     static final String EXPECTED = "expected ".repeat(70) + "EXPECTED_FINAL_♠ · Mâna următoare";
     static final String ACTUAL = "observed ".repeat(70) + "OBSERVED_FINAL_♥";
+    static final String LARGE_CASE = "Large structured component";
+    static final Map<String, Object> LARGE = Map.of("context", "captured ".repeat(2000),
+            "integer", 9007199254740993L, "final", "JSON_FINAL_♠");
     private BrowserReportFixture() { }
 
     static URLClassLoader compile(Path classes) throws Exception {
@@ -40,7 +43,9 @@ final class BrowserReportFixture {
                 image("second.png", "Second captured frame")));
         var last = Map.of("id", "FIXTURE-LAST", "name", LAST, "status", "FAIL", "expected", EXPECTED,
                 "observed", ACTUAL, "layer", "android-component", "images", List.of(image("last.png", "Last captured frame")));
-        new ObjectMapper().writeValue(root.resolve("browser-checks.json").toFile(), List.of(first, last));
+        var large = Map.of("id", "FIXTURE-LARGE", "name", LARGE_CASE, "status", "PASS",
+                "expected", LARGE, "observed", LARGE, "images", List.of());
+        new ObjectMapper().writeValue(root.resolve("browser-checks.json").toFile(), List.of(first, large, last));
     }
 
     static void publish(URLClassLoader loader, Path root) throws Exception {

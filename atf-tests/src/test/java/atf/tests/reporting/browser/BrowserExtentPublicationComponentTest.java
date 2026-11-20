@@ -26,7 +26,7 @@ public class BrowserExtentPublicationComponentTest {
 
     @Test void standardOverviewKeepsEnglishNarrativeAndScenarioOwnedCaptures(ComponentInputs inputs) throws Exception {
         BrowserReportFixture.write(root);
-        inputs.add("Publisher fixture", "Two recorded synthetic cases: PASS and FAIL, three distinct PNGs, long original comparisons.");
+        inputs.add("Publisher fixture", "Three synthetic cases: PASS and FAIL, three distinct PNGs, long text and JSON with a large integer.");
         BrowserReportFixture.publish(publisher, root);
         String html = Files.readString(root.resolve("report.html"));
         Document doc = Jsoup.parse(html);
@@ -51,6 +51,9 @@ public class BrowserExtentPublicationComponentTest {
         assertFalse(last.outerHtml().contains(a), "The final case does not inherit the first capture");
         assertTrue(last.text().contains("EXPECTED_FINAL_♠") && last.text().contains("OBSERVED_FINAL_♥"), "Long expected and observed values remain complete");
         assertTrue(last.text().contains("Mâna următoare"), "English report narration preserves original Romanian application evidence");
+        var structured = new atf.tests.reporting.GameReportTextAudit(scenario(doc, BrowserReportFixture.LARGE_CASE).outerHtml());
+        assertTrue(structured.contains(new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(BrowserReportFixture.LARGE)),
+                "Structured input beyond 12000 characters retains the final scalar and exact large integer");
         assertTrue(last.outerHtml().contains("fail"), "A failed recorded comparison retains its outcome");
         assertEquals(0, doc.select("img[src]:not([src^=data:]), a[data-img]:not([data-img^=data:])").size(), "Captures need no external files");
     }

@@ -153,6 +153,8 @@ The passage of the structural audit does not demonstrate the legibility or inter
 
 The Extent Overview keeps the standard Reporting dashboard. Consumer publishers must not inject screenshot galleries, game controls or custom sections into that view. Attach captured PNGs inline to their original scenario and phase through the public UI evidence API. Observation-only frames do not manufacture assertions or a new game result.
 
+Comparison previews keep the standard 240-character limit; original input bodies remain complete inside the case disclosures, with body-display truncation disabled for this publisher.
+
 Report narration is English: suite names, phases, evidence labels and diagnostic explanations. Original application text, localized RO/EN captures and measured values remain unchanged. Each capture retains its title and case owner; all selected comparisons and the original outcome remain available in the standalone HTML.
 
 Publisher components check the standard Overview, English narration, the first and final case, multiple frames, complete long values and failed outcomes. Missing, external or invalid images must be rejected before a report is created. Existing sealed release evidence remains immutable; republication records the original evidence identity and the publisher revision separately.
