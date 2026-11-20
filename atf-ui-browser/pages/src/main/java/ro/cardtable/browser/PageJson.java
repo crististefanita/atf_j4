@@ -66,7 +66,9 @@ final class PageJson {
             return fields("heading", view.heading(), "subtitle", view.subtitle(), "prompt", view.prompt(),
                     "seats", view.seats(), "hand", view.hand(), "played", view.played(), "center", view.center(),
                     "actions", view.actions(), "history", view.history(), "header", view.header(), "score", view.score(),
-                    "scoreDetails", view.scoreDetails());
+                    "scoreDetails", view.scoreDetails(), "menuEntries", view.menuEntries());
+        if (value instanceof ro.cardtable.ui.menu.TableMenuContent.Entry entry)
+            return fields("id", entry.id(), "label", entry.label());
         if (value instanceof BrowserGame.Header header)
             return fields("mode", header.mode(), "title", header.title(), "progress", header.progress(), "bids", header.bids(),
                     "trump", header.trump(), "trumpDescription", header.trumpDescription(),
@@ -102,7 +104,7 @@ final class PageJson {
             return fields("headings", history.headings(), "rows", history.rows(), "grid", history.grid());
         if (value instanceof BrowserGame.HistoryGrid grid)
             return fields("players", grid.players(), "rows", grid.rows(), "cardsLabel", grid.cardsLabel(),
-                    "bidLabel", grid.bidLabel(), "pointsLabel", grid.pointsLabel(), "legend", grid.legend());
+                    "bidLabel", grid.bidLabel(), "pointsLabel", grid.pointsLabel(), "legend", grid.legend(), "appearance", grid.appearance());
         if (value instanceof BrowserGame.HistoryRow row)
             return fields("cards", row.cards(), "status", row.status(), "cells", row.cells());
         if (value instanceof BrowserGame.HistoryCell cell)

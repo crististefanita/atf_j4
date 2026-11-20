@@ -284,3 +284,15 @@ Score actions have dedicated shared roles: primary actions use 24 logical units 
 - The Web adapter uses the same exported `ScoreTypography` tokens. Narrow windows wrap complete labels and scroll the score page; desktop scaling belongs to the shared viewport contract.
 - Numeric columns, history cells, card ranks, generic dialogs and other menus keep their own roles. Game adapters own localized captions, confirmed values and callbacks.
 - Consumer tests execute the delivered renderer and compare the actual AAR/JAR roles. Cover RO/EN, short windows, enlarged text, reachable actions, unchanged callback order and rejection of stale or double-scaled styles.
+
+## Shared menu and history adapters
+
+| Contract | Android adapter | Browser adapter |
+|---|---|---|
+| Localized menu plan | Bind immutable TableMenuContent entries to lifecycle-owned callbacks. | Bind the same entry IDs, labels and order through menuFromEntries. |
+| History appearance | Pass HistoryAppearance to the shared ScoreHistoryView. | Apply its exported CSS tokens to the shared history renderer. |
+| Visibility | The game defines confirmed-result availability; the platform hides Stop when automation is off. | The same availability applies without inventing unsupported in-game routes. |
+
+The regular history profile removes bold headings and uses two logical units with the Whist divider color. Existing callers retain the legacy native constructor and the unchanged default Web appearance. Appearance is per table; clearing it restores defaults without changing unrelated styles.
+
+New shared UI coordinates use two-part 0.x versions. Existing three-part coordinates may only be reused after their input manifest and artifact hashes are verified; changed bytes require a new coordinate. Runtime, portable tests and checksums are delivered together.

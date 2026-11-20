@@ -168,3 +168,15 @@ The game transmits the legal cards and activates the clue when the player can mo
 - Admission Face SHA-256, the content of the AAR, manifest and dependencies before the consumer's building. Local publication does not close the consumer's acceptance of the IU.
 
 [Whist app](../app/src/main/java/ro/whistlab/app/README.md) · [Component strategy](../../docs/testing/ATF_DisplayComponents.md) · [Withdrawal remaining](../../docs/feedback/ATF_CardUi_Extraction.md)
+
+## Shared menu and history adapters
+
+| Contract | Android adapter | Browser adapter |
+|---|---|---|
+| Localized menu plan | Bind immutable TableMenuContent entries to lifecycle-owned callbacks. | Bind the same entry IDs, labels and order through menuFromEntries. |
+| History appearance | Pass HistoryAppearance to the shared ScoreHistoryView. | Apply its exported CSS tokens to the shared history renderer. |
+| Visibility | The game defines confirmed-result availability; the platform hides Stop when automation is off. | The same availability applies without inventing unsupported in-game routes. |
+
+The regular history profile removes bold headings and uses two logical units with the Whist divider color. Existing callers retain the legacy native constructor and the unchanged default Web appearance. Appearance is per table; clearing it restores defaults without changing unrelated styles.
+
+New shared UI coordinates use two-part 0.x versions. Existing three-part coordinates may only be reused after their input manifest and artifact hashes are verified; changed bytes require a new coordinate. Runtime, portable tests and checksums are delivered together.

@@ -5,6 +5,7 @@ param(
     [string]$AndroidSdk = 'C:\tools\whist-android-sdk'
 )
 $ErrorActionPreference = 'Stop'
+Import-Module (Join-Path $PSScriptRoot 'CardTableLibraryVersion.psm1') -Force
 $source = [IO.Path]::GetFullPath($SourceRoot)
 if (!$Repository) {
     $archive = if ($env:WHIST_EVIDENCE_ROOT) { $env:WHIST_EVIDENCE_ROOT } else { 'C:\work\whist_back' }
@@ -17,13 +18,15 @@ if ($repositoryRoot.Equals($source, [StringComparison]::OrdinalIgnoreCase) -or
 }
 $module = 'whist-lab-app/atf-card-table-ui'
 $build = Get-Content -LiteralPath (Join-Path $source "$module/build.gradle") -Raw
-$versionMatch = [regex]::Match($build, '(?m)^version\s*=\s*''([0-9]+\.[0-9]+\.[0-9]+)''\s*$')
+$versionMatch = [regex]::Match($build, '(?m)^version\s*=\s*''([^'']+)''\s*$')
 if (!$versionMatch.Success) { throw 'Versiunea AAR trebuie declarată explicit în modul.' }
 $version = $versionMatch.Groups[1].Value
+Assert-CardTableLibraryVersion -Version $version -Existing $true
 $baseName = "card-table-ui-$version"
 $names = @("$baseName.aar", "$baseName.pom", "$baseName.module", "$baseName-sources.jar")
 $artifactPath = "ro/cardtable/card-table-ui/$version"
 $final = Join-Path $repositoryRoot $artifactPath
+Assert-CardTableLibraryVersion -Version $version -Existing (Test-Path -LiteralPath $final)
 $receiptName = 'card-ui-build.json'
 
 $productionRoots = @("$module/build.gradle", "$module/src/main", 'whist-lab-app/settings.gradle',

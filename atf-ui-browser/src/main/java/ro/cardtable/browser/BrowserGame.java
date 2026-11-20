@@ -112,7 +112,13 @@ public interface BrowserGame {
     record HistoryCell(String bid, String total, String description, boolean missed, int series) { }
     record HistoryRow(int cards, String status, List<HistoryCell> cells) { }
     record HistoryGrid(List<String> players, List<HistoryRow> rows, String cardsLabel,
-                       String bidLabel, String pointsLabel, String legend) { }
+                       String bidLabel, String pointsLabel, String legend, Map<String, String> appearance) {
+        public HistoryGrid(List<String> players, List<HistoryRow> rows, String cardsLabel,
+                           String bidLabel, String pointsLabel, String legend) {
+            this(players, rows, cardsLabel, bidLabel, pointsLabel, legend, Map.of());
+        }
+        public HistoryGrid { appearance = Map.copyOf(appearance); }
+    }
 
     record History(List<String> headings, List<List<String>> rows, HistoryGrid grid) {
         public History(List<String> headings, List<List<String>> rows) {
@@ -150,7 +156,12 @@ public interface BrowserGame {
                         List<String> rules, History liveTable) { }
 
     record View(String heading, String subtitle, String prompt, List<Seat> seats, List<Card> hand,
+                List<Played> played, List<Card> center, List<Action> actions, History history, Header header, Score score, ScoreDetails scoreDetails,
+                List<ro.cardtable.ui.menu.TableMenuContent.Entry> menuEntries) {
+        public View(String heading, String subtitle, String prompt, List<Seat> seats, List<Card> hand,
                 List<Played> played, List<Card> center, List<Action> actions, History history, Header header, Score score, ScoreDetails scoreDetails) {
+            this(heading, subtitle, prompt, seats, hand, played, center, actions, history, header, score, scoreDetails, List.of());
+        }
         public View(String heading, String subtitle, String prompt, List<Seat> seats, List<Card> hand,
                 List<Played> played, List<Card> center, List<Action> actions, History history, Header header, Score score) {
             this(heading, subtitle, prompt, seats, hand, played, center, actions, history, header, score, null);
@@ -167,6 +178,11 @@ public interface BrowserGame {
             played = List.copyOf(played);
             center = List.copyOf(center);
             actions = List.copyOf(actions);
+            menuEntries = List.copyOf(menuEntries);
+        }
+
+        public View withMenuEntries(List<ro.cardtable.ui.menu.TableMenuContent.Entry> entries) {
+            return new View(heading, subtitle, prompt, seats, hand, played, center, actions, history, header, score, scoreDetails, entries);
         }
 
         boolean accepts(String key) {

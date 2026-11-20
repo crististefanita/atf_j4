@@ -29,11 +29,17 @@ public class ScoreHistoryView extends ScrollView {
     private final List<RowViews> rowViews = new ArrayList<>();
     private final int separator, labelMinimum, nameMinimum;
     private final List<Integer> columnMinima;
+    private final HistoryAppearance appearance;
     private int fittedWidth = -1, naturalRows, firstRow;
 
     public ScoreHistoryView(Context context, HistoryContent data, Consumer<String> openDetails) {
+        this(context, data, openDetails, HistoryAppearance.LEGACY);
+    }
+
+    public ScoreHistoryView(Context context, HistoryContent data, Consumer<String> openDetails, HistoryAppearance appearance) {
         super(context); Objects.requireNonNull(openDetails);
-        separator = dp(1);
+        this.appearance = Objects.requireNonNull(appearance);
+        separator = dp(appearance.separatorDp());
         for (int i = 0; i < data.columns().size(); i++) columns.add(new ArrayList<>());
         var content = column(); addView(content, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
         header = new LinearLayout(context); header.setBackgroundColor(ScoreGridStyle.HEADER);
@@ -132,7 +138,7 @@ public class ScoreHistoryView extends ScrollView {
         return group;
     }
     private void addGroup(LinearLayout line, LinearLayout group, int fill) {
-        var border = new View(getContext()); border.setBackgroundColor(ScoreGridStyle.RULE);
+        var border = new View(getContext()); border.setBackgroundColor(appearance.separatorColor());
         border.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
         line.addView(border, new LinearLayout.LayoutParams(separator, LayoutParams.MATCH_PARENT));
         group.setBackgroundColor(fill); line.addView(group, new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
@@ -140,7 +146,7 @@ public class ScoreHistoryView extends ScrollView {
     private TextView text(String value, boolean bold, int gravity) {
         var view = new TextView(getContext()); view.setText(value); view.setTextSize(13); view.setTextColor(ScoreGridStyle.INK);
         view.setGravity(gravity | Gravity.CENTER_VERTICAL); view.setPadding(dp(6), dp(5), dp(6), dp(5));
-        if (bold) view.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        view.setTypeface(Typeface.DEFAULT, bold && appearance.boldPlayerNames() ? Typeface.BOLD : Typeface.NORMAL);
         return view;
     }
     private LinearLayout column() { var layout = new LinearLayout(getContext()); layout.setOrientation(LinearLayout.VERTICAL); return layout; }

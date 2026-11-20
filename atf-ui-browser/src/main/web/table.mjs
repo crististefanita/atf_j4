@@ -2,9 +2,9 @@ import { fitTextWidth, isPhone, viewportGeometry, textScale } from "./viewport.m
 import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
 import { bindHandFeedback } from "./hand-feedback.mjs";
-import { historyGrid } from "./records.mjs";
+import { historyGrid, applyHistoryAppearance } from "./records.mjs?v=0.3";
 import { fitSeatLine, fitSeatLines, retainSeatFrames, measureSeatActionClearance } from "./seat-presentation.mjs";
-import { historyFirst } from "./table-menu.mjs";
+import { historyFirst, menuFromEntries } from "./table-menu.mjs?v=0.3";
 import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.26";
 
 const stage = document.querySelector("#table");
@@ -536,6 +536,7 @@ function scoreGrid(data, native = false) {
 }
 
 function showHistory(data) {
+  applyHistoryAppearance(history, data.grid?.appearance ?? {});
   history.querySelector("#history-title").textContent = copy("history", "Istoric punctaj");
   history.querySelector("button").textContent = copy("close", "Închide");
   const content = document.querySelector("#history-data");
@@ -739,8 +740,8 @@ function whistHeader(match) {
     { id: "rankings", label: copy("ranking", "Clasamente"), action: () => { void showRankings(); } },
     { id: "home", label: copy("mainMenu", "Meniu principal"), action: menu }
   ]);
-  for (const route of routes) {
-    if (route.id === "stop-auto") items.append(stop);
+  for (const route of match.menuEntries?.length ? menuFromEntries(routes, match.menuEntries) : routes) {
+    if (route.id === "stop-auto") { stop.textContent = route.label; items.append(stop); }
     else {
       const entry = item(route.label, route.action);
       entry.dataset.menuAction = route.id;

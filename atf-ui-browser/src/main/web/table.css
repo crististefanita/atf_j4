@@ -185,7 +185,9 @@ header .subtitle { font-size: 14px; color: #41574b; }
 .record-history thead tr { background: #dfeada; }
 .record-history thead tr + tr { background: #eef3ea; }
 .record-history thead tr + tr th { font-weight: normal; }
-.record-history .history-seat { border-left: 2px solid #71846c; }
+.record-history thead tr:first-child th { font-weight: var(--history-heading-weight, 700); }
+#history h2 { font-weight: var(--history-heading-weight, 700); }
+.record-history .history-seat { border-left: var(--history-divider-width, 2px) solid var(--history-divider-color, #71846c); }
 .record-history tbody tr:nth-child(odd) { background: #fffef8; }
 .record-history tbody tr:nth-child(even) { background: #f1f5ee; }
 .record-history tbody tr[data-status="current"] { background: #e5eedc; }
