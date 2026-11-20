@@ -64,6 +64,7 @@ Validarea snapshot-ului și a cache-ului consumă timp chiar când execuția tes
 - Reluați invocările nerezolvate numai după verificarea acestor intrări imuabile. Păstrați încercările respinse ca diagnostice.
 - Dovediți paritatea întregului set de identități JUnit față de o rulare completă; respingeți sursele schimbate, cazurile lipsă, identitățile duplicate și dovezile modificate.
 - Păstrați timeout-urile explicite până trece o reluare reală. Un caz vecin trecut sau un receipt rescris nu reprezintă dovezi înlocuitoare.
+- Oferiți un lansator țintit versionat, care rezolvă semnăturile parametrilor metodelor și contextul raportului agregat înaintea execuției. Păstrați încercările respinse la descoperire sau publicare separat de probele acceptate.
 
 ## Costul selecției pe platformă
 
@@ -87,11 +88,10 @@ Respingeți probele de control al sursei lipsă sau expirate înainte de copiere
 
 Fluxul izolat primește acum explicit baza reviziei. Admiterea probelor de control al sursei lipsă înaintea pregătirii dependențelor rămâne deschisă; alegerea bazei corecte nu închide singură această limită.
 
-## Admiterea commitului auditului publicat
+## Admiterea schemei de raportare
 
-Fluxul de publicare poate afișa un commit pregătit înainte ca manifestul să conțină commitul sursei calificate. Guvernanța finală respinge acest link, dar ediția publică necesită apoi corectarea metadatelor.
+Evaluatorul poate accepta dovezi HTML canonice când manifestul declară calificarea XML istorică. Guvernanța integrității respinge ulterior nepotrivirea; cele două etape au nevoie de aceeași regulă de admitere.
 
-- Validați commitul auditului înainte de publicarea adresei: cereți sursa calificată, identitatea identică a APK-ului și hash-ul raportului canonic, cu link direct în indexul versionat.
-- Acoperiți prin componente manifestul pregătit fără sursă, alt commit al sursei, raportul lipsă și hash-ul modificat al raportului.
-- Păstrați receipt-urile originale ale execuțiilor și fișierele publicate când corectați metadatele prezentării. Verificați separat notele GitHub și dosarul versionat.
-- Refolosiți selecția de guvernanță deja compilată pentru corectarea metadatelor; nu repetați componentele sau execuțiile Android neschimbate.
+- Verificați schema calificării și reprezentarea dovezilor înaintea verdictului sau publicării. Cereți schema HTML canonică pentru dosarele moderne și o limită explicit acceptată pentru dovezile XML istorice.
+- Acoperiți prin componente schemele absente sau neacceptate, dovezile mixte, receipt-urile lipsă ale grupurilor și numerele contradictorii de invocări.
+- Aliniați diagnosticele evaluatorului, preflight-ului independent și guvernanței complete. Respingeți intrarea inconsistentă fără rescrierea receipt-urilor vechi sau inventarea datelor JUnit.

@@ -15,4 +15,4 @@ Procesul de livrare Whist folosește versiuni cu două componente și verifică 
 
 ## Documentație
 
-- [Extent](https://github.com/crististefanita/whist/blob/{evidenceCommit}/release/0.22/reports/README.md)
+- [Extent](https://github.com/crististefanita/whist/blob/ab42fb4ae16b12f5ade8b42e78c116bf75660410/release/0.22/reports/README.md)

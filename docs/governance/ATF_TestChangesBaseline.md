@@ -1490,3 +1490,25 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Linkuri de produs adaptate limbii</summary>
+
+```yaml
+testChanges:
+  - id: BILINGUAL-GAME-SECTION
+    status: VERIFIED
+    base: df7d1954a0b4098f9678ed54acc911a57600adff
+    expires: 2026-12-20
+    reason: Citește limba configurată a documentației înaintea verificării secțiunii de produs; păstrează linkurile exacte APK și online și respinge adresele străine de publicare.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=ReleaseArtifactLayoutGovernanceTest,ReleasePresentationGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest#theGameSectionHasOnlyTheDirectApkAndTheOnlineGame
+      negative:
+        - atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest#rawRepositoryLinksAndAnotherVersionsAssetsAreRejected
+    paths:
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java
+```
+
+</details>

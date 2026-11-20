@@ -56,7 +56,9 @@ class ReleaseArtifactLayoutGovernanceTest {
     @Test void theGameSectionHasOnlyTheDirectApkAndTheOnlineGame() throws Exception {
         Path root = GovernanceProject.locateProjectRoot();
         String guide = Files.readString(root.resolve("README.md")).replace("\r\n", "\n");
-        int start = guide.indexOf("\n## Game\n");
+        String heading = GovernanceProject.policy(root).required("documentationLanguage").asText().equals("en")
+                ? "Game" : "Jocul";
+        int start = guide.indexOf("\n## " + heading + "\n");
         AuditedAssertions.assertTrue(start >= 0, "The product entry has its own section");
         int end = guide.indexOf("\n## ", start + 1);
         String section = guide.substring(start, end < 0 ? guide.length() : end);

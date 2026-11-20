@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-Ediție Android de mentenanță, calificată pentru livrare cu identitate de versiune cu două componente.
+Ediție Android de mentenanță publicată, cu identitate de versiune cu două componente.
 
 - [Descarcă APK 0.22](https://github.com/crististefanita/whist/releases/download/v0.22/WhistLab-0.22.apk)
 - [SHA-256](https://github.com/crististefanita/whist/releases/download/v0.22/WhistLab-0.22.apk.sha256)
@@ -10,6 +10,6 @@ Ediție Android de mentenanță, calificată pentru livrare cu identitate de ver
 
 ## Stare și domeniu
 
-Componentele sunt calificate; publicarea și descărcarea au verificări distincte. Manifestul păstrează identitatea APK-ului, sursa, semnătura și hash-urile fiecărui fișier.
+APK-ul este publicat; descărcarea prin API și browser a fost verificată. Manifestul păstrează identitatea APK-ului, sursa, semnătura și hash-urile fiecărui fișier.
 
 [README proiect](../../README.md) · [Catalog](../README.md) · [Calificarea livrării](../../docs/testing/ATF_ReleaseQualification.md)

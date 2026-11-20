@@ -7,5 +7,5 @@
     "Verifică auditul legat de sursă înaintea publicării fișierelor ediției.",
     "Folosește explicit baza Git revizuită și refolosește dovezile componentelor independente."
   ],
-  "evidenceUrlTemplate": "https://github.com/crististefanita/whist/blob/{evidenceCommit}/release/0.22/reports/README.md"
+  "evidenceUrl": "https://github.com/crististefanita/whist/blob/ab42fb4ae16b12f5ade8b42e78c116bf75660410/release/0.22/reports/README.md"
 }

@@ -13,7 +13,15 @@ Componentele sunt calificate pe surse identificate, cu rapoarte Extent canonice 
 | APK | WhistLab-0.22.apk |
 | versionCode | 45 |
 | Sursa calificată | `df7d1954a0b4098f9678ed54acc911a57600adff` |
-| Integritate | [Manifest](../release-validation.json) |
+| Integritate | ## Distribuție
+
+Descărcarea autentificată prin API și transferul anonim finalizat în browser corespund APK-ului calificat. Aceste verificări au rapoarte separate și nu se adaugă inventarului componentelor.
+
+- [Extent pentru transferul APK](download-extent.html)
+- [Extent pentru descărcarea din README](browser-download-extent.html)
+- [Identitatea livrării](distribution-verification.json)
+
+[Manifest](../release-validation.json) |
 
 ## Componente
 
