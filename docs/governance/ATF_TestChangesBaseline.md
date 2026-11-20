@@ -40,7 +40,7 @@ testChanges:
     base: 4b96da72e6bc8c97e1a01db4517a50a9f9d67574
     expires: 2026-12-20
     reason: Derive component ownership from the Gradle collection map, reuse only hash-bound unchanged suites, fail closed for shared or unknown inputs, enforce 0.x.y increments by change risk and resolve qualification roots from machine configuration.
-    proof: 'mvn -o -pl atf-tests -am -Dtest=ComponentEvidenceScopeComponentTest,ComponentEvidencePortabilityComponentTest,ReleaseVersionComponentTest,ReleaseRagProvenanceComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    proof: 'mvn -o -pl atf-tests -am -Dtest=ComponentEvidenceScopeComponentTest,ComponentEvidencePortabilityComponentTest,QualificationLauncherComponentTest,ReleaseVersionComponentTest,ReleaseRagProvenanceComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
     checks:
       positive:
         - atf.tests.governance.documentation.release.rag.scope.ComponentEvidenceScopeComponentTest#nodeContractTestsKeepReuseClassificationInsideTheRealBuildBoundary
@@ -51,6 +51,7 @@ testChanges:
         - atf.tests.governance.documentation.release.rag.scope.ComponentEvidenceScopeComponentTest#sharedDependenciesAndUnknownInputsCannotReuseTheirConsumers
         - atf.tests.governance.documentation.release.rag.scope.ComponentEvidencePortabilityComponentTest#androidSdkDoesNotSilentlyFallBackWhenNoMachinePathIsConfigured
         - atf.tests.governance.documentation.release.rag.scope.ComponentEvidencePortabilityComponentTest#relativeEvidenceRootIsRejectedInsteadOfResolvingAgainstTheCheckout
+        - atf.tests.governance.documentation.release.rag.scope.QualificationLauncherComponentTest#checkoutTmpStopsBothLaunchersBeforeStagingOrMaven
         - atf.tests.governance.documentation.release.rag.ReleaseRagProvenanceComponentTest#aMalformedReleaseVersionPatternBlocksPolicyWithoutCrashingTheEvaluator
         - atf.tests.governance.documentation.release.versioning.ReleaseVersionComponentTest#aChangeRiskCannotClaimAnIncorrectVersionIncrement
     paths:
@@ -58,6 +59,7 @@ testChanges:
       - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagProvenanceComponentTest.java
       - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidencePortabilityComponentTest.java
       - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/QualificationLauncherComponentTest.java
       - atf-tests/src/test/java/atf/tests/governance/documentation/release/versioning/ReleaseVersionComponentTest.java
       - atf-tests/tools/component-evidence-scope.mjs
       - atf-tests/tools/android-user-ownership.test.mjs
