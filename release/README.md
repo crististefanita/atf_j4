@@ -6,7 +6,7 @@ Catalogul identifică ediția Android curentă și păstrează o singură ediți
 
 ## Versiunea curentă
 
-[0.21.13 — APK, verificări și proveniență](0.21.13/README.md) este calificată pentru publicare. Linkul APK se află în README-ul principal.
+[0.21.13 — APK, verificări și proveniență](0.21.13/README.md) este ediția Android publicată curentă. Linkul APK se află în README-ul principal.
 
 ## Versiunea anterioară
 
@@ -16,7 +16,7 @@ Catalogul identifică ediția Android curentă și păstrează o singură ediți
 
 | Versiune | Stare | Dosar |
 |---|---|---|
-| 0.21.13 | Pregătită · calificare încheiată | [APK și dovezi](0.21.13/README.md) |
+| 0.21.13 | Publicată · APK verificat | [APK și dovezi](0.21.13/README.md) |
 | 0.21.12 | Ediția anterioară | [APK și dovezi](0.21.12/README.md) |
 
 ## Publicare și verificare

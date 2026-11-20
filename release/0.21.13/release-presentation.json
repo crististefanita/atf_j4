@@ -6,5 +6,5 @@
     "Actualizează integrarea meniurilor comune și a istoricului punctajului pentru Android și Web.",
     "Păstrează resursele Web asociate pe aceeași revizie de cache."
   ],
-  "evidenceUrlTemplate": "https://github.com/crististefanita/whist/blob/{evidenceCommit}/release/0.21.13/reports/README.md"
+  "evidenceUrl": "https://github.com/crististefanita/whist/blob/9de575e7789ae2548219ecd9c286f96b0069f95f/release/0.21.13/reports/README.md"
 }
