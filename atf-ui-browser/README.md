@@ -188,9 +188,9 @@ The viewport contract preserves a 414 × 896 logical frame on desktop, scales un
 .\atf-ui-browser\Package-CardTableBrowser.ps1 -WorkRoot $WorkRoot -Version $BrowserLibraryVersion
 ```
 
-- Choose `$BrowserLibraryVersion` and start out from a clean checkout Git. The exhibition writes the two JARs, fingerprints and `browser-build.json` in the external directory of the version. The registry links the files to the source comma and the input inventory.
+- Choose `$BrowserLibraryVersion` and start out from a clean checkout Git. The packager writes both JARs, checksums and `browser-build.json` into the external version directory. The receipt binds those files to their source commit and input inventory.
 - Check the commit and SHA-256 at adoption. The manifest installed near the two JARs shows which version each adapter uses.
-- Export shall re-use the Director of the same version after confrontation with entries and bytes. Changing entries requires a new version. The integration challenge starts the first match through the physical JARs, adaptor and game dependencies.
+- Packaging reuses an existing version only after comparing its inputs and bytes. Changed inputs require a new version. Consumer verification starts the first match through the packaged JARs, adapter and game dependencies.
 - Promote the same bytes and same fingerprints in qualified consumers. The version of the HTML cache aims at updating the site's resources. [Consumer verification](#verification)
 
 ### Portable Web and APK adapter contracts
@@ -296,3 +296,25 @@ Score actions have dedicated shared roles: primary actions use 24 logical units 
 The regular history profile removes bold headings and uses two logical units with the Whist divider color. Existing callers retain the legacy native constructor and the unchanged default Web appearance. Appearance is per table; clearing it restores defaults without changing unrelated styles.
 
 New shared UI coordinates use two-part 0.x versions. Existing three-part coordinates may only be reused after their input manifest and artifact hashes are verified; changed bytes require a new coordinate. Runtime, portable tests and checksums are delivered together.
+
+### Shared contract, separate platform adapters
+
+```mermaid
+flowchart LR
+    Game[Game projection] -->|defines| Plan[Menu and history contract]
+    Plan -->|binds callbacks and density| Android[Android adapter]
+    Plan -->|binds callbacks and CSS units| Web[Browser adapter]
+    Tests[Portable component contracts] -->|checks the same inputs| Android
+    Tests -->|checks the same inputs| Web
+    Android -->|renders| Native[Native widgets]
+    Web -->|renders| DOM[Browser DOM]
+```
+
+<details>
+<summary>Legend: shared intent and platform rendering</summary>
+
+- Games supply localized entries, availability and confirmed history values; the shared library owns immutable presentation policies.
+- Adapters own navigation and lifecycle callbacks. Android density and browser CSS units normalize to logical dimensions.
+- Component contracts verify models, ordering, styles and callback isolation. Native raster, keyboard and gesture acceptance remains separate from DOM measurements.
+
+</details>

@@ -176,8 +176,8 @@ A formula change first runs the components; a change of rendering or integration
 
 | Shared | Whist integration, maintained in the Whist app |
 |---|---|
-| Proportion, centering, regions and quarrying | The order of the engine actors and the legality of the card. |
+| Proportions, centering, regions and spacing | The order of the engine actors and the legality of the card. |
 | Ordered and immutable acts, markings and identities | Bidding, trump, trick, score and restoration. |
-| Wigets and selection ports | Snapshot → projection, original command and lifecycle. |
+| Widgets and selection ports | Snapshot → projection, original command and lifecycle. |
 
 Same Whist tests run before / after extraction with preserved sources and identities. The rules and projections belong to the adapter of each game; the Whist bid or score classes do not move into the common suite just to reuse the drawing.

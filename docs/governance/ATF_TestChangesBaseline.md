@@ -1288,3 +1288,38 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Android delivery identity</summary>
+
+```yaml
+testChanges:
+  - id: RELEASE-02113-MAIN
+    status: VERIFIED
+    base: 569462291a317cb4e4d6a2077d3a08fd336f92ec
+    expires: 2026-12-20
+    reason: Increment the Android delivery identity without changing gameplay; bind the advertised APK to candidate metadata.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=ReleaseArtifactLayoutGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest#theMainReadmeOmitsRawApkDigestWhileTheVersionManifestRetainsIt
+      negative:
+        - atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest#aPreparedAuthenticatedCandidateMayDeclareOnlyItsExactFutureGithubAsset
+    paths:
+      - whist-lab-app/app/build.gradle
+  - id: RELEASE-02113-RO
+    status: VERIFIED
+    base: 552d4389703219c9ee07bfb46102be17c5d3e6f2
+    expires: 2026-12-20
+    reason: Increment the Android delivery identity without changing gameplay; bind the advertised APK to candidate metadata.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=ReleaseArtifactLayoutGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest#theMainReadmeOmitsRawApkDigestWhileTheVersionManifestRetainsIt
+      negative:
+        - atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest#aPreparedAuthenticatedCandidateMayDeclareOnlyItsExactFutureGithubAsset
+    paths:
+      - whist-lab-app/app/build.gradle
+```
+
+</details>
