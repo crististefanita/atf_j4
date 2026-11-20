@@ -6,7 +6,7 @@ The catalog identifies the current Android edition and retains one preceding pub
 
 ## Current version
 
-[0.22.1 — qualified Android maintenance edition](0.22.1/README.md) is qualified and awaiting authenticated GitHub publication. The main README links to its pinned APK asset.
+[0.22.1 — qualified Android maintenance edition](0.22.1/README.md) is published and its authenticated APK download and checksum are verified. The main README links to its pinned APK asset.
 
 ## Previous version
 
@@ -16,7 +16,7 @@ The catalog identifies the current Android edition and retains one preceding pub
 
 | Version | State | Dossier |
 |---|---|---|
-| 0.22.1 | Qualified; publication pending | [APK and evidence](0.22.1/README.md) |
+| 0.22.1 | Published; authenticated download verified | [APK and evidence](0.22.1/README.md) |
 | 0.22 | Previous published edition | [APK and evidence](0.22/README.md) |
 
 ## Publication and verification

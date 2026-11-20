@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "publication": {
-    "state": "QUALIFIED",
+    "state": "PUBLISHED",
     "channel": "TEST",
     "repository": "crististefanita/whist",
     "accessMode": "AUTHENTICATED",
@@ -57,6 +57,10 @@
           "androidComponents": {
             "status": "PASS",
             "receipt": "reports/component/source-component-run.json"
+          },
+          "distributionDownload": {
+            "status": "PASS",
+            "receipt": "reports/distribution-verification.json"
           }
         }
       }
@@ -162,12 +166,12 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-20T16:59:10.656Z",
+    "observedUtc": "2026-11-20T17:10:30.287Z",
     "files": [
       {
         "path": "README.md",
-        "bytes": 658,
-        "sha256": "100e75b186712cd2d1691dc9bc7118e257f7f2a6d2eac5ee33dc9287416a929f"
+        "bytes": 821,
+        "sha256": "4da5d36e17c59a86f1142f63146381b90e1b81f9d9c6765c92877a60dfed3c07"
       },
       {
         "path": "WhistLab-0.22.1.apk",
@@ -190,9 +194,14 @@
         "sha256": "5391eeefd97686a79d26a6606f94828534fb8777bb7be16c358de9dab1b83458"
       },
       {
+        "path": "github-release.json",
+        "bytes": 873,
+        "sha256": "339600a23d258356b0faef6f25230843bd885317f60f85f55e024fd78f16feb6"
+      },
+      {
         "path": "release-notes.md",
-        "bytes": 391,
-        "sha256": "e77c6480b454b525a1fba6ad4cfe9c9ecf095772cdf6e077b25195b435ae71c1"
+        "bytes": 574,
+        "sha256": "d5b3a86cfd67f287f2b1ee60201292f4be280a3f6206bc41a5948e306817052d"
       },
       {
         "path": "release-presentation.json",
@@ -201,8 +210,8 @@
       },
       {
         "path": "reports/README.md",
-        "bytes": 2619,
-        "sha256": "d6a726f069d62fe79dab2446be1b222bb598d078e4b4b46589be40e09c8e8cd9"
+        "bytes": 2687,
+        "sha256": "b67e2a18338bc6f15349b27576da45970b83d0f18f67a456e1a97caa489c01c9"
       },
       {
         "path": "reports/apk-inputs.json",
@@ -433,6 +442,11 @@
         "path": "reports/diagnostics/signing-compatibility.json",
         "bytes": 383,
         "sha256": "d89cb1fd29e1f4867fe2817b150e540074e984964fc5a3fd5b5f0737b7fc2db5"
+      },
+      {
+        "path": "reports/distribution-verification.json",
+        "bytes": 1036,
+        "sha256": "84f5ca878753b2938b98172798426de743e342d061ae31875aad739ea7a4da22"
       }
     ]
   }
