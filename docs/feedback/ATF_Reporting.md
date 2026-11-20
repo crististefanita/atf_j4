@@ -80,4 +80,4 @@ Measurement justifies investigating the reduction of redundancy; it does not pro
 
 ## Remaining producer qualification
 
-For each remaining producer, include the standard Overview and English narration in the standalone-HTML acceptance. Keep original application-language evidence intact, preserve case-owned inline PNGs and refuse missing or misassigned frames. The browser publisher contract belongs to the focused reporting component suite; it does not imply acceptance of unrelated producers or alter sealed release evidence.
+For each remaining producer, include the standard `Overview` and English narration in the standalone-HTML acceptance. Keep original application-language evidence intact, preserve case-owned inline PNGs and refuse missing or misassigned frames. The browser publisher contract belongs to the focused reporting component suite; it does not imply acceptance of unrelated producers or alter sealed release evidence.
