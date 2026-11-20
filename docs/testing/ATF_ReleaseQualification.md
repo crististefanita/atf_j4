@@ -275,11 +275,14 @@ Rapoartele native păstrează APK-ul, commitul execuției, amprenta sursei, scen
 
 | Familie de intrări | Frontiera reutilizării |
 |---|---|
-| APK și motor | SHA-256 al APK-ului și amprenta intrărilor motorului sunt identice; schimbarea surselor jocului, binarelor, resurselor sau intrărilor necunoscute cere un flux nou. |
+| APK și runtime | SHA-256 identic al APK-ului și aceeași amprentă a intrărilor Android; schimbările motorului, binarelor native, resurselor ori intrărilor necunoscute cer un flux nou. |
 | Scenariu | Infrastructura nativă și intrările lansatoarelor rămân identice, împreună cu selecția fluxului, API-ul, profilul de afișare și matricea adaptivă. |
 | Validator | Modulele Node de la primul nivel al directorului uneltelor de release au o revizie observată proprie; schimbarea lor cere validare, nu execuție nativă. Câmpul opțional `validatorRevision` din cererea E2E sau plan fixează această revizie. |
 | Metadate editoriale | Documentația și înregistrarea reviziei bilingve se pot schimba fără modificarea identității motorului nativ. |
+| Modul exclusiv Web | `atf-ui-browser/` nu face parte din graful build-ului Android. Modificările lui pot păstra probele APK-ului numai cu aceiași octeți APK și intrări native și de scenariu neschimbate. |
 | Dovezi originale | Păstrați octeții chitanței, raportului și izolării. Fiecare grup deține `source-provenance.json`; grupurile împart documentul original al intrărilor sursei sub amprenta lui. |
+
+[Contractele de componentă](../../atf-tests/tools/android-e2e-runtime-scope.test.mjs) verifică separarea browserului de build-ul Android, adăugarea, modificarea și eliminarea intrărilor și resping schimbările native sau necunoscute combinate. Câmpurile originale de amprentă rămân intacte; validatorul curent înregistrează separat `runtimeAdmission`, cu căile schimbate și amprenta Android neschimbată. Selecția fluxurilor obligatorii calculată din diff rămâne neschimbată.
 
 Execuțiile noi înregistrează automat această proveniență. Pentru dovezile mai vechi cu schema 2, exportați din directorul calificat original într-o rulare externă nouă ce conține `e2e-request.json`, apoi importați în candidat. Exportul păstrează octeții originali și reduce reutilizările succesive la snapshot-ul primei execuții.
 

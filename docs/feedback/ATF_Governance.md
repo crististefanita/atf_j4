@@ -72,3 +72,15 @@ Selecția conservatoare include resursele exclusiv Web, pachetele istorice ale n
 - Declarați platforma responsabilă pentru resurse și împachetare; schimbările necunoscute ale execuției comune trebuie să selecteze în continuare fiecare flux afectat.
 - Simulați schimbări exclusiv Web, eliminarea versiunilor nefolosite, schimbări ale meniului Android și ale dependențelor de execuție. Cereți un caz vecin valid și un control negativ pentru fiecare excludere.
 - Măsurați separat inventarul, copierea, compilarea, execuția și așteptarea dispozitivului. Păstrați separat snapshot-ul RAG exclusiv de surse și workspace-urile componentelor care conțin catalogul de release și fișiere generate.
+
+## Admiterea testChanges înainte de pregătirea colecției
+
+Respingeți probele de control al sursei lipsă sau expirate înainte de copierea cache-urilor, compilare ori lansarea unei colecții lungi. Eșecul târziu de guvernanță protejează corectitudinea, dar consumă inutil pregătirea validată și execuțiile fără legătură.
+
+- Descoperiți ID-urile controalelor necesare din diff-ul Git revizuit și validați explicit rădăcina externă a probelor.
+- Folosiți același validator pentru admitere și guvernanța finală: ID-ul, baza, commitul, diff-ul, selectorii pozitivi și negativi și hash-ul raportului original trebuie să corespundă.
+- Generați controalele lipsă folosind compilarea existentă înaintea colecției primare; transmiteți explicit rădăcina rezultată procesului suitei.
+- Acoperiți configurația absentă, alt commit, controlul negativ lipsă, raportul modificat și schimbarea sursei între admitere și execuție. Probele lipsă trebuie să oprească fluxul înainte de Maven; sursele schimbate trebuie să invalideze în continuare admiterea.
+- Măsurați separat pregătirea respinsă și execuția acceptată. Nu înlocuiți raportul original eșuat cu un caz vecin trecut și nu editați un receipt de execuție.
+
+- Faceți baza de revizie un parametru explicit în lansările locale și izolate. Verificați planul controalelor înaintea dependențelor; o bază istorică incompatibilă trebuie respinsă cu același diagnostic înaintea compilării.

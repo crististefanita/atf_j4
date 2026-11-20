@@ -85,3 +85,5 @@ test('re-export flattens provenance and shares the original snapshot without rew
   const final = JSON.parse(await fs.readFile(path.join(next, 'release-validation.json')));
   assert.equal((await planAndroidE2e(next, final, request))[0].decision, 'REUSE');
 });
+
+import './android-e2e-runtime-scope.test.mjs';

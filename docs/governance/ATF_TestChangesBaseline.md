@@ -2,7 +2,7 @@
 
 ## Pe scurt
 
-Acest registru păstrează controalele tehnice verificate, cu baza Git și căile lor exacte. [Ghidul schimbărilor de teste](ATF_TestChanges.md) stabilește regulile comune și separă cererea activă de înregistrarea verificată.
+Acest registru definește controalele revizuite, baza Git și căile lor exacte. [Ghidul modificărilor testelor](ATF_TestChanges.md) explică eligibilitatea și separă controalele înregistrate de probele executate pentru diff-ul curent.
 
 ## Controale verificate
 
@@ -1320,6 +1320,64 @@ testChanges:
         - atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest#aPreparedAuthenticatedCandidateMayDeclareOnlyItsExactFutureGithubAsset
     paths:
       - whist-lab-app/app/build.gradle
+```
+
+</details>
+
+<details>
+<summary>Admiterea probelor native după schimbări exclusiv Web</summary>
+
+```yaml
+testChanges:
+  - id: NATIVE-WEB-ADMISSION-RO
+    status: VERIFIED
+    base: 552d4389703219c9ee07bfb46102be17c5d3e6f2
+    expires: 2026-12-20
+    reason: Păstrează probele originale ale aceluiași APK după schimbări exclusive ale modulului Web și respinge runtime-ul Android, scenariile ori proveniența schimbate.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=NativeSourceProvenanceComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.rag.nativeproof.NativeSourceProvenanceComponentTest#immutableRuntimeEvidenceSurvivesValidatorMaintenanceButRejectsChangedInputs
+      negative:
+        - atf.tests.governance.documentation.release.rag.nativeproof.NativeSourceProvenanceComponentTest#legacyEvidenceAndSourceSelectionKeepTheirIndependentGuards
+    paths:
+      - atf-tests/tools/android-e2e-provenance.mjs
+      - atf-tests/tools/android-e2e-provenance-fixture.mjs
+      - atf-tests/tools/android-e2e-runtime-scope.test.mjs
+      - atf-tests/tools/android-e2e-provenance.test.mjs
+```
+
+</details>
+
+<details>
+<summary>Meniuri comune și audit pe baza revizuită a colectorului</summary>
+
+```yaml
+testChanges:
+  - id: SHARED-MENU-AUDIT-BASE-RO
+    status: VERIFIED
+    base: 552d4389703219c9ee07bfb46102be17c5d3e6f2
+    expires: 2026-12-20
+    reason: Leagă meniurile, aspectul istoricului, raportarea și lansatorul izolat de comparații reale pozitive și negative pe baza Git declarată.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=SharedMenuHistoryComponentTest,BrowserExtentPublicationComponentTest,ReleasePresentationGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#historyTypographyAndDividersFollowTheNativePolicy
+        - atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#menuAdaptersKeepNativeLabelsOrderAndDispatch
+        - atf.tests.reporting.browser.BrowserExtentPublicationComponentTest#standardOverviewKeepsEnglishNarrativeAndScenarioOwnedCaptures
+      negative:
+        - atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#invalidStylesAreAtomicAndClearingRestoresTheBaseline
+        - atf.tests.reporting.browser.BrowserExtentPublicationComponentTest#externalCaptureAndInvalidPngCannotBePublished
+        - atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest#aPreparedCandidateCannotClaimPublicationOrInventASourceCommit
+    paths:
+      - .github/workflows/whist-components.yml
+      - atf-tests/src/test/java/atf/tests/governance/uiadapter/SharedMenuHistoryComponentTest.java
+      - atf-tests/src/test/java/atf/tests/reporting/browser/BrowserExtentPublicationComponentTest.java
+      - atf-tests/src/test/java/atf/tests/reporting/browser/BrowserReportFixture.java
+      - whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/score/HistoryAppearanceComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/reporting/GameReportComponentSuite.java
+      - whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/menu/TableMenuContentComponentTest.java
 ```
 
 </details>

@@ -78,7 +78,7 @@ async function bindRagCandidate(candidate, sourceRoot, planFile) {
 if (process.argv[2] === 'bind-rag' && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url))
   await bindRagCandidate(...process.argv.slice(3));
 
-export async function nativeFixture(t, {exported = true} = {}) {
+export async function nativeFixture(t, {exported = true, extraInputs = []} = {}) {
   const base = await fs.mkdtemp(path.join(os.tmpdir(), 'native-origin-'));
   t.after(() => fs.rm(base, {recursive: true, force: true}));
   const origin = path.join(base, 'origin', request.releaseVersion), candidate = path.join(base, 'candidate', request.releaseVersion);
@@ -86,7 +86,8 @@ export async function nativeFixture(t, {exported = true} = {}) {
   for (const directory of [origin, candidate, run]) await fs.mkdir(directory, {recursive: true});
   const manifest = {release: {versionName: request.releaseVersion, apkSha256: 'a'.repeat(64), applicationId: 'ro.whistlab.app'},
     publication: {state: 'PREPARED'}, qualification: {e2eGroups: {}}, integrity: {files: []}};
-  await setSources(origin, manifest, inputs, 'c'.repeat(40));
+  const sourceInputs = inputs.concat(extraInputs);
+  await setSources(origin, manifest, sourceInputs, 'c'.repeat(40));
   const paths = e2ePaths(flow), leaseId = 'd'.repeat(32), isolation = disposablePaths(leaseId);
   const common = {scope: 'ANDROID_SECONDARY_USER', applicationId: manifest.release.applicationId,
     originalUserId: 0, originalPackageWasInstalledBefore: true};
@@ -110,7 +111,7 @@ export async function nativeFixture(t, {exported = true} = {}) {
   const current = structuredClone(manifest);
   current.qualification.e2eGroups = {};
   current.integrity.files = [];
-  const files = inputs.map(row => [validatorFile, 'docs/Guide.md'].includes(row.path) ? {...row, sha256: digest('new ' + row.path)} : {...row});
+  const files = sourceInputs.map(row => [validatorFile, 'docs/Guide.md'].includes(row.path) ? {...row, sha256: digest('new ' + row.path)} : {...row});
   await setSources(candidate, current, files);
   await fs.writeFile(path.join(run, 'e2e-request.json'), JSON.stringify(request));
   if (exported) {
