@@ -1,6 +1,7 @@
 package atf.tests.governance.documentation.release.reporting;
 
 import atf.testkit.AtfComponentTest;
+import atf.tests.distribution.ReleaseVersion;
 import atf.tests.governance.support.GovernanceProject;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -98,14 +99,7 @@ class ReleaseSuiteReportingGovernanceTest {
     }
 
     private static boolean releaseVersionAtLeast(String version, String minimum) {
-        String[] current = version.split("-", 2)[0].split("\\.");
-        String[] threshold = minimum.split("-", 2)[0].split("\\.");
-        if (current.length != 3 || threshold.length != 3) return false;
-        for (int index = 0; index < current.length; index++) {
-            int comparison = Integer.compare(Integer.parseInt(current[index]), Integer.parseInt(threshold[index]));
-            if (comparison != 0) return comparison > 0;
-        }
-        return true;
+        return ReleaseVersion.atLeast(version, minimum);
     }
 
     private static Map<String, String> payloadHashes(JsonNode manifest) {

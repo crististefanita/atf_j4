@@ -109,7 +109,7 @@ public final class DocumentationContentPolicy {
     /** Historical release READMEs may link to their own tagged asset; visible labels remain governed prose. */
     public static String historicalReleaseProse(String relative, String source, String repository) {
         var archive = java.util.regex.Pattern.compile(
-                "^release/([0-9]+\\.[0-9]+\\.[0-9]+)/README\\.md$").matcher(relative.replace('\\', '/'));
+                "^release/([0-9]+\\.[0-9]+(?:\\.[0-9]+)?)/README\\.md$").matcher(relative.replace('\\', '/'));
         if (!archive.matches() || repository.isEmpty()) return source;
         String version = archive.group(1);
         String page = repository + "/releases/tag/v" + version;

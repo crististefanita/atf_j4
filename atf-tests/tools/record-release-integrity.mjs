@@ -2,11 +2,12 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import crypto from 'node:crypto';
+import {releaseVersionPattern} from './release-version.mjs';
 
 // Preparation only: observing hashes neither runs tests nor promotes their verdict.
 export async function recordIntegrity(project, version) {
   const root = await fs.realpath(project);
-  if (!/^(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$/.test(version)) throw Error('Invalid release version');
+  if (!releaseVersionPattern.test(version)) throw Error('Invalid release version');
   const folder = path.join(root, 'release', version);
   if (await fs.realpath(folder) !== folder) throw Error('Release directory must have its canonical location');
   const manifest = path.join(folder, 'release-validation.json'), original = await fs.readFile(manifest);

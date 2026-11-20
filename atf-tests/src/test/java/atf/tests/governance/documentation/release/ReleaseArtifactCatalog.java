@@ -1,6 +1,7 @@
 package atf.tests.governance.documentation.release;
 
 import atf.tests.distribution.ReleaseDownloadSelection;
+import atf.tests.distribution.ReleaseVersion;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,7 +29,7 @@ final class ReleaseArtifactCatalog {
         var result = new ArrayList<Path>();
         for (var entry : versions) {
             String version = entry.asText();
-            require(entry.isTextual() && version.matches("(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?"), "VERSION", root);
+            require(entry.isTextual() && ReleaseVersion.isValid(version), "VERSION", root);
             require(names.add(version), "DUPLICATE", root);
             Path folder = root.resolve(version);
             require(Files.isDirectory(folder) && folder.toRealPath().getParent().equals(root.toRealPath()), "FOLDER", folder);
@@ -51,7 +52,7 @@ final class ReleaseArtifactCatalog {
         if (!candidateVersion.isMissingNode()) {
             String version = candidateVersion.asText();
             require(candidateVersion.isTextual()
-                    && version.matches("(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)\\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?")
+                    && ReleaseVersion.isValid(version)
                     && !names.contains(version), "CANDIDATE-VERSION", root);
             Path receipt = root.resolve("candidate.json");
             require(Files.isRegularFile(receipt) && receipt.toRealPath().getParent().equals(root.toRealPath()),

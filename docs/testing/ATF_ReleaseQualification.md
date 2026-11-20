@@ -105,6 +105,8 @@ The RAG evaluator consumes the evidence already produced and issues a readonly v
 - The verdict embeds the exact plan as UTF-8 Base64 in `qualificationPlan.contentBase64`; its hash supports review without a separate temporary plan copy.
 - Unresolved gaps are tracked in [feedback register](../feedback/README.md#prioritized-todos).
 
+Before publication, [audit admission](../../atf-tests/tools/publication-audit.mjs) reads the exact dossier commit through Git. A source-bound `QUALIFIED` snapshot retains passing evidence without claiming delivery; missing sources, another APK, changed report bytes and an indirect index stop before any GitHub mutation.
+
 The plan declares version, channel (`LOCAL`, `TEST` or `PRODUCTION`), risk, platforms, component groups, flow-change status and a justified E2E decision.
 
 ### Evaluator regression tests

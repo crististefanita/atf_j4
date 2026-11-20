@@ -14,6 +14,23 @@ const runReceipt = 'source-component-run.json';
 const provenanceReceipt = 'source-provenance.json';
 const extent = '<html><img src="data:image/png;base64,AA=="></html>';
 
+test('the identified qualification workflow affects framework governance but not product compilation', () => {
+  const workflow = '.github/workflows/whist-components.yml';
+  const previous = new Map([[workflow, 'a'.repeat(64)]]), current = new Map([[workflow, 'b'.repeat(64)]]);
+  const independent = ['atf-validation', 'atf-test-android', 'whist-lab-app-rules', 'whist-lab-app-atf-card-table-ui',
+    ...['achievements', 'bidding', 'commands', 'display', 'history'].map(key => 'whist-lab-app-' + key)];
+  for (const group of independent) {
+    assert.equal(componentEvidenceScope(group, current, previous).decision, 'REUSE', group);
+    for (const critical of ['.github/workflows/unknown.yml', 'whist-lab-app/app/src/main/java/Unknown.java', 'pom.xml']) {
+      const result = componentEvidenceScope(group, new Map([...current, [critical, 'c'.repeat(64)]]), previous);
+      if (critical.endsWith('Unknown.java') && ['atf-validation', 'atf-test-android', 'whist-lab-app-rules', 'whist-lab-app-atf-card-table-ui'].includes(group)) continue;
+      assert.equal(result.decision, 'RUN', group + ': ' + critical);
+    }
+  }
+  assert.equal(componentEvidenceScope('atf-tests', current, previous).decision, 'RUN');
+  assert.equal(componentEvidenceScope('unknown-group', current, previous).decision, 'RUN');
+});
+
 test('Web-only artifacts preserve independent native and API evidence while critical or unknown changes still rerun', () => {
   const changed=new Map([['atf-ui-browser/lib/browser-build.json','a'.repeat(64)],
     ['atf-ui-browser/lib/atf-ui-browser-1.2.3.jar','b'.repeat(64)],['atf-ui-browser/src/main/web/table.css','c'.repeat(64)]]);

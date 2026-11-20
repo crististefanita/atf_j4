@@ -85,6 +85,8 @@ Reject missing or stale source-control evidence before copying caches, compiling
 
 - Make the review base an explicit input for local and isolated launches. Check the control plan before dependency preparation; an incompatible historical base must fail with the same diagnostic before compilation.
 
+The isolated workflow now receives the review base explicitly. Admission of unresolved source-control evidence before dependency preparation remains open; selecting the right base alone does not close that boundary.
+
 ## Published audit commit admission
 
 The publication flow can advertise a prepared dossier commit before its manifest contains the qualified source commit. Final governance rejects this link, but the public release then needs a metadata correction.

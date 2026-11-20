@@ -6,6 +6,14 @@ Git and GitHub retain the current published release and its immediate predecesso
 
 ## Active structure
 
+New application releases use `0.<minor>` for the Android name, dossier, tag and asset filename. Increment Android `versionCode` for every delivered APK; keep historical three-part identities unchanged.
+
+| Boundary | Contract |
+|---|---|
+| Ordering | Compare numeric major, minor and optional historical patch values; an absent patch means zero. Numerically equivalent names cannot occupy both catalog slots. |
+| New delivery | [Version policy](../../config/release-platform-rag-policy.json) and [component governance](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/versioning/ReleaseVersionComponentTest.java) enforce the two-part application convention. |
+| Recovery | Publication, Git reconstruction and the local projection accept the same identity while retaining historical manifests and hashes. |
+
 ```text
 release/
   README.md
@@ -87,6 +95,8 @@ An uncommitted candidate is marked `PREPARED` and identified by its snapshot has
 - At publication, pin the documentation URL to the actual commit, generate `release-notes.md` and record the verified channel. Do not invent a commit or claim a download that did not complete.
 - A GitHub release uses `publication.state: PUBLISHED`, the `github-release.json` manifest and the same source commit in `targetCommit`. An APK published through the Site uses `publication.state: PUBLISHED_SITE` and proof of anonymous download from `reports/distribution-verification.json`; no GitHub release is invented.
 - Both transitions record `source.sourceCommit`, replace `evidenceUrlTemplate` by `evidenceUrl` and require final release notes with the APK and the checksum published on the distribution channel.
+
+A `QUALIFIED` dossier is a source-bound, passing snapshot awaiting publication. It records the real source commit and keeps the evidence URL as a template; it has no published-release record. Before creating a draft, the [audit admission](../../atf-tests/tools/publication-audit.mjs) reads the referenced Git blobs and checks source, APK identity, canonical report hash and the direct index link.
 
 `versionName` identifies the edition; increment `versionCode` for every delivered APK. Even after resetting visible numbering, preserve the Android [version-code](https://developer.android.com/studio/publish/versioning) and signing-certificate upgrade path. Explicitly mark the promoted GitHub edition as latest.
 

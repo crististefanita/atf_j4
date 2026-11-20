@@ -1,6 +1,6 @@
 import {evidenceFreshness, observationDeadline} from './release-evidence-freshness.mjs';
 
-const versionPattern = /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/;
+import {publishedVersionPattern as versionPattern, releaseVersionAtLeast} from './release-version.mjs';
 const sha256Pattern = /^[a-f0-9]{64}$/;
 const commitPattern = /^[a-f0-9]{40}$/;
 const repositoryPattern = /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
@@ -20,9 +20,8 @@ export function catalogVersions(catalog) {
       || !versions.every(version => typeof version === 'string' && versionPattern.test(version))) {
     throw Error('RETENTION_CATALOG: expected the current version and one previous version');
   }
-  const current = versions[0].split('.').map(Number), previous = versions[1].split('.').map(Number);
-  const difference = current.findIndex((value, index) => value !== previous[index]);
-  if (difference < 0 || current[difference] <= previous[difference]) throw Error('RETENTION_CATALOG_ORDER');
+  if (!releaseVersionAtLeast(versions[0], versions[1]) || releaseVersionAtLeast(versions[1], versions[0]))
+    throw Error('RETENTION_CATALOG_ORDER');
   return versions;
 }
 

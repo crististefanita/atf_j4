@@ -3,6 +3,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {digest, regularFile, strictJson} from './evaluate-release-rag.mjs';
 import {gitBlob} from './git-snapshot-blobs.mjs';
+import {releaseVersionPattern} from './release-version.mjs';
 
 const sourcePaths = new Set(['README.md', 'release-notes.md', 'reports/README.md',
   'README.en.md', 'release-notes.en.md', 'reports/README.en.md']);
@@ -10,7 +11,7 @@ const receiptName = 'documentation-provenance.json';
 
 /** Presentation may be translated; the original publication documents remain verifiable in Git. */
 export async function verifyDocumentationProvenance(root, version, options = {}) {
-  if (typeof version !== 'string' || !/^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?$/.test(version))
+  if (typeof version !== 'string' || !releaseVersionPattern.test(version))
     throw Error('DOC-RELEASE-VERSION');
   const folder = path.join(await fs.realpath(root), 'release', version);
   const receipt = path.join(folder, receiptName);

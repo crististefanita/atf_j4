@@ -15,6 +15,12 @@ final class ReleaseHandoffState {
             require(validation.path("source").path("sourceCommit").asText().matches("[0-9a-f]{40}"), "COMMIT");
             return false;
         }
+        if (state.equals("QUALIFIED")) {
+            require(!hasPublishedRecord && validation.path("qualification").path("state").asText().equals("PASS"), "STATE");
+            require(validation.path("source").path("sourceCommit").asText().matches("[0-9a-f]{40}"), "COMMIT");
+            require(validation.path("source").path("workingTreeFingerprint").asText().matches("[0-9a-f]{64}"), "FINGERPRINT");
+            return true;
+        }
         require(state.equals("PREPARED") && !hasPublishedRecord, "STATE");
         var provenance = validation.path("source");
         require(provenance.has("sourceCommit") && provenance.path("sourceCommit").isNull(), "COMMIT");

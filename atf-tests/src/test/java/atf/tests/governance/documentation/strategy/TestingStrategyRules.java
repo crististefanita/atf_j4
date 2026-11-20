@@ -9,7 +9,7 @@ final class TestingStrategyRules {
     static final String OWNER = "<!-- atf-testing-strategy-owner -->";
     private static final Pattern RESULTS = Pattern.compile("(?iu)\\b[0-9]+\\s*/\\s*[0-9]+\\s+(?:trecute|PASS|verzi|passed)\\b"
             + "|\\b[0-9]+\\s+(?:teste|tests)\\s*[,;:]?\\s*(?:trecute|verzi|passed|PASS\\b|fără\\s+(?:erori|omisiuni))");
-    private static final Pattern VERSION_PATH = Pattern.compile("(?i)(?:release|artifacts/reports)/[0-9]+\\.[0-9]+\\.[0-9]+(?:/|\\b)");
+    private static final Pattern VERSION_PATH = Pattern.compile("(?i)(?:release|artifacts/reports)/[0-9]+\\.[0-9]+(?:\\.[0-9]+)?(?:/|\\b)");
     static List<String> violations(String text) {
         var result = new ArrayList<String>();
         if (RESULTS.matcher(text).find()) result.add("run-specific test outcome");

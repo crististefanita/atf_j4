@@ -1437,3 +1437,56 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Two-part release identity and source-bound audit admission</summary>
+
+```yaml
+testChanges:
+  - id: TWO-PART-RELEASE-AND-AUDIT
+    status: VERIFIED
+    base: 0020521d3793c90c5da53d9efb53c8ab03e35680
+    expires: 2026-12-20
+    reason: Keep numeric two-part and historical ordering consistent across publication, reconstruction, download and the local projection; reject foreign audit source and report bytes before GitHub mutation.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=ReleaseVersionComponentTest,ReleasePresentationGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.versioning.ReleaseVersionComponentTest#theApplicationUsesTheDeclaredTwoPartReleaseConvention
+        - atf.tests.governance.documentation.release.versioning.ReleaseVersionComponentTest#releaseAdaptersAcceptTwoPartNamesAndRejectForeignAuditCommits
+      negative:
+        - atf.tests.governance.documentation.release.versioning.ReleaseVersionComponentTest#invalidIdentitiesCannotConstructDownloadPaths
+        - atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest#aPreparedCandidateCannotClaimPublicationOrInventASourceCommit
+    paths:
+      - .github/workflows/whist-components.yml
+      - atf-tests/src/main/java/atf/tests/distribution/ApkDownloadTarget.java
+      - atf-tests/src/main/java/atf/tests/distribution/ReleaseVersion.java
+      - atf-tests/src/main/java/atf/tests/documentation/policy/DocumentationContentPolicy.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/handoff/ReleaseCommitEvidence.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactCatalog.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseCatalogPresentation.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseHandoffState.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/reporting/ReleaseSuiteReportingGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/versioning/ReleaseVersionComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/strategy/TestingStrategyRules.java
+      - atf-tests/tools/check-release-artifacts.mjs
+      - atf-tests/tools/component-evidence-scope.mjs
+      - atf-tests/tools/documentation-editions.mjs
+      - atf-tests/tools/evaluate-release-rag.mjs
+      - atf-tests/tools/github-release-journal.mjs
+      - atf-tests/tools/github-release-retention.mjs
+      - atf-tests/tools/local-release-sync.mjs
+      - atf-tests/tools/prepare-component-reuse.test.mjs
+      - atf-tests/tools/publication-audit.mjs
+      - atf-tests/tools/publication-audit.test.mjs
+      - atf-tests/tools/publish-github-release.mjs
+      - atf-tests/tools/record-release-integrity.mjs
+      - atf-tests/tools/release-documentation-provenance.mjs
+      - atf-tests/tools/release-version.mjs
+      - atf-tests/tools/release-version.test.mjs
+      - atf-tests/tools/verify-release-git-snapshot.mjs
+      - config/release-platform-rag-policy.json
+      - whist-lab-app/app/build.gradle
+```
+
+</details>

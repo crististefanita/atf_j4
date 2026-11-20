@@ -14,7 +14,7 @@ import {readVisualContractSources} from './visual-contract-sources.mjs';
 import {catalogVersions, expectedEdition, githubRetentionPolicy, githubRetentionProblems} from './github-release-retention.mjs';
 import {documentationEditionsPolicy, matchesDocumentationEditionsPolicy, verifyReviewedDocumentation} from './documentation-editions.mjs';
 
-const VERSION = /^(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$/;
+import {releaseVersionPattern as VERSION, releaseVersionAtLeast} from './release-version.mjs';
 const HASH = /^[0-9a-f]{64}$/;
 const COMMIT = /^[0-9a-f]{40}$/;
 const STATUSES = new Set(['PASS', 'FAIL', 'BLOCKED', 'NOT_RUN', 'NOT_APPLICABLE', 'NOT_IMPLEMENTED']);
@@ -23,16 +23,6 @@ const REQUIRED_ANDROID_COMPONENT_GROUPS = [
   'whist-lab-app-bidding', 'whist-lab-app-commands',
   'whist-lab-app-display', 'whist-lab-app-history'
 ];
-
-function releaseVersionAtLeast(version, minimum) {
-  if (!VERSION.test(version ?? '') || !VERSION.test(minimum ?? '')) return false;
-  const current = version.split('-')[0].split('.').map(Number);
-  const threshold = minimum.split('-')[0].split('.').map(Number);
-  for (let index = 0; index < current.length; index++) {
-    if (current[index] !== threshold[index]) return current[index] > threshold[index];
-  }
-  return true;
-}
 
 function componentGroupsRequiredForVersion(policy, platform, version) {
   const configuredBase = policy.ragEvaluator?.requiredComponentGroupsByPlatform?.[platform];
