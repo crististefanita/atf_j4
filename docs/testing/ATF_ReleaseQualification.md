@@ -183,11 +183,56 @@ Calculați selecția înainte de build, din snapshot-ul copiat de lansatoarele d
 - La reevaluarea unei versiuni reținute, baza este ediția anterioară din același catalog.
 - Baza trebuie să fie publicată și calificată, cu inventarul surselor legat prin hash de manifest.
 
+Snapshot-ul `main` versionat în Git este sursa adevărului pentru release. Selecția compară fișierele lui fixate cu inventarul ultimei surse publicate din `release/index.json`; ownership-ul derivă din limitele declarate ale modulelor, nu din numele release-ului sau dintr-o listă aleasă manual.
+
+#### Ownership-ul componentelor și reutilizarea dovezilor
+
+O suită se reutilizează numai când receipt-ul ei original a trecut, raportul și inventarul surselor sunt valide, iar toate intrările deținute de acea suită au aceleași hash-uri în candidat. Prin urmare, un modul neschimbat nu se rerulează doar pentru că s-a schimbat alt modul, documentația sau un harness independent.
+
+```mermaid
+flowchart LR
+    DIFF[Diff candidat] -->|clasifică| OWNER{Owner cunoscut?}
+    OWNER -->|un singur pachet| GROUP[Suită proprietară]
+    OWNER -->|dependență comună| USERS[Suite dependente]
+    OWNER -->|cale necunoscută| ALL[Toate suitele]
+    GROUP -->|calculează hash-urile| HASH{Intrări neschimbate?}
+    USERS -->|calculează hash-urile| HASH
+    ALL -->|refuză implicit| RUN[Rulează suitele selectate]
+    HASH -->|dovezi valide| REUSE[Reutilizează receipt-ul și Extent]
+    HASH -->|schimbat sau expirat| RUN
+    RUN -->|leagă raportul| SEAL[Fixează snapshot-ul candidat]
+    REUSE -->|păstrează proveniența| SEAL
+```
+
+<details>
+<summary>Legendă — ownership-ul suitei și deciziile privind dovezile</summary>
+
+Fiecare săgeată numește decizia reprezentată. Reutilizarea cere în continuare hash-uri de intrări identice și un receipt original valid.
+</details>
+
+| Limită de intrare | Regula de selecție |
+|---|---|
+| Pachet de aplicație declarat în `config/gradle-app-collections.properties` | Rulează colecția proprietară și guvernanța framework-ului; celelalte colecții ale aplicației pot fi reutilizate dacă intrările lor corespund. |
+| Nucleu comun al jocului, nume, modulul Android UI, configurația Gradle sau librărie comună | Invalidează fiecare suită care consumă dependența respectivă. |
+| Infrastructură Maven, politica release-ului, ownership-ul suitei sau instrumentele de dovezi | Rulează `atf-tests`; suitele de produs pot fi reutilizate dacă intrările lor nu s-au schimbat. |
+| Cale nouă, necunoscută sau cu ownership ambiguu | Refuză implicit și rulează toate grupurile de componente. |
+| Numai `versionCode`/`versionName` | Reutilizează dovezile de produs numai când baza publicată este calificată și reconstrucția exactă demonstrează că înlocuirea celor două valori reface hash-ul original al fișierului de build. Guvernanța rulează în continuare. |
+
+Reutilizarea se decide per suită, nu per release. Un rezultat trecut pentru alt fingerprint al sursei nu este suficient: receipt-ul original trebuie să corespundă hash-urilor intrărilor suitei, octeților Extent, numărului de rezultate și provenienței sursei. Dovezile lipsă, eșuate, expirate sau neconforme selectează o rulare nouă.
+
 ```powershell
 $ProjectRoot = (Get-Location).Path
 node .\atf-tests\tools\plan-release-tests.mjs $ProjectRoot $SourceSnapshotDir `
   $SourceInputsFile $ReleaseVersion $SelectionFile
 ```
+
+Configurați căile specifice mașinii pentru fiecare stație de lucru și păstrați fișierele generate în afara arborelui sursă.
+
+- `WHIST_EVIDENCE_ROOT` selectează rădăcina implicită pentru rapoarte și arhive.
+- `WHIST_QUALIFICATION_TEMP_ROOT` selectează spațiul izolat pentru surse și build.
+- `ANDROID_SDK_ROOT` sau `ANDROID_HOME` identifică Android SDK.
+- Dacă variabilele nu sunt setate, dovezile folosesc datele locale ale utilizatorului curent, iar calificarea folosește directorul temporar al sistemului de operare.
+- Lansatoarele refuză rădăcini temporare din interiorul unui checkout.
 
 `$SourceInputsFile` este lista ordinală JSON produsă de [Get-AtfSourceInputs.ps1](../../scripts/Get-AtfSourceInputs.ps1), în afara snapshot-ului și a checkout-ului. `$SelectionFile` este un fișier nou în directorul de lucru extern. Rezultatul arată căile adăugate, modificate și șterse, regula aplicată, suitele obligatorii și selecțiile E2E cerute. [Regulile selectorului](../../atf-tests/tools/release-test-scope.mjs)
 
@@ -197,7 +242,7 @@ node .\atf-tests\tools\plan-release-tests.mjs $ProjectRoot $SourceSnapshotDir `
 | Schimbare editorială | Rulează guvernanța. Refolosește dovezile compatibile pentru celelalte suite. E2E poate rămâne `NOT_RUN` cu motiv. |
 | Schimbare de licitare, masă, scor, profil sau alt flux identificat | Selectează probele native indicate în `requiredE2eGroups`. Testele de componentă rămân obligatorii pentru contractele lor. |
 | Cale de produs ori intrare partajată neclasificată | Selectează toate probele de flux prevăzute de selector și verifică perimetrele de componentă. |
-| Creștere a versiunii Android | Excepția de E2E se aplică dacă înlocuirea celor două valori `versionName` și `versionCode` reproduce exact hash-ul fișierului de build publicat. Dovezile de componentă se verifică separat pe intrările lor. |
+| Creștere a versiunii Android | Excepția de E2E se aplică dacă înlocuirea celor două valori `versionName` și `versionCode` reproduce exact hash-ul fișierului de build publicat. Dovezile de componentă se verifică separat pe intrările lor. Mentenanța crește `y`; schimbările de comportament sau de structură cresc `x` și resetează `y` la zero. Majorul `1` cere o actualizare explicită a politicii. |
 
 În planul calificării cu `schemaVersion: 2`, păstrați `releaseVersion`, `scope`, `componentGroups` și `userFlowChanged` din selecție.
 

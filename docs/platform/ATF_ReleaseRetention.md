@@ -6,12 +6,14 @@ Git și GitHub păstrează versiunea publicată curentă și predecesoarea imedi
 
 ## Structură activă
 
-Edițiile noi ale aplicației folosesc `0.<minor>` pentru numele Android, dosar, tag și numele APK-ului. Creșteți `versionCode` la fiecare APK livrat; păstrați identitățile istorice cu trei componente.
+Edițiile noi ale aplicației folosesc `0.<minor>.<patch>` pentru numele Android, dosar, tag și numele APK-ului. Creșteți `versionCode` la fiecare APK livrat; păstrați numele istorice neschimbate.
 
 | Limită | Contract |
 |---|---|
 | Ordonare | Comparați numeric valorile major, minor și patch-ul istoric opțional; patch-ul absent înseamnă zero. Numele echivalente numeric nu pot ocupa ambele poziții ale catalogului. |
-| Livrare nouă | [Politica versiunilor](../../config/release-platform-rag-policy.json) și [guvernanța de componentă](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/versioning/ReleaseVersionComponentTest.java) impun convenția aplicației cu două componente. |
+| Livrare nouă | [Politica versiunilor](../../config/release-platform-rag-policy.json) și [guvernanța de componentă](../../atf-tests/src/test/java/atf/tests/governance/documentation/release/versioning/ReleaseVersionComponentTest.java) impun `0.x.y` și incrementul permis de riscul declarat al schimbării. |
+| Mentenanță sau refactorizare | Creșteți `y` cu unu și păstrați `x`; `0.22` este forma istorică a lui `0.22.0`, deci următoarea versiune de mentenanță este `0.22.1`. |
+| Schimbare de comportament sau structură | Creșteți `x` cu unu și setați `y` la zero. Păstrați majorul zero; trecerea la `1.0.0` cere actualizarea explicită a politicii și revizuirea release-ului. |
 | Recuperare | Publicarea, reconstrucția Git și proiecția locală acceptă aceeași identitate, păstrând manifestele și hash-urile istorice. |
 
 ```text

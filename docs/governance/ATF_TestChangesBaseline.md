@@ -31,6 +31,63 @@ testChanges:
 </details>
 
 <details>
+<summary>Reutilizarea componentelor după ownership, versificarea patch și căi portabile de calificare</summary>
+
+```yaml
+testChanges:
+  - id: RAG-COMPONENT-OWNERSHIP
+    status: VERIFIED
+    base: 4b96da72e6bc8c97e1a01db4517a50a9f9d67574
+    expires: 2026-12-20
+    reason: Derivă ownership-ul componentelor din harta colecțiilor Gradle, reutilizează numai suite neschimbate cu hash-uri legate de dovezi, refuză implicit intrările partajate sau necunoscute, aplică incrementul 0.x.y în funcție de riscul schimbării și rezolvă rădăcinile de calificare din configurația mașinii.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=ComponentEvidenceScopeComponentTest,ComponentEvidencePortabilityComponentTest,QualificationLauncherComponentTest,ReleaseVersionComponentTest,ReleaseRagProvenanceComponentTest,TestChangeReviewComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.rag.scope.ComponentEvidenceScopeComponentTest#nodeContractTestsKeepReuseClassificationInsideTheRealBuildBoundary
+        - atf.tests.governance.documentation.release.rag.scope.ComponentEvidencePortabilityComponentTest#evidenceAndSdkRootsResolveFromMachineConfiguration
+        - atf.tests.governance.documentation.release.versioning.ReleaseVersionComponentTest#theApplicationUsesTheDeclaredPatchReleaseConvention
+        - atf.tests.governance.documentation.release.rag.ReleaseRagProvenanceComponentTest#aPinnedComponentCandidateProducesCitedHumanReviewWithoutChangingInputsOrCallingE2e
+      negative:
+        - atf.tests.governance.documentation.release.rag.scope.ComponentEvidenceScopeComponentTest#sharedDependenciesAndUnknownInputsCannotReuseTheirConsumers
+        - atf.tests.governance.documentation.release.rag.scope.ComponentEvidencePortabilityComponentTest#androidSdkDoesNotSilentlyFallBackWhenNoMachinePathIsConfigured
+        - atf.tests.governance.documentation.release.rag.scope.ComponentEvidencePortabilityComponentTest#relativeEvidenceRootIsRejectedInsteadOfResolvingAgainstTheCheckout
+        - atf.tests.governance.documentation.release.rag.scope.QualificationLauncherComponentTest#checkoutTmpStopsBothLaunchersBeforeStagingOrMaven
+        - atf.tests.governance.documentation.release.rag.ReleaseRagProvenanceComponentTest#aMalformedReleaseVersionPatternBlocksPolicyWithoutCrashingTheEvaluator
+        - atf.tests.governance.documentation.release.versioning.ReleaseVersionComponentTest#aChangeRiskCannotClaimAnIncorrectVersionIncrement
+    paths:
+      - atf-tests/src/main/java/atf/tests/testchange/TestChangeReview.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/ReleaseRagProvenanceComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidencePortabilityComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/ComponentEvidenceScopeComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/rag/scope/QualificationLauncherComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/versioning/ReleaseVersionComponentTest.java
+      - atf-tests/tools/component-evidence-scope.mjs
+      - atf-tests/tools/android-user-ownership.test.mjs
+      - atf-tests/tools/evaluate-release-rag.mjs
+      - atf-tests/tools/prepare-component-reuse.mjs
+      - atf-tests/tools/prepare-component-reuse.test.mjs
+      - atf-tests/tools/publish-github-release.test.mjs
+      - atf-tests/tools/qualification-temp-root.mjs
+      - atf-tests/tools/qualification-temp-root.test.mjs
+      - atf-tests/tools/release-test-scope.mjs
+      - atf-tests/tools/release-test-scope.test.mjs
+      - atf-tests/tools/release-version.mjs
+      - atf-tests/tools/release-version.test.mjs
+      - config/release-platform-rag-policy.json
+      - scripts/AtfLocalPaths.ps1
+      - scripts/AtfQualificationSnapshot.ps1
+      - scripts/Invoke-AtfAndroidDisposableUser.ps1
+      - scripts/export-card-table-ui.ps1
+      - scripts/run-atf-governance.ps1
+      - scripts/run-component-suites.ps1
+      - scripts/run-documentation-governance.ps1
+      - scripts/run-jvm-inventory.ps1
+      - whist-lab-app/app/build.gradle
+```
+
+</details>
+
+<details>
 <summary>Control verificat: acceptanța nativă a acțiunilor și a istoricului</summary>
 
 ```yaml
