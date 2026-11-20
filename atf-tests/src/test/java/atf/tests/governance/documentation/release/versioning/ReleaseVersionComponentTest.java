@@ -56,6 +56,13 @@ class ReleaseVersionComponentTest {
         assertThrows(IllegalArgumentException.class, () -> new ApkDownloadTarget("example/game", version, 1, "a".repeat(64)));
     }
 
+    @Test void absentVersionCannotBecomeADownloadIdentity(ComponentInputs inputs) {
+        inputs.add("Absent release name", "null");
+        assertFalse(ReleaseVersion.atLeast(null, "0.22"));
+        assertFalse(ReleaseVersion.atLeast("0.22", null));
+        assertThrows(IllegalArgumentException.class, () -> new ApkDownloadTarget("example/game", null, 1, "a".repeat(64)));
+    }
+
     @Test void releaseAdaptersAcceptTwoPartNamesAndRejectForeignAuditCommits(ComponentInputs inputs) throws Exception {
         var target = new ApkDownloadTarget("example/game", "0.22", 1, "a".repeat(64));
         assertEquals("https://github.com/example/game/releases/download/v0.22/WhistLab-0.22.apk", target.publicUrl());
