@@ -1345,6 +1345,22 @@ testChanges:
       - atf-tests/tools/android-e2e-provenance-fixture.mjs
       - atf-tests/tools/android-e2e-runtime-scope.test.mjs
       - atf-tests/tools/android-e2e-provenance.test.mjs
+  - id: NATIVE-WEB-ADMISSION-RO
+    status: VERIFIED
+    base: 552d4389703219c9ee07bfb46102be17c5d3e6f2
+    expires: 2026-12-20
+    reason: Preserve original evidence for the same APK after browser-only changes, rejecting changed Android runtime, scenarios or provenance.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=NativeSourceProvenanceComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.rag.nativeproof.NativeSourceProvenanceComponentTest#immutableRuntimeEvidenceSurvivesValidatorMaintenanceButRejectsChangedInputs
+      negative:
+        - atf.tests.governance.documentation.release.rag.nativeproof.NativeSourceProvenanceComponentTest#legacyEvidenceAndSourceSelectionKeepTheirIndependentGuards
+    paths:
+      - atf-tests/tools/android-e2e-provenance.mjs
+      - atf-tests/tools/android-e2e-provenance-fixture.mjs
+      - atf-tests/tools/android-e2e-runtime-scope.test.mjs
+      - atf-tests/tools/android-e2e-provenance.test.mjs
 ```
 
 </details>
@@ -1357,6 +1373,30 @@ testChanges:
   - id: SHARED-MENU-AUDIT-BASE-MAIN
     status: VERIFIED
     base: 1e078d06f4000d848675d87497302bad3052903d
+    expires: 2026-12-20
+    reason: Bind shared menus, history presentation, report publication and isolated collection to real positive and negative comparisons on the declared Git base.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=SharedMenuHistoryComponentTest,BrowserExtentPublicationComponentTest,ReleasePresentationGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#historyTypographyAndDividersFollowTheNativePolicy
+        - atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#menuAdaptersKeepNativeLabelsOrderAndDispatch
+        - atf.tests.reporting.browser.BrowserExtentPublicationComponentTest#standardOverviewKeepsEnglishNarrativeAndScenarioOwnedCaptures
+      negative:
+        - atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#invalidStylesAreAtomicAndClearingRestoresTheBaseline
+        - atf.tests.reporting.browser.BrowserExtentPublicationComponentTest#externalCaptureAndInvalidPngCannotBePublished
+        - atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest#aPreparedCandidateCannotClaimPublicationOrInventASourceCommit
+    paths:
+      - .github/workflows/whist-components.yml
+      - atf-tests/src/test/java/atf/tests/governance/uiadapter/SharedMenuHistoryComponentTest.java
+      - atf-tests/src/test/java/atf/tests/reporting/browser/BrowserExtentPublicationComponentTest.java
+      - atf-tests/src/test/java/atf/tests/reporting/browser/BrowserReportFixture.java
+      - whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/score/HistoryAppearanceComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleasePresentationGovernanceTest.java
+      - atf-tests/src/test/java/atf/tests/reporting/GameReportComponentSuite.java
+      - whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/menu/TableMenuContentComponentTest.java
+  - id: SHARED-MENU-AUDIT-BASE-RO
+    status: VERIFIED
+    base: 552d4389703219c9ee07bfb46102be17c5d3e6f2
     expires: 2026-12-20
     reason: Bind shared menus, history presentation, report publication and isolated collection to real positive and negative comparisons on the declared Git base.
     proof: 'mvn -o -pl atf-tests -am -Dtest=SharedMenuHistoryComponentTest,BrowserExtentPublicationComponentTest,ReleasePresentationGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
