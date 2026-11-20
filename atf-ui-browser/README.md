@@ -6,6 +6,8 @@ Whist uses the Java engine and portable table contracts in both APK and browser.
 
 **Quick links** · [Android–Web contract](#what-android-and-web-share) · [Run on the Web](#web-execution-paths) · [JAR and AAR](#adapter-library) · [Verification](#verification)
 
+<a id="what-android-and-web-share"></a>
+
 ## What Android and Web share
 
 | Shared presentation contract | Responsibility |
@@ -39,6 +41,8 @@ flowchart LR
 - Typography and system insets shall be measured separately. Samples with the same inputs check the formulae, and the APK-browser comparison on the device measures the rendered result. [Display components](../docs/testing/ATF_DisplayComponents.md)
 
 </details>
+
+<a id="web-execution-paths"></a>
 
 ## Web execution paths
 

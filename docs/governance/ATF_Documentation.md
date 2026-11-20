@@ -57,6 +57,8 @@ When statements conflict, check code and configuration, narrow the claim to the 
 
 The purpose, responsibility and the main limit remain visible. The secondary details, the long exceptions and justifications may be in folding blocks.
 
+<a id="main-readme"></a>
+
 ## Main README
 
 The main README guides the reader to the product, source code and verification.
