@@ -151,12 +151,12 @@ Trecerea auditului structural nu demonstrează singură lizibilitatea sau naviga
 
 ## Interfața raportului și proprietatea dovezilor
 
-Overview-ul Extent păstrează dashboard-ul standard Reporting. Publisherii consumatori nu injectează galerii de capturi, controale de joc sau secțiuni proprii în acest tab.
+Fila `Overview` din Extent păstrează panoul standard al bibliotecii `Reporting`. Producătorii rapoartelor nu injectează galerii de capturi, controale de joc sau secțiuni proprii în această filă.
 
-PNG-urile capturate se atașează inline scenariului și fazei originale prin API-ul public de dovezi UI. Cadrele doar observate nu inventează aserțiuni sau un rezultat nou al jocului.
+PNG-urile capturate se încorporează în scenariul și faza originale prin API-ul public de dovezi UI. Cadrele doar observate nu inventează aserțiuni sau un rezultat nou al jocului.
 
-Preview-urile comparațiilor păstrează limita standard de 240 de caractere; corpurile intrărilor originale rămân complete în secțiunile pliante ale cazului, cu trunchierea afișării corpurilor dezactivată pentru acest publisher.
+Previzualizările comparațiilor păstrează limita standard de 240 de caractere; corpurile intrărilor originale rămân complete în secțiunile pliante ale cazului, cu trunchierea afișării corpurilor dezactivată pentru acest producător.
 
 Structura rapoartelor este în engleză: nume de suite, faze, etichete ale dovezilor și explicații de diagnostic. Textele originale ale aplicației, capturile localizate RO/EN și valorile măsurate rămân neschimbate. Fiecare captură își păstrează titlul și cazul proprietar; toate comparațiile selectate și rezultatul original rămân accesibile în HTML-ul autonom.
 
-Componentele publisherului verifică Overview-ul standard, structura în engleză, primul și ultimul caz, cadrele multiple, valorile lungi complete și rezultatele eșuate. Imaginile lipsă, externe sau invalide se refuză înaintea creării raportului. Dovezile release-urilor deja sigilate rămân imuabile; republicarea înregistrează separat identitatea dovezii originale și revizia publisherului.
+Componentele producătorului verifică fila standard `Overview`, structura în engleză, primul și ultimul caz, cadrele multiple, valorile lungi complete și rezultatele eșuate. Imaginile lipsă, externe sau invalide se refuză înaintea creării raportului. Dovezile release-urilor deja sigilate rămân imuabile; republicarea înregistrează separat identitatea dovezii originale și revizia producătorului.
