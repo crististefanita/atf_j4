@@ -275,11 +275,14 @@ Native reports retain their original APK, execution commit, source fingerprint, 
 
 | Input family | Reuse boundary |
 |---|---|
-| APK and runtime | Identical APK SHA-256 and runtime input fingerprint; changed game sources, binaries, resources or unknown inputs require a new flow. |
+| APK and runtime | Identical APK SHA-256 and Android runtime input fingerprint; changed game sources, native binaries, resources or unknown inputs require a new flow. |
 | Scenario | Native infrastructure and launcher inputs remain identical, along with flow selection, API, display profile and responsive matrix. |
 | Validator | Top-level Node modules under the release-tool directory have their own observed revision; changing them triggers validation, not native execution. An optional `validatorRevision` in the E2E request or plan pins that revision. |
 | Editorial metadata | Documentation and the bilingual review record can change without changing native runtime identity. |
+| Web-only module | `atf-ui-browser/` stays outside the Android build graph. Its changes may preserve APK evidence only with identical APK bytes and unchanged native and scenario inputs. |
 | Original evidence | Preserve receipt, report and isolation bytes. Each group owns `source-provenance.json`; groups share the original source-input document under its fingerprint. |
+
+[Component contracts](../../atf-tests/tools/android-e2e-runtime-scope.test.mjs) check the browser build boundary, input addition, modification and removal, and reject mixed native or unknown changes. Original fingerprint fields remain intact; the current validator records a separate `runtimeAdmission` with changed paths and the unchanged Android fingerprint. Diff-derived mandatory flow selection remains unchanged.
 
 New executions record that provenance automatically. For older schema-2 evidence, export from the original qualified directory into a fresh external run containing `e2e-request.json`, then import into the prepared candidate. The export preserves original bytes and flattens prior reuse to the first execution snapshot.
 

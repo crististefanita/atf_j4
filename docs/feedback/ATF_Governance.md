@@ -72,3 +72,15 @@ The conservative fallback includes Web-only resources, retired browser packages 
 - Declare platform ownership for resources and packaging; unknown shared-runtime changes must still select every affected flow.
 - Mock Web-only changes, removal of unused versions, Android menu changes and runtime dependency changes. Require a valid neighbor and a negative control for every exclusion.
 - Measure inventory, copying, compilation, execution and device waiting separately. Keep the source-only RAG snapshot distinct from component workspaces containing the release catalog and build outputs.
+
+## testChanges admission before collection preparation
+
+Reject missing or stale source-control evidence before copying caches, compiling or launching a long collection. A late governance failure still protects correctness, but wastes the accepted preparation and unrelated test work.
+
+- Discover the required control IDs from the reviewed Git diff and validate their external evidence root explicitly.
+- Use the same proof validator for admission and final governance: control ID, base, commit, diff, positive and negative selectors, and original report hash must match.
+- Generate unresolved controls with the existing compilation before starting the primary collection; pass the resulting root explicitly to the suite process.
+- Cover absent configuration, another commit, a missing negative control, altered report bytes and a source change between admission and execution. Missing evidence must fail before Maven; changed sources must still invalidate admission.
+- Measure rejected preparation separately from accepted execution. Do not replace a failed original report with a passing neighbour or edit an execution receipt.
+
+- Make the review base an explicit input for local and isolated launches. Check the control plan before dependency preparation; an incompatible historical base must fail with the same diagnostic before compilation.
