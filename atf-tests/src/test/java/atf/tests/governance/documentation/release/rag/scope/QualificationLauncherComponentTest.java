@@ -157,6 +157,7 @@ class QualificationLauncherComponentTest {
         write(source, "pom.xml", "<project/>");
         Path real = GovernanceProject.locateProjectRoot();
         Files.copy(real.resolve("config/release-platform-rag-policy.json"), source.resolve("config/release-platform-rag-policy.json"));
+        Files.copy(real.resolve("config/gradle-app-collections.properties"), source.resolve("config/gradle-app-collections.properties"));
         // Keep the real runtime module closure; a hand-maintained subset hid later helper imports.
         Path tools = real.resolve("atf-tests/tools");
         try (var entries = Files.list(tools)) {
@@ -205,6 +206,10 @@ class QualificationLauncherComponentTest {
         if (pinned != null) command.addAll(List.of("-PinnedSourceInputs", pinned.toString()));
         var builder = new ProcessBuilder(command);
         var environment = builder.environment();
+        // The launcher under test must resolve the fixture's TEMP/TMP roots, not inherit
+        // machine-wide output roots from the parent RAG process.
+        environment.remove("WHIST_QUALIFICATION_TEMP_ROOT");
+        environment.remove("WHIST_EVIDENCE_ROOT");
         environment.put("TEMP", temp.toString());
         environment.put("TMP", tmp.toString());
         environment.put("ATF_FIXTURE_SOURCE", source.toString());
