@@ -18,7 +18,7 @@ import javax.tools.ToolProvider;
 final class BrowserReportFixture {
     static final String FIRST = "First recorded component";
     static final String LAST = "Last recorded component";
-    static final String EXPECTED = "expected ".repeat(70) + "EXPECTED_FINAL_♠";
+    static final String EXPECTED = "expected ".repeat(70) + "EXPECTED_FINAL_♠ · Mâna următoare";
     static final String ACTUAL = "observed ".repeat(70) + "OBSERVED_FINAL_♥";
     private BrowserReportFixture() { }
 

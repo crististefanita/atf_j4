@@ -44,10 +44,12 @@ class BrowserExtent {
                         List.of(check.layer(), "recorded-evidence"));
                 try (var scenario = UiExtentReportSession.adaptScenario(raw, profile, title);
                      var phase = scenario.startPhase("TEST BODY")) {
-                    phase.observation(new ReportObservation("Recorded case identity", List.of(
+                    phase.observation(new ReportObservation("Recorded inputs and identity", List.of(
                             new ReportField("Case ID", test.path("id").asText(title)),
                             new ReportField("Evidence layer", check.layer()),
-                            new ReportField("Original outcome", status.name())), List.of(), List.of()));
+                            new ReportField("Original outcome", status.name())), List.of(
+                            body("Original expected", test.required("expected")),
+                            body("Original observed", test.required("observed"))), List.of()));
                     phase.uiValidation("Recorded comparisons", "Captured test result", null,
                             List.of(new AtfAssertion(title, display(test.required("expected")),
                                     display(test.required("observed")), status == AtfReportStatus.PASS, status)), status);
@@ -104,5 +106,10 @@ class BrowserExtent {
 
     private static String display(JsonNode value) {
         return value.isTextual() ? value.asText() : value.toPrettyString();
+    }
+
+    private static ReportObservation.Body body(String label, JsonNode value) {
+        return new ReportObservation.Body(label, display(value), value.isTextual()
+                ? ReportObservation.Format.TEXT : ReportObservation.Format.JSON);
     }
 }
