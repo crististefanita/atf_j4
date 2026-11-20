@@ -1,0 +1,11 @@
+{
+  "version": "0.22",
+  "mode": "changes",
+  "previousVersion": "0.21.13",
+  "points": [
+    "Folosește consecvent versiuni cu două componente pentru livrarea APK-ului și recuperarea release-ului.",
+    "Verifică auditul legat de sursă înaintea publicării fișierelor ediției.",
+    "Folosește explicit baza Git revizuită și refolosește dovezile componentelor independente."
+  ],
+  "evidenceUrlTemplate": "https://github.com/crististefanita/whist/blob/{evidenceCommit}/release/0.22/reports/README.md"
+}

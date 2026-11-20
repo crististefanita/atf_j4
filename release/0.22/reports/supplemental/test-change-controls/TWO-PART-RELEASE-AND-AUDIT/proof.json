@@ -1,0 +1,25 @@
+{
+  "schemaVersion" : 1,
+  "kind" : "ATF_TEST_CHANGE_PROOF",
+  "identity" : {
+    "id" : "TWO-PART-RELEASE-AND-AUDIT",
+    "base" : "0020521d3793c90c5da53d9efb53c8ab03e35680",
+    "commit" : "df7d1954a0b4098f9678ed54acc911a57600adff",
+    "diffSha256" : "d361a43520537896738ef00414b5402d60106b1f7cc1fbf697652ca67f1af1e5"
+  },
+  "positive" : [ {
+    "selector" : "atf.tests.governance.documentation.release.versioning.ReleaseVersionComponentTest#theApplicationUsesTheDeclaredTwoPartReleaseConvention",
+    "verdict" : "PASS"
+  }, {
+    "selector" : "atf.tests.governance.documentation.release.versioning.ReleaseVersionComponentTest#releaseAdaptersAcceptTwoPartNamesAndRejectForeignAuditCommits",
+    "verdict" : "PASS"
+  } ],
+  "negative" : [ {
+    "selector" : "atf.tests.governance.documentation.release.versioning.ReleaseVersionComponentTest#absentVersionCannotBecomeADownloadIdentity",
+    "verdict" : "PASS"
+  }, {
+    "selector" : "atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest#aPreparedCandidateCannotClaimPublicationOrInventASourceCommit",
+    "verdict" : "PASS"
+  } ],
+  "reportSha256" : "bb6bf4def8d2fb9e302d35f5f66e91a0bba48d4eb56352174828edf81e15eb96"
+}
