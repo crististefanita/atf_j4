@@ -296,3 +296,25 @@ Acțiunile scorului au roluri comune dedicate: acțiunile principale folosesc 24
 Profilul obișnuit al istoricului elimină antetele îngroșate și folosește două unități logice cu nuanța separatorului Whist. Apelanții existenți păstrează constructorul nativ anterior și aspectul implicit neschimbat pentru navigator. Aspectul aparține fiecărui tabel; eliminarea lui restabilește valorile implicite fără modificarea altor stiluri.
 
 Coordonatele UI comune noi folosesc versiuni 0.x cu două segmente. Coordonatele existente cu trei segmente se pot doar reutiliza după verificarea manifestului intrărilor și a hash-urilor; octeții modificați cer o coordonată nouă. Biblioteca de execuție, testele portabile și hash-urile se livrează împreună.
+
+### Contract comun, adaptoare separate pe platformă
+
+```mermaid
+flowchart LR
+    Game[Proiecția jocului] -->|definește| Plan[Contractul meniului și istoricului]
+    Plan -->|leagă acțiunile și densitatea| Android[Adaptor Android]
+    Plan -->|leagă acțiunile și unitățile CSS| Web[Adaptor pentru navigator]
+    Tests[Contracte portabile de componentă] -->|verifică aceleași intrări| Android
+    Tests -->|verifică aceleași intrări| Web
+    Android -->|afișează| Native[Widgeturi native]
+    Web -->|afișează| DOM[DOM-ul navigatorului]
+```
+
+<details>
+<summary>Legendă: intenție comună și afișare pe platformă</summary>
+
+- Jocurile furnizează intrările localizate, disponibilitatea și valorile confirmate ale istoricului; biblioteca comună deține politicile imuabile de prezentare.
+- Adaptoarele dețin navigarea și acțiunile ciclului de viață. Densitatea Android și unitățile CSS se normalizează la dimensiuni logice.
+- Contractele de componentă verifică modelele, ordinea, stilurile și izolarea acțiunilor. Acceptanța rasterului nativ, a tastaturii și a gesturilor rămâne separată de măsurătorile DOM.
+
+</details>
