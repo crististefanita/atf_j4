@@ -45,8 +45,8 @@ Rapoartele de componentă păstrează intrările capturate, comparațiile reale 
 
 [Receipt-ul componentelor](component/source-component-run.json) păstrează inventarul complet al invocărilor, stabilitatea și deciziile de reutilizare. Colecția cadrului are o [execuție CI izolată](diagnostics/cloud-qualification.json) nouă; celelalte nouă colecții păstrează rapoartele originale trecute după validarea perimetrului. Încercările respinse prin timeout rămân diagnostice separate și nu contribuie la rezultate trecute.
 
-[Admiterea build-ului final](diagnostics/final-source-build-reuse.json) confirmă reconstruirea reală și octeții Android identici după actualizarea validatorului și a documentației. Șapte fluxuri native headless au rulat pe acel APK semnat.
-
-Sursele și receipt-urile execuțiilor originale rămân neschimbate; validatorul curent înregistrează separat admiterea schimbărilor exclusiv Web. Alte API-uri Android și acceptanța Chrome pe același dispozitiv rămân calificări separate.
+- [Admiterea build-ului final](diagnostics/final-source-build-reuse.json) confirmă reconstruirea reală și octeții Android identici după actualizarea validatorului și a documentației. Șapte fluxuri native headless au rulat pe acel APK semnat.
+- Sursele și receipt-urile execuțiilor originale rămân neschimbate; validatorul curent înregistrează separat admiterea schimbărilor exclusiv Web.
+- Alte API-uri Android și acceptanța Chrome pe același dispozitiv rămân calificări separate.
 
 [Manifest](../release-validation.json) · [Catalogul livrărilor](../../README.md) · [Strategia testării](../../../docs/testing/README.md)
