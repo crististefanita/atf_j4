@@ -43,7 +43,7 @@ E2E: **NOT_RUN**. The recomputed source diff contains release policy, qualificat
 - [Component execution and reuse receipt](component/source-component-run.json)
 - [Original component snapshots](component/snapshots/)
 - [APK build and identity checks](diagnostics/)
-- - [Authenticated APK download and checksum verification](distribution-verification.json)
+- [Authenticated APK download and checksum verification](distribution-verification.json)
 - [Published GitHub release and asset inventory](../github-release.json)
 
 [Release manifest](../release-validation.json) · [Release catalog](../../README.md) · [Test strategy](../../../docs/testing/README.md)
