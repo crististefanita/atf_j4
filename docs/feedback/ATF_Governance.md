@@ -64,3 +64,11 @@ Validarea snapshot-ului și a cache-ului consumă timp chiar când execuția tes
 - Reluați invocările nerezolvate numai după verificarea acestor intrări imuabile. Păstrați încercările respinse ca diagnostice.
 - Dovediți paritatea întregului set de identități JUnit față de o rulare completă; respingeți sursele schimbate, cazurile lipsă, identitățile duplicate și dovezile modificate.
 - Păstrați timeout-urile explicite până trece o reluare reală. Un caz vecin trecut sau un receipt rescris nu reprezintă dovezi înlocuitoare.
+
+## Costul selecției pe platformă
+
+Selecția conservatoare include resursele exclusiv Web, pachetele istorice ale navigatorului și instrumentele de împachetare în fluxurile Android. Păstrați această limită de siguranță până când componentele bazate pe dependențe demonstrează o selecție mai restrânsă.
+
+- Declarați platforma responsabilă pentru resurse și împachetare; schimbările necunoscute ale execuției comune trebuie să selecteze în continuare fiecare flux afectat.
+- Simulați schimbări exclusiv Web, eliminarea versiunilor nefolosite, schimbări ale meniului Android și ale dependențelor de execuție. Cereți un caz vecin valid și un control negativ pentru fiecare excludere.
+- Măsurați separat inventarul, copierea, compilarea, execuția și așteptarea dispozitivului. Păstrați separat snapshot-ul RAG exclusiv de surse și workspace-urile componentelor care conțin catalogul de release și fișiere generate.
