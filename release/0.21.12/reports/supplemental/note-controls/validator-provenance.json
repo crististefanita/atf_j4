@@ -1,7 +1,0 @@
-{
-  "validatorCommit": "94c6f22a75e5e5a9601e469781f5bf5632781ede",
-  "testSourceSha256": "ebfa994e46f2f2a5abe2129b00791ee7ca8f17ac7ab4fefac61c60b89fe220a1",
-  "apkSourceCommit": "1ff434dfd3aef176ced5340fe5a3d284192532a5",
-  "scope": "Bounded summary parser and preserved strict negative oracle, with unchanged compiled JUnit/ATF dependencies",
-  "kind": "source-bound-note-control"
-}

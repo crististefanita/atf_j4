@@ -6,18 +6,18 @@ The catalog identifies the current Android edition and retains one previous edit
 
 ## Current version
 
-[0.21.13 — APK, checks and provenance](0.21.13/README.md) is the current published Android edition. The APK link is in the main README.
+[0.22 — APK, checks and provenance](0.22/README.md) is qualified for publication. The APK link is in the main README.
 
 ## Previous version
 
-[0.21.12 — APK and evidence](0.21.12/README.md) remains available for provenance and comparisons.
+[0.21.13 — APK and evidence](0.21.13/README.md) remains available for provenance and comparisons.
 
 ## Available versions
 
 | Version | State | Dossier |
 |---|---|---|
-| 0.21.13 | Published · APK verified | [APK and evidence](0.21.13/README.md) |
-| 0.21.12 | Previous edition | [APK and evidence](0.21.12/README.md) |
+| 0.22 | Qualified · awaiting publication | [APK and evidence](0.22/README.md) |
+| 0.21.13 | Previous edition | [APK and evidence](0.21.13/README.md) |
 
 ## Publication and verification
 

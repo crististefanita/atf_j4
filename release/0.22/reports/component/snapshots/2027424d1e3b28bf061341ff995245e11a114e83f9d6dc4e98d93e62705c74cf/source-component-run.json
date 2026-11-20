@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "kind": "live-source-components",
+  "apkQualification": false,
+  "sourceFingerprint": "1893ad1c98345a6c821e7ced87f955306dc1d7ab37d9dc3ff80a3e8d567c1615",
+  "provenanceReceiptSha256": "2027424d1e3b28bf061341ff995245e11a114e83f9d6dc4e98d93e62705c74cf",
+  "inputManifest": "source-inputs.json",
+  "sourceStable": true,
+  "status": "PASS",
+  "stage": "isolated-staging-copy",
+  "inputCount": 1348,
+  "releaseFingerprint": "48c8dd4a133eceb0913993f0cd886c24813e51e3d86c496d3475f39f8a170c80",
+  "releaseInputManifest": "release-inputs.json",
+  "snapshotDifferences": [],
+  "results": [
+    {
+      "module": "whist-lab-app-achievements",
+      "suite": "testDebugAchievementsComponents",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "selection": "testDebugAchievementsComponents",
+        "tests": 28,
+        "outcomes": {
+          "PASS": 28,
+          "ERROR": 0,
+          "SKIP": 0,
+          "FAIL": 0
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "provenanceSha256": "2027424d1e3b28bf061341ff995245e11a114e83f9d6dc4e98d93e62705c74cf",
+        "reportSha256": "0030f983b3f3ad6f4bf09ea95bc5cc67c7fff9c1a66c00cd1f144bcba605f08f"
+      }
+    },
+    {
+      "module": "whist-lab-app-bidding",
+      "suite": "testDebugBiddingComponents",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "selection": "testDebugBiddingComponents",
+        "tests": 255,
+        "outcomes": {
+          "FAIL": 0,
+          "SKIP": 0,
+          "ERROR": 0,
+          "PASS": 255
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "provenanceSha256": "2027424d1e3b28bf061341ff995245e11a114e83f9d6dc4e98d93e62705c74cf",
+        "reportSha256": "605bd98a4d15de0d6ffaeb17d824eff926957b3961b9f093354da7a0a3851816"
+      }
+    },
+    {
+      "module": "whist-lab-app-commands",
+      "suite": "testDebugCommandsComponents",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "selection": "testDebugCommandsComponents",
+        "tests": 123,
+        "outcomes": {
+          "PASS": 123,
+          "ERROR": 0,
+          "SKIP": 0,
+          "FAIL": 0
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "provenanceSha256": "2027424d1e3b28bf061341ff995245e11a114e83f9d6dc4e98d93e62705c74cf",
+        "reportSha256": "975dc5a5e6c72b832fd4bc937e60377d0a8c0c6063ca0da3703adea23c4735b5"
+      }
+    },
+    {
+      "module": "whist-lab-app-display",
+      "suite": "testDebugDisplayComponents",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "selection": "testDebugDisplayComponents",
+        "tests": 107,
+        "outcomes": {
+          "FAIL": 0,
+          "PASS": 107,
+          "ERROR": 0,
+          "SKIP": 0
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "provenanceSha256": "2027424d1e3b28bf061341ff995245e11a114e83f9d6dc4e98d93e62705c74cf",
+        "reportSha256": "2aa7496119fd04afa5ac82f581fb2d4aa988f8efaefd75fb0c0010c30b1bc2cc"
+      }
+    },
+    {
+      "module": "whist-lab-app-history",
+      "suite": "testDebugHistoryComponents",
+      "exitCode": 0,
+      "receipt": {
+        "schemaVersion": 1,
+        "kind": "live-source-components",
+        "apkQualification": false,
+        "selection": "testDebugHistoryComponents",
+        "tests": 61,
+        "outcomes": {
+          "PASS": 61,
+          "ERROR": 0,
+          "SKIP": 0,
+          "FAIL": 0
+        },
+        "coverageErrors": [],
+        "containerFailures": [],
+        "provenanceSha256": "2027424d1e3b28bf061341ff995245e11a114e83f9d6dc4e98d93e62705c74cf",
+        "reportSha256": "77767305aacbe2d0aefe307d10f7a5a33ea5ecec0a017314cbdc25ab200b8811"
+      }
+    }
+  ],
+  "reusedGroups": [],
+  "gradleBatch": {
+    "tasks": [
+      ":app:testDebugAchievementsComponents",
+      ":app:testDebugBiddingComponents",
+      ":app:testDebugCommandsComponents",
+      ":app:testDebugDisplayComponents",
+      ":app:testDebugHistoryComponents"
+    ],
+    "exitCode": 0,
+    "elapsedSeconds": 183.168,
+    "log": "gradle-components.log"
+  },
+  "androidComponentsReceipt": "source-component-run.json"
+}

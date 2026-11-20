@@ -1,0 +1,11 @@
+{
+  "version": "0.22",
+  "mode": "changes",
+  "previousVersion": "0.21.13",
+  "points": [
+    "Use two-part version names consistently for APK delivery and release recovery.",
+    "Check the source-bound audit before publishing release assets.",
+    "Use the reviewed Git base explicitly and reuse independent component evidence."
+  ],
+  "evidenceUrlTemplate": "https://github.com/crististefanita/whist/blob/{evidenceCommit}/release/0.22/reports/README.md"
+}

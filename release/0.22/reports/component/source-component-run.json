@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "kind": "live-source-components",
+  "apkQualification": false,
+  "sourceFingerprint": "f58319ace90786631adbc62f2fa02a50403c799713589666977d39b52586bc04",
+  "provenanceReceiptSha256": "61ae5f74ad6ad42c8d6e0314c5b4ffcd4516409e470207548f6d32dd09c7c802",
+  "inputManifest": "source-inputs.json",
+  "sourceStable": true,
+  "status": "PASS",
+  "stage": "isolated-staging-copy",
+  "inputCount": 1348,
+  "releaseFingerprint": "48c8dd4a133eceb0913993f0cd886c24813e51e3d86c496d3475f39f8a170c80",
+  "releaseInputManifest": "release-inputs.json",
+  "snapshotDifferences": [],
+  "results": [],
+  "reusedGroups": [
+    "atf-validation",
+    "atf-test-android",
+    "atf-tests",
+    "whist-lab-app-achievements",
+    "whist-lab-app-bidding",
+    "whist-lab-app-commands",
+    "whist-lab-app-display",
+    "whist-lab-app-history",
+    "whist-lab-app-atf-card-table-ui",
+    "whist-lab-app-rules"
+  ],
+  "gradleBatch": null,
+  "androidComponentsReceipt": "snapshots/4b7af0039f21df8a259e9b43bb6c7794d1cdcd9001dc0d3bdc55ede2a49baf67/source-component-run.json"
+}
