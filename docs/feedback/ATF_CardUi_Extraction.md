@@ -54,3 +54,7 @@ The shared matrix covers 3–6 seats, compact and tall windows, enlarged fonts a
 ## Result action acceptance
 
 The shared roles and adapter components qualify the logical text and callback contract. Native raster acceptance must additionally observe complete wrapped labels, vertical scrolling and the last action on identified Whist and Rentz APKs, with RO/EN and enlarged text. A source or AAR comparison alone does not certify Android clipping.
+
+## Next shared-library version format
+
+Use two-part 0.x coordinates for the next newly published Browser and Android UI packages. Keep already published three-part coordinates and their hashes immutable. Before the next packaging, align both packaging entry points and add component controls for the new format, legacy immutable reuse and refusal to overwrite an existing coordinate with different bytes.

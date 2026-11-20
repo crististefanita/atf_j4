@@ -1,20 +1,23 @@
-import atf.reporting.audit.AssertionAuditReport;
-import atf.reporting.audit.AssertionAuditRun;
 import atf.reporting.contract.AtfAssertion;
 import atf.reporting.contract.AtfReportStatus;
-import atf.reporting.evidence.ExtentReportUiEvidence;
+import atf.reporting.evidence.ReportScreenshotPolicy;
+import atf.reporting.evidence.profile.ReportEvidenceProfile;
 import atf.reporting.extent.session.ExtentReportSession;
-import atf.reporting.security.SensitiveDataRedactor;
+import atf.reporting.model.ReportField;
+import atf.reporting.model.ReportObservation;
+import atf.reporting.model.ReportScreenshot;
+import atf.reporting.ui.UiExtentReportSession;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
-/** Publishes browser observations and comparisons through the repository's reporting JAR. */
+/** Publishes recorded comparisons and scenario-owned captures using the pinned Reporting API. */
 class BrowserExtent {
-    record Check(JsonNode result, String layer) { }
+    record Check(JsonNode result, String layer, List<ReportScreenshot> captures) { }
 
     public static void main(String[] args) throws Exception {
         if (args.length != 2) throw new IllegalArgumentException("Evidence directory and new Extent path required");
@@ -25,50 +28,78 @@ class BrowserExtent {
         }
         var mapper = new ObjectMapper();
         var checks = new ArrayList<Check>();
-        readCases(mapper, directory.resolve("browser-checks.json"), "component", checks);
-        readCases(mapper, directory.resolve("browser-ui-checks.json"), "ui", checks);
-        if (checks.isEmpty()) throw new IllegalArgumentException("No browser cases");
+        readCases(mapper, directory, "browser-checks.json", "component", checks);
+        readCases(mapper, directory, "browser-ui-checks.json", "ui", checks);
         Path parity = directory.resolve("whist-parity.json");
-        if (Files.isRegularFile(parity)) checks.add(new Check(mapper.readTree(parity.toFile()), "component"));
-        Path mobile = directory.resolve("paired-android.json");
-        readCases(mapper, mobile, "android-comparison", checks);
-        var captures = new ArrayList<ExtentReportUiEvidence.Capture>();
-        try (var run = new AssertionAuditRun(new ExtentReportSession(report), new SensitiveDataRedactor())) {
-            int number = 0;
+        if (Files.isRegularFile(parity)) checks.add(check(mapper.readTree(parity.toFile()), "component", directory));
+        readCases(mapper, directory, "paired-android.json", "android-comparison", checks);
+        if (checks.isEmpty()) throw new IllegalArgumentException("No recorded cases");
+        var profile = ReportEvidenceProfile.forScreenshotPolicy(ReportScreenshotPolicy.EACH_CHECKPOINT);
+        try (var session = new ExtentReportSession(report)) {
             for (var check : checks) {
                 var test = check.result();
                 String title = test.required("name").asText();
-                String key = test.path("id").asText("WEB-01") + "-" + ++number;
                 var status = AtfReportStatus.valueOf(test.required("status").asText());
-                String suite = switch (check.layer()) {
-                    case "ui" -> "Browser UI · Playwright";
-                    case "android-comparison" -> "Comparație cu Android";
-                    default -> "Componente browser";
-                };
-                var id = new AssertionAuditReport.Identity(suite, "Card Table", title, key,
-                        List.of(check.layer(), "browser"));
-                try (var audit = run.open(id)) {
-                    audit.phase("Rezultatul verificării", List.of(new AtfAssertion(title,
-                            display(test.required("expected")), display(test.required("observed")),
-                            status == AtfReportStatus.PASS, status)), status, "");
-                    audit.complete(status);
-                }
-                for (var image : test.path("images")) {
-                    Path png = directory.resolve(image.required("file").asText()).toRealPath();
-                    if (!png.getParent().equals(directory)) throw new IllegalArgumentException("Image escaped evidence root");
-                    captures.add(new ExtentReportUiEvidence.Capture(png, image.required("title").asText(), List.of(title)));
+                var raw = session.startScenario(suite(check.layer()), "Card Table", title,
+                        List.of(check.layer(), "recorded-evidence"));
+                try (var scenario = UiExtentReportSession.adaptScenario(raw, profile, title);
+                     var phase = scenario.startPhase("TEST BODY")) {
+                    phase.observation(new ReportObservation("Recorded case identity", List.of(
+                            new ReportField("Case ID", test.path("id").asText(title)),
+                            new ReportField("Evidence layer", check.layer()),
+                            new ReportField("Original outcome", status.name())), List.of(), List.of()));
+                    phase.uiValidation("Recorded comparisons", "Captured test result", null,
+                            List.of(new AtfAssertion(title, display(test.required("expected")),
+                                    display(test.required("observed")), status == AtfReportStatus.PASS, status)), status);
+                    for (var capture : check.captures()) {
+                        phase.uiValidationAsMedia(capture.title(), "Captured checkpoint", capture.base64Png(),
+                                List.of(), List.of(), status);
+                    }
+                    phase.complete(status);
+                    scenario.complete(status);
                 }
             }
         }
-        if (!captures.isEmpty()) ExtentReportUiEvidence.embedInlinePngs(report, captures);
         System.out.println(report);
     }
 
-    private static void readCases(ObjectMapper mapper, Path file, String layer, List<Check> checks) throws Exception {
-        if (!Files.isRegularFile(file)) return;
-        var cases = mapper.readTree(file.toFile());
-        if (!cases.isArray() || cases.isEmpty()) throw new IllegalArgumentException("No cases in " + file.getFileName());
-        cases.forEach(result -> checks.add(new Check(result, layer)));
+    private static void readCases(ObjectMapper mapper, Path directory, String file, String layer,
+                                  List<Check> checks) throws Exception {
+        Path source = directory.resolve(file);
+        if (!Files.isRegularFile(source)) return;
+        var cases = mapper.readTree(source.toFile());
+        if (!cases.isArray() || cases.isEmpty()) throw new IllegalArgumentException("No cases in " + file);
+        for (var result : cases) checks.add(check(result, layer, directory));
+    }
+
+    private static Check check(JsonNode test, String defaultLayer, Path directory) throws Exception {
+        if (!test.isObject() || test.required("name").asText().isBlank())
+            throw new IllegalArgumentException("Recorded case name is required");
+        AtfReportStatus.valueOf(test.required("status").asText());
+        test.required("expected"); test.required("observed");
+        String layer = test.path("layer").asText(defaultLayer);
+        suite(layer);
+        var captures = new ArrayList<ReportScreenshot>();
+        if (test.has("images") && !test.get("images").isArray())
+            throw new IllegalArgumentException("Captured images must be an array");
+        for (var image : test.path("images")) {
+            Path png = directory.resolve(image.required("file").asText()).toRealPath();
+            if (!png.getParent().equals(directory)) throw new IllegalArgumentException("Image escaped evidence root");
+            String payload = Base64.getEncoder().encodeToString(Files.readAllBytes(png));
+            if (!ReportScreenshot.hasPngSignature(payload)) throw new IllegalArgumentException("Invalid PNG: " + png.getFileName());
+            captures.add(new ReportScreenshot(image.required("title").asText(), payload));
+        }
+        return new Check(test, layer, List.copyOf(captures));
+    }
+
+    private static String suite(String layer) {
+        return switch (layer) {
+            case "component" -> "Browser components";
+            case "ui" -> "Browser UI";
+            case "android-component" -> "Android components";
+            case "android-comparison" -> "Android and Web comparison";
+            default -> throw new IllegalArgumentException("Unknown evidence layer: " + layer);
+        };
     }
 
     private static String display(JsonNode value) {

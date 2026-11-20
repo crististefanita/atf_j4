@@ -1160,3 +1160,48 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Standard report interface</summary>
+
+```yaml
+testChanges:
+  - id: RPT-OVERVIEW-MAIN
+    status: VERIFIED
+    base: a07e597fb9238e89f6614643442c344058c66362
+    expires: 2026-12-20
+    reason: Preserve the standard English report interface and original case-owned captures, comparisons and outcomes.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=BrowserExtentPublicationComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.reporting.browser.BrowserExtentPublicationComponentTest#standardOverviewKeepsEnglishNarrativeAndScenarioOwnedCaptures
+      negative:
+        - atf.tests.reporting.browser.BrowserExtentPublicationComponentTest#missingCaptureIsRejectedBeforeReportCreation
+        - atf.tests.reporting.browser.BrowserExtentPublicationComponentTest#externalCaptureAndInvalidPngCannotBePublished
+        - atf.tests.reporting.browser.BrowserExtentPublicationComponentTest#invalidLayerAndImageShapeDoNotCreatePartialReports
+    paths:
+      - atf-ui-browser/tests/BrowserExtent.java
+      - atf-tests/src/test/java/atf/tests/reporting/browser/BrowserReportFixture.java
+      - atf-tests/src/test/java/atf/tests/reporting/browser/BrowserExtentPublicationComponentTest.java
+      - atf-tests/src/test/java/atf/tests/reporting/GameReportComponentSuite.java
+  - id: RPT-OVERVIEW-RO
+    status: VERIFIED
+    base: 4a7b06cb78b5e98bcca3f45d62d1681073327a9a
+    expires: 2026-12-20
+    reason: Preserve the standard English report interface and original case-owned captures, comparisons and outcomes.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=BrowserExtentPublicationComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.reporting.browser.BrowserExtentPublicationComponentTest#standardOverviewKeepsEnglishNarrativeAndScenarioOwnedCaptures
+      negative:
+        - atf.tests.reporting.browser.BrowserExtentPublicationComponentTest#missingCaptureIsRejectedBeforeReportCreation
+        - atf.tests.reporting.browser.BrowserExtentPublicationComponentTest#externalCaptureAndInvalidPngCannotBePublished
+        - atf.tests.reporting.browser.BrowserExtentPublicationComponentTest#invalidLayerAndImageShapeDoNotCreatePartialReports
+    paths:
+      - atf-ui-browser/tests/BrowserExtent.java
+      - atf-tests/src/test/java/atf/tests/reporting/browser/BrowserReportFixture.java
+      - atf-tests/src/test/java/atf/tests/reporting/browser/BrowserExtentPublicationComponentTest.java
+      - atf-tests/src/test/java/atf/tests/reporting/GameReportComponentSuite.java
+```
+
+</details>

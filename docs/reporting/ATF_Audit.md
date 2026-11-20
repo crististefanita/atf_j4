@@ -148,3 +148,11 @@ The review shall cover the branches declared. The reduction to a representative 
 The passage of the structural audit does not demonstrate the legibility or interactive navigation alone. Checking the publication does not certify a new Android execution or the power of game policy.
 
 [Presentation policy](ATF_Presentation.md) · [Android contract](ATF_Android.md) · [Reporting architecture](README.md)
+
+## Report interface and evidence ownership
+
+The Extent Overview keeps the standard Reporting dashboard. Consumer publishers must not inject screenshot galleries, game controls or custom sections into that view. Attach captured PNGs inline to their original scenario and phase through the public UI evidence API. Observation-only frames do not manufacture assertions or a new game result.
+
+Report narration is English: suite names, phases, evidence labels and diagnostic explanations. Original application text, localized RO/EN captures and measured values remain unchanged. Each capture retains its title and case owner; all selected comparisons and the original outcome remain available in the standalone HTML.
+
+Publisher components check the standard Overview, English narration, the first and final case, multiple frames, complete long values and failed outcomes. Missing, external or invalid images must be rejected before a report is created. Existing sealed release evidence remains immutable; republication records the original evidence identity and the publisher revision separately.
