@@ -38,7 +38,6 @@ The 1–100 score expresses work priority, not quality or completion percentage.
 | RAG-16 | P2 | 85 | Resume unresolved component invocations from verified checkpoints, retaining original comparisons and complete JUnit identity parity. [Register](ATF_Governance.md#qualification-cost-and-invocation-recovery) |
 | UI-02 | P2 | 84 | Qualify enlarged result actions and scrolling on the consumer APKs in RO/EN with enlarged text. [Register](ATF_CardUi_Extraction.md#result-action-acceptance) |
 | AI-02 | P2 | 82 | Measure opportunities, conversions to 500, ranking impact and latency on new batches; separate natural play from controlled prefixes. [Register](ATF_Ai.md#playing-for-zero) |
-| WEB-16 | P2 | 80 | Prepare two-part 0.x versions for the next Browser and Android UI packages, preserving immutable legacy coordinates. [Register](ATF_CardUi_Extraction.md#next-shared-library-version-format) |
 | WEB-07 | P2 | 79 | Qualify settings, resume, Play again and history in APK and Chrome on the same Android in RO/EN and with increased text. [Register](ATF_UiBrowser.md#qualification-on-the-same-device) |
 | WEB-11 | P2 | 78 | Qualify ranks and suit glyphs in a 17-card hand with enlarged text in Android Chrome. [Register](ATF_UiBrowser.md#qualification-on-the-same-device) |
 | WEB-15 | P2 | 77 | Complete adoption qualification in remaining consumers, preserving matching runtime/test JAR hashes and game-specific adapters. [Register](ATF_UiBrowser.md#shared-package-adoption) |
