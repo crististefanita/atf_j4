@@ -39,6 +39,8 @@ class ComponentEvidenceScopeComponentTest {
                 "Shared dependency edges and unclassified paths cannot silently reuse evidence.");
         AuditedAssertions.assertTrue(output.contains("the version metadata exemption must reproduce the exact baseline build bytes"),
                 "A release version-only diff is exempt only when the prior build bytes reconstruct exactly.");
+        AuditedAssertions.assertTrue(output.contains("qualification path and UI export helpers require offline governance without native replay"),
+                "Qualification-only helpers must not turn a documentation and governance release into seven Android E2E flows.");
     }
 
     @Test void sharedDependenciesAndUnknownInputsCannotReuseTheirConsumers() throws Exception {

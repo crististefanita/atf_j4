@@ -118,6 +118,15 @@ test('standalone governance launchers rerun only the offline governance componen
   assert.ok(selection.changes.every(change => change.rule === 'non-runtime'));
 });
 
+test('qualification path and UI export helpers require offline governance without native replay', () => {
+  const paths = ['scripts/AtfLocalPaths.ps1', 'scripts/export-card-table-ui.ps1'];
+  const selection = deriveReleaseTestScope(new Map(), new Map(paths.map(file => [file, 'new'])), groups);
+  assert.equal(selection.kind, 'MAINTENANCE');
+  assert.deepEqual(selection.runComponentGroups, ['atf-tests']);
+  assert.deepEqual(selection.requiredE2eGroups, []);
+  assert.ok(selection.changes.every(change => change.rule === 'non-runtime'));
+});
+
 for (const file of ['scripts/AtfComponentJvm.ps1', 'scripts/AtfSigningSourcePolicy.ps1']) {
 test(`${file} requires offline components without selecting native game flows`, () => {
   const selection = deriveReleaseTestScope(new Map(), new Map([[file, 'new']]), groups);
