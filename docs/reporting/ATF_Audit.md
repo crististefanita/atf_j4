@@ -151,7 +151,9 @@ The passage of the structural audit does not demonstrate the legibility or inter
 
 ## Report interface and evidence ownership
 
-The Extent Overview keeps the standard Reporting dashboard. Consumer publishers must not inject screenshot galleries, game controls or custom sections into that view. Attach captured PNGs inline to their original scenario and phase through the public UI evidence API. Observation-only frames do not manufacture assertions or a new game result.
+The Extent Overview keeps the standard Reporting dashboard. Consumer publishers must not inject screenshot galleries, game controls or custom sections into that view.
+
+Attach captured PNGs inline to their original scenario and phase through the public UI evidence API. Observation-only frames do not manufacture assertions or a new game result.
 
 Comparison previews keep the standard 240-character limit; original input bodies remain complete inside the case disclosures, with body-display truncation disabled for this publisher.
 
