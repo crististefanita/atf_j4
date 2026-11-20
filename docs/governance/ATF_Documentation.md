@@ -57,7 +57,9 @@ La o contradicție, confruntați codul și configurația, restrângeți afirmaț
 
 Scopul, responsabilitatea și limita principală rămân vizibile. Detaliile secundare, excepțiile și justificările lungi pot sta în blocuri pliabile.
 
-<a id="main-readme"></a>`r`n`r`n## README-ul principal
+<a id="main-readme"></a>
+
+## README-ul principal
 
 README-ul principal orientează cititorul către produs, surse și verificare:
 

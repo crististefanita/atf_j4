@@ -6,7 +6,9 @@ Whist folosește motorul Java și contractele portabile ale mesei atât în APK,
 
 **Trasee rapide** · [Contract Android–Web](#ce-folosesc-împreună-android-și-web) · [Rulare Web](#traseele-de-execuție-web) · [JAR și AAR](#bibliotecă-pentru-adaptoare) · [Verificare](#verificare)
 
-<a id="what-android-and-web-share"></a>`r`n`r`n## Ce folosesc împreună Android și Web
+<a id="what-android-and-web-share"></a>
+
+## Ce folosesc împreună Android și Web
 
 | Contract comun de prezentare | Responsabilitate |
 |---|---|
@@ -40,7 +42,9 @@ flowchart LR
 
 </details>
 
-<a id="web-execution-paths"></a>`r`n`r`n## Traseele de execuție Web
+<a id="web-execution-paths"></a>
+
+## Traseele de execuție Web
 
 ```mermaid
 flowchart LR
