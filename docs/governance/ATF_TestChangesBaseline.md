@@ -1361,6 +1361,22 @@ testChanges:
       - atf-tests/tools/android-e2e-provenance-fixture.mjs
       - atf-tests/tools/android-e2e-runtime-scope.test.mjs
       - atf-tests/tools/android-e2e-provenance.test.mjs
+  - id: NATIVE-WEB-ADMISSION-COLLECTOR
+    status: VERIFIED
+    base: 1e078d06f4000d848675d87497302bad3052903d
+    expires: 2026-12-20
+    reason: Preserve original evidence for the same APK after browser-only changes, rejecting changed Android runtime, scenarios or provenance.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=NativeSourceProvenanceComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.rag.nativeproof.NativeSourceProvenanceComponentTest#immutableRuntimeEvidenceSurvivesValidatorMaintenanceButRejectsChangedInputs
+      negative:
+        - atf.tests.governance.documentation.release.rag.nativeproof.NativeSourceProvenanceComponentTest#legacyEvidenceAndSourceSelectionKeepTheirIndependentGuards
+    paths:
+      - atf-tests/tools/android-e2e-provenance.mjs
+      - atf-tests/tools/android-e2e-provenance-fixture.mjs
+      - atf-tests/tools/android-e2e-runtime-scope.test.mjs
+      - atf-tests/tools/android-e2e-provenance.test.mjs
 ```
 
 </details>
