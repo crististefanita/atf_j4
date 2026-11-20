@@ -174,12 +174,12 @@ flowchart LR
 
 </details>
 
-### Pachetul calificat curent: 0.4
+### Pachetul calificat curent: 0.5
 
 Fișierul alăturat `browser-build.json` leagă această versiune de commitul sursă, inventarul intrărilor și hash-urile artefactelor.
 
-- Runtime: [Card Table Browser 0.4](lib/atf-ui-browser-0.4.jar) · [SHA-256](lib/atf-ui-browser-0.4.jar.sha256)
-- Teste comune: [Testele Card Table Browser 0.4](lib/atf-ui-browser-0.4-tests.jar) · [SHA-256](lib/atf-ui-browser-0.4-tests.jar.sha256)
+- Runtime: [Card Table Browser 0.5](lib/atf-ui-browser-0.5.jar) · [SHA-256](lib/atf-ui-browser-0.5.jar.sha256)
+- Teste comune: [Testele Card Table Browser 0.5](lib/atf-ui-browser-0.5-tests.jar) · [SHA-256](lib/atf-ui-browser-0.5-tests.jar.sha256)
 - Proveniență: [browser-build.json](lib/browser-build.json)
 
 Contractul de viewport păstrează pe desktop cadrul logic de 414 × 896, îl scalează uniform după înălțimea și lățimea utilă a browserului și menține pragul de lizibilitate 0,68 numai când încap ambele dimensiuni. Browserul de telefon folosește viewport-ul CSS la scara 1:1. Consumatorii trebuie să adopte arhivele de execuție și teste din același receipt și să le verifice octeții.
