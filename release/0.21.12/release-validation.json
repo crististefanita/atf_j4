@@ -227,7 +227,7 @@
       }
     },
     "schemaVersion": 2,
-    "uniqueJunitInvocations": 1487
+    "uniqueJunitInvocations": 1480
   },
   "evidenceRetention": {
     "canonicalReport": "reports/component/atf-tests/component-report.html",

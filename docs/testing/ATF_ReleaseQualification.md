@@ -54,6 +54,7 @@ Fiecare selecție primară executată deține un raport Extent canonic și un re
 - Căile sunt unice: componenta folosește `reports/component/{group}/component-report.html`; E2E folosește `reports/e2e/{suite}/report.html` și `execution.json` alături.
 - Capturile PNG sunt încorporate Base64 în raportul suitei.
 - Rapoartele de componentă și E2E au proprietari diferiți și nu se reunesc într-o populație comună.
+- Numărați separat invocările unice unitare/de componentă și fluxurile pe APK-ul semnat. Totalurile E2E nu intră în recensământul invocărilor de componentă.
 
 | Selecție | Receipt-ul minim | Legătura verificată |
 |---|---|---|

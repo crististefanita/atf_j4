@@ -1,11 +1,11 @@
-import { fitTextWidth, isPhone, viewportGeometry, textScale } from "./viewport.mjs?v=0.2.26";
+import { fitTextWidth, isPhone, viewportGeometry, textScale } from "./viewport.mjs?v=0.3";
 import { collect } from "./collection.mjs";
 import { autoGame, waitForDecision } from "./auto-game.mjs";
 import { bindHandFeedback } from "./hand-feedback.mjs";
 import { historyGrid, applyHistoryAppearance } from "./records.mjs?v=0.3";
 import { fitSeatLine, fitSeatLines, retainSeatFrames, measureSeatActionClearance } from "./seat-presentation.mjs";
 import { historyFirst, menuFromEntries } from "./table-menu.mjs?v=0.3";
-import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.2.26";
+import { createProfileDialogs, deviceProfile, dismissGameMenuOnOutsideClick, preferredLanguage, saveLanguage } from "./profile.mjs?v=0.3";
 
 const stage = document.querySelector("#table");
 const frame = document.querySelector("#frame");
