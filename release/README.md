@@ -2,31 +2,31 @@
 
 ## Overview
 
-The catalog identifies the current Android release and retains one earlier release for provenance.
+The catalog identifies the current Android edition and retains one previous edition for provenance.
 
 ## Current version
 
-[0.21.12 — APK, checks and provenance](0.21.12/README.md) is the current Android release. The main README links directly to the APK.
+[0.21.13 — APK, checks and provenance](0.21.13/README.md) is qualified for publication. The APK link is in the main README.
 
 ## Previous version
 
-[0.21.11 — APK and evidence](0.21.11/README.md) remains in the catalog for provenance and comparison.
+[0.21.12 — APK and evidence](0.21.12/README.md) remains available for provenance and comparisons.
 
 ## Available versions
 
-| Version | Status | Dossier |
+| Version | State | Dossier |
 |---|---|---|
-| 0.21.12 | Published · APK verified | [APK and evidence](0.21.12/README.md) |
-| 0.21.11 | Previous version | [APK and evidence](0.21.11/README.md) |
+| 0.21.13 | Prepared · qualification complete | [APK and evidence](0.21.13/README.md) |
+| 0.21.12 | Previous edition | [APK and evidence](0.21.12/README.md) |
 
 ## Publication and verification
 
-Preparation, qualification and publication follow the [release process](../docs/testing/ATF_ReleaseQualification.md) and the [Android delivery guide](../docs/platform/ATF_AndroidDelivery.md). The main README introduces the product. The version manifest records the hashes and release details.
+Preparation, qualification and publication follow the [RAG process](../docs/testing/ATF_ReleaseQualification.md) and [Android guide](../docs/platform/ATF_AndroidDelivery.md). Technical details and hashes belong to the edition manifest.
 
-## Quick navigation
+## Reading the audit
 
-1. Open the current release README for its scope and download link.
-2. Open the canonical Extent report. Its index explains the selected checks and their provenance.
-3. Read the manifest for APK identity, signing, qualification and the payload inventory.
+1. Open the current dossier for scope and download.
+2. Follow the Extent index for selections and provenance.
+3. Read the manifest for APK identity, qualification and payload inventory.
 
-The [test documentation](../docs/testing/README.md) describes the strategy shared by releases. Each set of results belongs to its release.
+The [test strategy](../docs/testing/README.md) applies to every edition; its dossier holds the results.
