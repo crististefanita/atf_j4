@@ -54,6 +54,7 @@ Each executed primary selection owns a canonical Extent report and an execution 
 - The paths are unique: the component uses `reports/component/{group}/component-report.html`; E2E uses `reports/e2e/{suite}/report.html` and `execution.json` side by side.
 - Embed PNG captures as Base64 in the suite report.
 - Component and E2E reports have separate owners and invocation populations.
+- Count unique unit/component invocations separately from signed-APK flow invocations. E2E totals do not belong in the component invocation census.
 
 | Selection | Minimum receipt | Verified link |
 |---|---|---|
