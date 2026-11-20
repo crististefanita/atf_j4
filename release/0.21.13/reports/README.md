@@ -45,8 +45,8 @@ The component reports retain captured inputs, actual comparisons and inline PNGs
 
 The [component receipt](component/source-component-run.json) records the complete invocation census, stability check and reuse decisions. The framework collection has a fresh [isolated CI execution](diagnostics/cloud-qualification.json); nine other collections retain their original passing reports after scope validation. Rejected timeout attempts remain separate diagnostics and contribute no passing result.
 
-[Final-source build admission](diagnostics/final-source-build-reuse.json) confirms a real rebuild with identical Android binary bytes after validator and documentation updates. Seven headless native flows ran on that signed APK.
-
-Their original execution source and receipts remain unchanged; the current validator records Web-only admission separately. Broader Android/API and same-device Chrome acceptance remain separate qualifications.
+- [Final-source build admission](diagnostics/final-source-build-reuse.json) confirms a real rebuild with identical Android binary bytes after validator and documentation updates. Seven headless native flows ran on that signed APK.
+- Their original execution source and receipts remain unchanged; the current validator records Web-only admission separately.
+- Broader Android/API and same-device Chrome acceptance remain separate qualifications.
 
 [Manifest](../release-validation.json) · [Release catalog](../../README.md) · [Test strategy](../../../docs/testing/README.md)

@@ -237,7 +237,7 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-20T12:01:05.248Z",
+    "observedUtc": "2026-11-20T12:04:52.679Z",
     "files": [
       {
         "path": "README.md",
@@ -271,8 +271,8 @@
       },
       {
         "path": "reports/README.md",
-        "bytes": 3695,
-        "sha256": "c90e1c4853926f3e25a066f25ca6d4590eb60f47dcbfda15152c7878f3a2a608"
+        "bytes": 3700,
+        "sha256": "d245eff8ee4763eba21e5ad7e830dd59a74d5b1183f8dddaccd30de7f002e75b"
       },
       {
         "path": "reports/apk-inputs.json",
