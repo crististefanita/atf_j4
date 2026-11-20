@@ -1,0 +1,76 @@
+[
+  {
+    "id": "PUBLIC-WHIST-RO",
+    "name": "Published Whist home in ro at 414×896",
+    "status": "PASS",
+    "expected": {
+      "title": "Whist",
+      "buttons": [
+        "Numele tău: Tu",
+        "Joc nou",
+        "Reia partida",
+        "Clasamente",
+        "Realizări",
+        "Reguli de joc"
+      ],
+      "width": 414,
+      "overflow": false
+    },
+    "observed": {
+      "title": "Whist",
+      "buttons": [
+        "Numele tău: Tu",
+        "Joc nou",
+        "Reia partida",
+        "Clasamente",
+        "Realizări",
+        "Reguli de joc"
+      ],
+      "width": 414,
+      "overflow": false
+    },
+    "images": [
+      {
+        "file": "public-web-ro.png",
+        "title": "Published Web home — ro"
+      }
+    ]
+  },
+  {
+    "id": "PUBLIC-WHIST-EN",
+    "name": "Published Whist home in en at 414×896",
+    "status": "PASS",
+    "expected": {
+      "title": "Whist",
+      "buttons": [
+        "Your name: You",
+        "New game",
+        "Resume game",
+        "High scores",
+        "Achievements",
+        "How to play"
+      ],
+      "width": 414,
+      "overflow": false
+    },
+    "observed": {
+      "title": "Whist",
+      "buttons": [
+        "Your name: You",
+        "New game",
+        "Resume game",
+        "High scores",
+        "Achievements",
+        "How to play"
+      ],
+      "width": 414,
+      "overflow": false
+    },
+    "images": [
+      {
+        "file": "public-web-en.png",
+        "title": "Published Web home — en"
+      }
+    ]
+  }
+]

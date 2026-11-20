@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "kind": "android-e2e-execution-source",
+  "releaseVersion": "0.21.13",
+  "installedApkSha256": "375bdf8220897a7e34aad2aff5839a6945dd552c89c730283be8b3f2d963f9c8",
+  "executionReceiptSha256": "25afdbeb84d2326d9a772c113a78e41a7e5bd6817fb21a9f328f2ad9a670ed10",
+  "reportSha256": "6d4d9b11aac30778923b929238a077a38b081633a2607b8e6553477f8ab3abf5",
+  "sourceCommit": "964d3f69120242814e3b2843b004f9db5760dd23",
+  "sourceFingerprint": "6b04c761d52075380bc9ad31d047997cd0798946d95771b504d7074086d4704d",
+  "sourceInputManifest": "reports/e2e/sources/6b04c761d52075380bc9ad31d047997cd0798946d95771b504d7074086d4704d/source-inputs.json",
+  "sourceInputManifestSha256": "299552f1c8982414c0d59110fbe0513cd193dd218097a2c09571fbd157ce95b2",
+  "runtimeFingerprint": "29fc5c89d94613b431aabf5b8f740ddfef457a57f3fd431c1bd535548a977b18",
+  "scenarioFingerprint": "fb4feea10d51ac8e61604edb746c3864c3d6f674eba0f7a936108f48c1c1626f",
+  "snapshotValidatorFingerprint": "01a3dcfc843955ef6706e6a6924c976606c5f37f5fe50a14b4274cf70e33ab51"
+}

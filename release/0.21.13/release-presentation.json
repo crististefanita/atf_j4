@@ -1,0 +1,10 @@
+{
+  "version": "0.21.13",
+  "mode": "changes",
+  "previousVersion": "0.21.12",
+  "points": [
+    "Actualizează integrarea meniurilor comune și a istoricului punctajului pentru Android și Web.",
+    "Păstrează resursele Web asociate pe aceeași revizie de cache."
+  ],
+  "evidenceUrlTemplate": "https://github.com/crististefanita/whist/blob/{evidenceCommit}/release/0.21.13/reports/README.md"
+}

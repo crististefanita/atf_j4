@@ -1,0 +1,31 @@
+{
+  "schemaVersion" : 1,
+  "kind" : "ATF_TEST_CHANGE_PROOF",
+  "identity" : {
+    "id" : "SHARED-MENU-AUDIT-BASE-MAIN",
+    "base" : "1e078d06f4000d848675d87497302bad3052903d",
+    "commit" : "7732c4f883ee7ea0e2b2b3ad629e479bb836357f",
+    "diffSha256" : "519f3498eea65bf15dc3ddff187cd99d1e60a84f1d63669c1489e41cb2d8718a"
+  },
+  "positive" : [ {
+    "selector" : "atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#historyTypographyAndDividersFollowTheNativePolicy",
+    "verdict" : "PASS"
+  }, {
+    "selector" : "atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#menuAdaptersKeepNativeLabelsOrderAndDispatch",
+    "verdict" : "PASS"
+  }, {
+    "selector" : "atf.tests.reporting.browser.BrowserExtentPublicationComponentTest#standardOverviewKeepsEnglishNarrativeAndScenarioOwnedCaptures",
+    "verdict" : "PASS"
+  } ],
+  "negative" : [ {
+    "selector" : "atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#invalidStylesAreAtomicAndClearingRestoresTheBaseline",
+    "verdict" : "PASS"
+  }, {
+    "selector" : "atf.tests.reporting.browser.BrowserExtentPublicationComponentTest#externalCaptureAndInvalidPngCannotBePublished",
+    "verdict" : "PASS"
+  }, {
+    "selector" : "atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest#aPreparedCandidateCannotClaimPublicationOrInventASourceCommit",
+    "verdict" : "PASS"
+  } ],
+  "reportSha256" : "df84a487f234e59f83f175576a0e19f7a0ae5865c7e0606a90d09ff142a0410b"
+}

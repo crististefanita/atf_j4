@@ -1,0 +1,19 @@
+{
+  "schemaVersion" : 1,
+  "kind" : "ATF_TEST_CHANGE_PROOF",
+  "identity" : {
+    "id" : "NATIVE-WEB-ADMISSION-COLLECTOR",
+    "base" : "1e078d06f4000d848675d87497302bad3052903d",
+    "commit" : "7732c4f883ee7ea0e2b2b3ad629e479bb836357f",
+    "diffSha256" : "519f3498eea65bf15dc3ddff187cd99d1e60a84f1d63669c1489e41cb2d8718a"
+  },
+  "positive" : [ {
+    "selector" : "atf.tests.governance.documentation.release.rag.nativeproof.NativeSourceProvenanceComponentTest#immutableRuntimeEvidenceSurvivesValidatorMaintenanceButRejectsChangedInputs",
+    "verdict" : "PASS"
+  } ],
+  "negative" : [ {
+    "selector" : "atf.tests.governance.documentation.release.rag.nativeproof.NativeSourceProvenanceComponentTest#legacyEvidenceAndSourceSelectionKeepTheirIndependentGuards",
+    "verdict" : "PASS"
+  } ],
+  "reportSha256" : "f2efc761fe36203be443085764c49f98ddae80efbba549ff4575bcd0d8db56fe"
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "kind": "live-source-components",
+  "apkQualification": false,
+  "sourceFingerprint": "88c7cd58f5f8f3d3d89750a26c3efa98328023e895d590e09cf221fe56aa8ba3",
+  "provenanceReceiptSha256": "cded0befb9b24b2015d7affb6ffda7dc50c9e77cb9c8ba8e3512e182e219af95",
+  "inputManifest": "source-inputs.json",
+  "sourceStable": true,
+  "status": "PASS",
+  "stage": "isolated-staging-copy",
+  "inputCount": 1342,
+  "releaseFingerprint": "95b7a77b7755a015d8c1ee9781023a8e501a9670e6a6598e10628a328843a176",
+  "releaseInputManifest": "release-inputs.json",
+  "snapshotDifferences": [],
+  "results": [],
+  "reusedGroups": [
+    "atf-validation",
+    "atf-test-android",
+    "atf-tests",
+    "whist-lab-app-achievements",
+    "whist-lab-app-bidding",
+    "whist-lab-app-commands",
+    "whist-lab-app-display",
+    "whist-lab-app-history",
+    "whist-lab-app-atf-card-table-ui",
+    "whist-lab-app-rules"
+  ],
+  "gradleBatch": null,
+  "androidComponentsReceipt": "snapshots/4b7af0039f21df8a259e9b43bb6c7794d1cdcd9001dc0d3bdc55ede2a49baf67/source-component-run.json"
+}
