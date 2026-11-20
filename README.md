@@ -18,21 +18,21 @@ Gradle builds the APK and runs JVM checks for the game. The Maven reactor adds A
 ```mermaid
 flowchart LR
     gradle[Gradle]
-    product[Android APK]
-    components[JVM components]
+    produs[Android APK]
+    componente[JVM components]
     maven[Maven ATF]
-    checks[Audit and E2E]
-    libraries[ATF libraries]
+    verificari[Audit and E2E]
+    librarii[ATF libraries]
     rag[RAG qualification]
-    dossier[Release dossier]
-    gradle -->|builds| product
-    gradle -->|runs| components
-    maven -->|runs| checks
-    maven -->|consumes| libraries
-    checks -->|verifies| product
-    components -->|feeds| rag
-    checks -->|feeds| rag
-    rag -->|qualifies| dossier
+    dosar[Release dossier]
+    gradle -->|builds| produs
+    gradle -->|runs| componente
+    maven -->|runs| verificari
+    maven -->|consumes| librarii
+    verificari -->|verifies| produs
+    componente -->|feeds| rag
+    verificari -->|feeds| rag
+    rag -->|qualifies| dosar
 ```
 
 <details>
