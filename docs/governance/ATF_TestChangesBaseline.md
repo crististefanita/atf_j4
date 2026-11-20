@@ -1454,7 +1454,7 @@ testChanges:
         - atf.tests.governance.documentation.release.versioning.ReleaseVersionComponentTest#theApplicationUsesTheDeclaredTwoPartReleaseConvention
         - atf.tests.governance.documentation.release.versioning.ReleaseVersionComponentTest#releaseAdaptersAcceptTwoPartNamesAndRejectForeignAuditCommits
       negative:
-        - atf.tests.governance.documentation.release.versioning.ReleaseVersionComponentTest#invalidIdentitiesCannotConstructDownloadPaths
+        - atf.tests.governance.documentation.release.versioning.ReleaseVersionComponentTest#absentVersionCannotBecomeADownloadIdentity
         - atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest#aPreparedCandidateCannotClaimPublicationOrInventASourceCommit
     paths:
       - .github/workflows/whist-components.yml
