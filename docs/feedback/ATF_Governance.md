@@ -84,3 +84,12 @@ Respingeți probele de control al sursei lipsă sau expirate înainte de copiere
 - Măsurați separat pregătirea respinsă și execuția acceptată. Nu înlocuiți raportul original eșuat cu un caz vecin trecut și nu editați un receipt de execuție.
 
 - Faceți baza de revizie un parametru explicit în lansările locale și izolate. Verificați planul controalelor înaintea dependențelor; o bază istorică incompatibilă trebuie respinsă cu același diagnostic înaintea compilării.
+
+## Admiterea commitului auditului publicat
+
+Fluxul de publicare poate afișa un commit pregătit înainte ca manifestul să conțină commitul sursei calificate. Guvernanța finală respinge acest link, dar ediția publică necesită apoi corectarea metadatelor.
+
+- Validați commitul auditului înainte de publicarea adresei: cereți sursa calificată, identitatea identică a APK-ului și hash-ul raportului canonic, cu link direct în indexul versionat.
+- Acoperiți prin componente manifestul pregătit fără sursă, alt commit al sursei, raportul lipsă și hash-ul modificat al raportului.
+- Păstrați receipt-urile originale ale execuțiilor și fișierele publicate când corectați metadatele prezentării. Verificați separat notele GitHub și dosarul versionat.
+- Refolosiți selecția de guvernanță deja compilată pentru corectarea metadatelor; nu repetați componentele sau execuțiile Android neschimbate.
