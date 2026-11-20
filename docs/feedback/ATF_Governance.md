@@ -64,3 +64,11 @@ Snapshot and cache validation consume time even when test execution is reused. M
 - Resume unresolved invocations only after those immutable inputs are verified. Preserve rejected attempts as diagnostics.
 - Prove parity of the complete JUnit identity set against a full run; reject changed sources, missing cases, duplicate identities and altered evidence.
 - Keep timeout failures explicit until a real retry succeeds. A passing neighbouring case or a rewritten receipt is not replacement evidence.
+
+## Platform-specific selection cost
+
+The conservative fallback includes Web-only resources, retired browser packages and packaging tools in Android flow selection. Keep that safety boundary until dependency-aware component checks prove a narrower selection.
+
+- Declare platform ownership for resources and packaging; unknown shared-runtime changes must still select every affected flow.
+- Mock Web-only changes, removal of unused versions, Android menu changes and runtime dependency changes. Require a valid neighbor and a negative control for every exclusion.
+- Measure inventory, copying, compilation, execution and device waiting separately. Keep the source-only RAG snapshot distinct from component workspaces containing the release catalog and build outputs.

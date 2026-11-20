@@ -37,6 +37,7 @@ The 1–100 score expresses work priority, not quality or completion percentage.
 | UI-01 | P1 | 86 | Qualify headers, player boxes and notifications on consumer APKs, including Unicode name entry. [Register](ATF_CardUi_Extraction.md#priorities-and-closing-conditions) |
 | RAG-16 | P2 | 85 | Resume unresolved component invocations from verified checkpoints, retaining original comparisons and complete JUnit identity parity. [Register](ATF_Governance.md#qualification-cost-and-invocation-recovery) |
 | UI-02 | P2 | 84 | Qualify enlarged result actions and scrolling on the consumer APKs in RO/EN with enlarged text. [Register](ATF_CardUi_Extraction.md#result-action-acceptance) |
+| RAG-17 | P2 | 83 | Distinguish Web-only resources and packaging from Android runtime inputs without weakening the fallback for unknown dependencies. [Register](ATF_Governance.md#platform-specific-selection-cost) |
 | AI-02 | P2 | 82 | Measure opportunities, conversions to 500, ranking impact and latency on new batches; separate natural play from controlled prefixes. [Register](ATF_Ai.md#playing-for-zero) |
 | WEB-07 | P2 | 79 | Qualify settings, resume, Play again and history in APK and Chrome on the same Android in RO/EN and with increased text. [Register](ATF_UiBrowser.md#qualification-on-the-same-device) |
 | WEB-11 | P2 | 78 | Qualify ranks and suit glyphs in a 17-card hand with enlarged text in Android Chrome. [Register](ATF_UiBrowser.md#qualification-on-the-same-device) |
