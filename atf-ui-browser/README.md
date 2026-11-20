@@ -284,3 +284,15 @@ Acțiunile scorului au roluri comune dedicate: acțiunile principale folosesc 24
 - Adaptorul Web folosește aceleași tokenuri `ScoreTypography` exportate. Ferestrele înguste împachetează etichetele complete și derulează pagina scorului; scalarea desktop aparține contractului comun de viewport.
 - Coloanele numerice, celulele istoricului, rangurile cărților, dialogurile generice și celelalte meniuri își păstrează rolurile. Adaptoarele jocurilor dețin textele localizate, valorile confirmate și callback-urile.
 - Testele consumatorilor execută rendererul livrat și compară rolurile reale din AAR/JAR. Acoperiți RO/EN, ferestre scunde, text mărit, acțiuni accesibile, ordinea neschimbată a callback-urilor și respingerea stilurilor vechi sau scalate dublu.
+
+## Adaptoare comune pentru meniu și istoric
+
+| Contract | Adaptor Android | Adaptor pentru navigator |
+|---|---|---|
+| Plan localizat al meniului | Leagă intrările imuabile TableMenuContent de acțiunile deținute de ciclul de viață. | Leagă aceleași identități, etichete și ordine prin menuFromEntries. |
+| Aspectul istoricului | Transmite HistoryAppearance vizualizării comune ScoreHistoryView. | Aplică proprietățile CSS exportate de acesta în reprezentarea comună a istoricului. |
+| Vizibilitate | Jocul definește disponibilitatea rezultatului confirmat; platforma ascunde oprirea când automatizarea este oprită. | Aceeași disponibilitate se aplică fără introducerea unor rute nesuportate în timpul jocului. |
+
+Profilul obișnuit al istoricului elimină antetele îngroșate și folosește două unități logice cu nuanța separatorului Whist. Apelanții existenți păstrează constructorul nativ anterior și aspectul implicit neschimbat pentru navigator. Aspectul aparține fiecărui tabel; eliminarea lui restabilește valorile implicite fără modificarea altor stiluri.
+
+Coordonatele UI comune noi folosesc versiuni 0.x cu două segmente. Coordonatele existente cu trei segmente se pot doar reutiliza după verificarea manifestului intrărilor și a hash-urilor; octeții modificați cer o coordonată nouă. Biblioteca de execuție, testele portabile și hash-urile se livrează împreună.

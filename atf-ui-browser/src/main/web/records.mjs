@@ -11,6 +11,7 @@ export function saveRankingLimit(value) {
 
 export function historyGrid(data, element) {
   const grid = element("table", "", "record-history");
+  if (data.appearance && Object.keys(data.appearance).length) applyHistoryAppearance(grid, data.appearance);
   const header = element("thead");
   const names = element("tr");
   const headings = element("tr");
@@ -52,6 +53,20 @@ export function historyGrid(data, element) {
   }
   grid.append(header, body);
   return grid;
+}
+
+export function applyHistoryAppearance(grid, appearance) {
+  const keys = ["--history-heading-weight", "--history-divider-width", "--history-divider-color"];
+  if (Object.keys(appearance).length === 0) {
+    for (const key of keys) grid.style.removeProperty(key);
+    return;
+  }
+  if (Object.keys(appearance).length !== keys.length || !keys.every(key => typeof appearance[key] === "string")
+      || !/^(400|700)$/.test(appearance[keys[0]]) || !/^[1-4]px$/.test(appearance[keys[1]])
+      || !/^#[0-9a-f]{6}$/i.test(appearance[keys[2]])) {
+    throw new TypeError("Invalid shared history appearance");
+  }
+  for (const key of keys) grid.style.setProperty(key, appearance[key]);
 }
 
 export function rankingPanel(data, element, copy) {

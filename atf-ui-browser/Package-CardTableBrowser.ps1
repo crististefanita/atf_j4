@@ -4,9 +4,11 @@ param(
     [Parameter(Mandatory)][string]$Version
 )
 $ErrorActionPreference = 'Stop'
-if ($Version -notmatch '^\d+\.\d+\.\d+$') { throw 'Expected a three-part release version.' }
+Import-Module (Join-Path $PSScriptRoot '../scripts/CardTableLibraryVersion.psm1') -Force
+Assert-CardTableLibraryVersion -Version $Version -Existing $true
 $checkout = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).ProviderPath
 $root = [IO.Path]::GetFullPath($WorkRoot)
+Assert-CardTableLibraryVersion -Version $Version -Existing (Test-Path -LiteralPath (Join-Path $root "atf-ui-browser-$Version"))
 if ($root -ieq $checkout -or $root.StartsWith($checkout + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
     throw 'Use an external browser work directory.'
 }
@@ -23,6 +25,9 @@ $testInputs = @(
     Join-Path $tests 'trick-playback.mjs'
     Join-Path $tests 'shared-presentation.test.mjs'
     Join-Path $tests 'ScoreTypographyProbe.java'
+    Join-Path $tests 'MenuHistoryProbe.java'
+    Join-Path $tests 'menu-history-contract.mjs'
+    Join-Path $tests 'menu-history.test.mjs'
     Join-Path $tests 'seat-presentation.mjs'
     Join-Path $tests 'viewport-contract.mjs'
     Join-Path $tests 'card-typography.mjs'
@@ -39,7 +44,7 @@ function Get-CleanCommit {
     $commit
 }
 function Get-InputManifest {
-    $files = @($PSCommandPath, $starter) + @(& $starter @launch -ListSources) + $testInputs
+    $files = @($PSCommandPath, $starter, (Join-Path $checkout 'scripts/CardTableLibraryVersion.psm1')) + @(& $starter @launch -ListSources) + $testInputs
     $files += @(Get-ChildItem -LiteralPath (Join-Path $source 'web') -Recurse -File | ForEach-Object FullName)
     $order = [string[]]$files
     [Array]::Sort($order, [StringComparer]::Ordinal)

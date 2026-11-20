@@ -1205,3 +1205,84 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Adaptoare comune pentru meniu și istoric</summary>
+
+```yaml
+testChanges:
+  - id: UI-MENU-HISTORY-MAIN
+    status: VERIFIED
+    base: 8812885a4ecba84f9dfca3980a2c0b4165e4b900
+    expires: 2026-12-20
+    reason: Bind native and browser menu intentions and history appearance through shared models, preserving legacy behavior and immutable library coordinates.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=SharedMenuHistoryComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#historyTypographyAndDividersFollowTheNativePolicy
+        - atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#menuAdaptersKeepNativeLabelsOrderAndDispatch
+        - atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#newLibraryCoordinatesUseTwoPartsAndLegacyCoordinatesAreReuseOnly
+      negative:
+        - atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#invalidStylesAreAtomicAndClearingRestoresTheBaseline
+    paths:
+      - atf-ui-browser/Package-CardTableBrowser.ps1
+      - atf-ui-browser/Start-CardTableBrowser.ps1
+      - atf-ui-browser/pages/src/main/java/ro/cardtable/browser/PageJson.java
+      - atf-ui-browser/src/main/java/ro/cardtable/browser/BrowserGame.java
+      - atf-ui-browser/src/main/web/index.html
+      - atf-ui-browser/src/main/web/records.mjs
+      - atf-ui-browser/src/main/web/table-menu.mjs
+      - atf-ui-browser/src/main/web/table.css
+      - atf-ui-browser/src/main/web/table.mjs
+      - scripts/export-card-table-ui.ps1
+      - whist-lab-app/atf-card-table-ui/build.gradle
+      - whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/menu/TableMenuContent.java
+      - whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/score/ScoreHistoryView.java
+      - whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/menu/TableMenuContentComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/uiadapter/SharedMenuHistoryComponentTest.java
+      - atf-ui-browser/tests/MenuHistoryProbe.java
+      - atf-ui-browser/tests/menu-history-contract.mjs
+      - atf-ui-browser/tests/menu-history.test.mjs
+      - atf-ui-browser/tests/package-version.test.mjs
+      - scripts/CardTableLibraryVersion.psm1
+      - whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/score/HistoryAppearance.java
+      - whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/score/HistoryAppearanceComponentTest.java
+  - id: UI-MENU-HISTORY-RO
+    status: VERIFIED
+    base: 82d9dd9426c5a3ee7826f187bacf29879e30d1e3
+    expires: 2026-12-20
+    reason: Bind native and browser menu intentions and history appearance through shared models, preserving legacy behavior and immutable library coordinates.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=SharedMenuHistoryComponentTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#historyTypographyAndDividersFollowTheNativePolicy
+        - atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#menuAdaptersKeepNativeLabelsOrderAndDispatch
+        - atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#newLibraryCoordinatesUseTwoPartsAndLegacyCoordinatesAreReuseOnly
+      negative:
+        - atf.tests.governance.uiadapter.SharedMenuHistoryComponentTest#invalidStylesAreAtomicAndClearingRestoresTheBaseline
+    paths:
+      - atf-ui-browser/Package-CardTableBrowser.ps1
+      - atf-ui-browser/Start-CardTableBrowser.ps1
+      - atf-ui-browser/pages/src/main/java/ro/cardtable/browser/PageJson.java
+      - atf-ui-browser/src/main/java/ro/cardtable/browser/BrowserGame.java
+      - atf-ui-browser/src/main/web/index.html
+      - atf-ui-browser/src/main/web/records.mjs
+      - atf-ui-browser/src/main/web/table-menu.mjs
+      - atf-ui-browser/src/main/web/table.css
+      - atf-ui-browser/src/main/web/table.mjs
+      - scripts/export-card-table-ui.ps1
+      - whist-lab-app/atf-card-table-ui/build.gradle
+      - whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/menu/TableMenuContent.java
+      - whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/score/ScoreHistoryView.java
+      - whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/menu/TableMenuContentComponentTest.java
+      - atf-tests/src/test/java/atf/tests/governance/uiadapter/SharedMenuHistoryComponentTest.java
+      - atf-ui-browser/tests/MenuHistoryProbe.java
+      - atf-ui-browser/tests/menu-history-contract.mjs
+      - atf-ui-browser/tests/menu-history.test.mjs
+      - atf-ui-browser/tests/package-version.test.mjs
+      - scripts/CardTableLibraryVersion.psm1
+      - whist-lab-app/atf-card-table-ui/src/main/java/ro/cardtable/ui/score/HistoryAppearance.java
+      - whist-lab-app/atf-card-table-ui/src/test/java/ro/cardtable/ui/score/HistoryAppearanceComponentTest.java
+```
+
+</details>
