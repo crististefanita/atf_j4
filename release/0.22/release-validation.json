@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "publication": {
-    "state": "QUALIFIED",
+    "state": "PUBLISHED",
     "channel": "TEST",
     "repository": "crististefanita/whist",
     "accessMode": "AUTHENTICATED",
@@ -57,6 +57,10 @@
           "androidComponents": {
             "status": "PASS",
             "receipt": "reports/component/snapshots/4b7af0039f21df8a259e9b43bb6c7794d1cdcd9001dc0d3bdc55ede2a49baf67/source-component-run.json"
+          },
+          "distributionDownload": {
+            "status": "PASS",
+            "receipt": "reports/distribution-verification.json"
           }
         }
       }
@@ -162,12 +166,12 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-20T12:52:21.686Z",
+    "observedUtc": "2026-11-20T12:58:53.873Z",
     "files": [
       {
         "path": "README.md",
-        "bytes": 684,
-        "sha256": "784b319b92102971501987ddc1a8e67838141e7026917c32375fe1d33d0b75a7"
+        "bytes": 665,
+        "sha256": "ab2d00d02eb3e8efb926e8bb03cd15f8d238a6f8db1b885208ba13c9f686882b"
       },
       {
         "path": "WhistLab-0.22.apk",
@@ -175,34 +179,39 @@
         "sha256": "70cd42e55afc63cf7d3039eb37ab4ba7786d61a87e7503748ae0c32969a95916"
       },
       {
-        "path": "WhistLab-0.22.apk.idsig",
-        "bytes": 13699,
-        "sha256": "46223369ab7fbe97d93ed4f908c378d2ae44bf5005cf63dd83841a736c4275c4"
-      },
-      {
         "path": "WhistLab-0.22.apk.sha256",
         "bytes": 84,
         "sha256": "5391eeefd97686a79d26a6606f94828534fb8777bb7be16c358de9dab1b83458"
       },
       {
-        "path": "release-notes.template.md",
-        "bytes": 718,
-        "sha256": "cc72a6ea78f379733b0301065ca5e1fcc2648b7d4f12eda0b7785a119a4bd191"
+        "path": "github-release.json",
+        "bytes": 816,
+        "sha256": "403de221690cfe1715ce70994e9452317a7fdeb530cb6eba83cd9d3581489963"
+      },
+      {
+        "path": "release-notes.md",
+        "bytes": 742,
+        "sha256": "4516aaa17d65cbbd8747822694e595599682b1516f9ba0aac49758f2b112e033"
       },
       {
         "path": "release-presentation.json",
-        "bytes": 459,
-        "sha256": "93df0085cb2464b56596007a6703864e3dbe30a69effdacfe177182c965c014e"
+        "bytes": 475,
+        "sha256": "f76d73fc3f7d433a33fbd057a0e4703bee298a4a1fe50d152af6192c59cbdeb8"
       },
       {
         "path": "reports/README.md",
-        "bytes": 2639,
-        "sha256": "8e0b1445248e01e62f47999bea4e9671c07ef0e9d0a2aa6cc9826aee4e89206a"
+        "bytes": 3004,
+        "sha256": "52473f6cf7d03717117576d25279dfc8d3af1be25568ffe11d9decd9e0db9916"
       },
       {
         "path": "reports/apk-inputs.json",
         "bytes": 253385,
         "sha256": "00f89386c39ae82fb53b9dd529741d1ea0a2557b3a627c28f54ee01c4d6e5d72"
+      },
+      {
+        "path": "reports/browser-download-extent.html",
+        "bytes": 2452216,
+        "sha256": "a9cb080d0682732de0a618c38766c916fe6c0c8c3fcfcd7623e36c04c46f8118"
       },
       {
         "path": "reports/component/atf-test-android/component-report.html",
@@ -408,6 +417,16 @@
         "path": "reports/diagnostics/signing-compatibility.json",
         "bytes": 386,
         "sha256": "c313e54f312b13a1403f88aa65610a91d89ee68efb21ff222a277c21bd2c8e7d"
+      },
+      {
+        "path": "reports/distribution-verification.json",
+        "bytes": 1156,
+        "sha256": "562614f1fdb7c2122f723cfbc2d71dd6f73d4d2195aabc12b19c47088dd6d431"
+      },
+      {
+        "path": "reports/download-extent.html",
+        "bytes": 2413004,
+        "sha256": "074e098e8cef4472a4be8f13f2449fbb48e62c12ea8150057d7ac4760245bd0c"
       },
       {
         "path": "reports/supplemental/test-change-controls/TWO-PART-RELEASE-AND-AUDIT/component-report.html",

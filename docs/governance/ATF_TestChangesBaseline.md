@@ -1490,3 +1490,25 @@ testChanges:
 ```
 
 </details>
+
+<details>
+<summary>Language-aware product links</summary>
+
+```yaml
+testChanges:
+  - id: BILINGUAL-GAME-SECTION
+    status: VERIFIED
+    base: df7d1954a0b4098f9678ed54acc911a57600adff
+    expires: 2026-12-20
+    reason: Read the configured documentation language before checking the product section; retain exact APK and online links and reject foreign publication URLs.
+    proof: 'mvn -o -pl atf-tests -am -Dtest=ReleaseArtifactLayoutGovernanceTest,ReleasePresentationGovernanceTest -Dsurefire.failIfNoSpecifiedTests=false test'
+    checks:
+      positive:
+        - atf.tests.governance.documentation.release.ReleaseArtifactLayoutGovernanceTest#theGameSectionHasOnlyTheDirectApkAndTheOnlineGame
+      negative:
+        - atf.tests.governance.documentation.release.ReleasePresentationGovernanceTest#rawRepositoryLinksAndAnotherVersionsAssetsAreRejected
+    paths:
+      - atf-tests/src/test/java/atf/tests/governance/documentation/release/ReleaseArtifactLayoutGovernanceTest.java
+```
+
+</details>

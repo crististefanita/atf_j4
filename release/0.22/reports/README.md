@@ -13,7 +13,15 @@ Components are qualified against identified sources, with canonical Extent repor
 | APK | WhistLab-0.22.apk |
 | versionCode | 45 |
 | Qualified source | `df7d1954a0b4098f9678ed54acc911a57600adff` |
-| Integrity | [Manifest](../release-validation.json) |
+| Integrity | ## Distribution
+
+The authenticated API download and completed anonymous browser download match the qualified APK. These checks have separate reports and do not add to the component census.
+
+- [APK transfer Extent](download-extent.html)
+- [README browser download Extent](browser-download-extent.html)
+- [Recorded delivery identity](distribution-verification.json)
+
+[Manifest](../release-validation.json) |
 
 ## Components
 

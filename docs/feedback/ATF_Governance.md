@@ -64,6 +64,7 @@ Snapshot and cache validation consume time even when test execution is reused. M
 - Resume unresolved invocations only after those immutable inputs are verified. Preserve rejected attempts as diagnostics.
 - Prove parity of the complete JUnit identity set against a full run; reject changed sources, missing cases, duplicate identities and altered evidence.
 - Keep timeout failures explicit until a real retry succeeds. A passing neighbouring case or a rewritten receipt is not replacement evidence.
+- Provide a versioned targeted runner that resolves method parameter signatures and aggregate-report scope before execution. Keep rejected discovery or publication attempts separate from accepted test evidence.
 
 ## Platform-specific selection cost
 
@@ -87,11 +88,10 @@ Reject missing or stale source-control evidence before copying caches, compiling
 
 The isolated workflow now receives the review base explicitly. Admission of unresolved source-control evidence before dependency preparation remains open; selecting the right base alone does not close that boundary.
 
-## Published audit commit admission
+## Reporting schema admission
 
-The publication flow can advertise a prepared dossier commit before its manifest contains the qualified source commit. Final governance rejects this link, but the public release then needs a metadata correction.
+The evaluator can accept canonical HTML evidence while the manifest declares legacy XML qualification mode. Dossier integrity governance rejects the mismatch later; the two stages need the same admission rule.
 
-- Validate the audit commit before publishing its URL: require the qualified source, identical APK identity and canonical report hash, with a direct report link in the committed index.
-- Cover prepared manifests with an absent source, another source commit, missing report bytes and a changed report hash through component tests.
-- Preserve original execution receipts and published assets when correcting presentation metadata. Check the final GitHub release body and the committed dossier independently.
-- Reuse the existing compiled governance selection for a metadata correction; do not repeat unchanged component or Android execution.
+- Check the qualification schema and evidence representation before readiness or publication. Require the canonical HTML schema for modern dossiers and an explicit supported boundary for historical XML evidence.
+- Cover absent or unsupported schemas, mixed evidence modes, missing group receipts and contradictory invocation counts through component tests.
+- Keep evaluator, standalone preflight and full governance diagnostics aligned. Reject the inconsistent input without rewriting old receipts or inventing JUnit data.
