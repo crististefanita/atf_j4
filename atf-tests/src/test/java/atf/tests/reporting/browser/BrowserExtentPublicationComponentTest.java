@@ -50,6 +50,7 @@ public class BrowserExtentPublicationComponentTest {
         assertTrue(last.outerHtml().contains(c), "The final case retains its own frame");
         assertFalse(last.outerHtml().contains(a), "The final case does not inherit the first capture");
         assertTrue(last.text().contains("EXPECTED_FINAL_♠") && last.text().contains("OBSERVED_FINAL_♥"), "Long expected and observed values remain complete");
+        assertTrue(last.text().contains("Mâna următoare"), "English report narration preserves original Romanian application evidence");
         assertTrue(last.outerHtml().contains("fail"), "A failed recorded comparison retains its outcome");
         assertEquals(0, doc.select("img[src]:not([src^=data:]), a[data-img]:not([data-img^=data:])").size(), "Captures need no external files");
     }
