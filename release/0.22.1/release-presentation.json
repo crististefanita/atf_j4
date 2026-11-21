@@ -3,9 +3,9 @@
   "mode": "changes",
   "previousVersion": "0.22",
   "points": [
-    "Select and rerun component tests by source ownership and exact input hashes.",
-    "Reuse unchanged component evidence with its original source provenance.",
-    "Keep maintenance changes on the patch version line and record the diff-derived E2E decision."
+    "Selectează doar suitele de componentă afectate, pe baza proprietății sursei.",
+    "Reutilizează dovezile componentelor numai cât timp intrările deținute și proveniența rămân neschimbate.",
+    "Păstrează descărcarea APK-ului autentificat și dovezile de release legate de aceeași versiune."
   ],
   "evidenceUrl": "https://github.com/crististefanita/whist/blob/53f81ac299a82b8b68ed01b70c67a1baec267d6d/release/0.22.1/reports/README.md"
 }

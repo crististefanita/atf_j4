@@ -166,7 +166,7 @@
   "integrity": {
     "schemaVersion": 1,
     "kind": "OBSERVED_PAYLOAD_HASHES",
-    "observedUtc": "2026-11-21T10:20:46.991Z",
+    "observedUtc": "2026-11-21T11:44:15.638Z",
     "files": [
       {
         "path": "README.md",
@@ -200,13 +200,13 @@
       },
       {
         "path": "release-notes.md",
-        "bytes": 703,
-        "sha256": "cb3eacfdce4e94e3b4b59d40205d376e2eff237ee6afc842203fdfc37a48bcf8"
+        "bytes": 909,
+        "sha256": "a646810d77c52feae50788d3fa60d71f3992c8cf13185c4b4c4abc4bc77b3826"
       },
       {
         "path": "release-presentation.json",
-        "bytes": 497,
-        "sha256": "c90f03a7eb178a6818d0cecd49db7b0afddf3b6e3b1d39cdd978aa38b37603cd"
+        "bytes": 548,
+        "sha256": "9077e15948f7be2fffaae774872764e843aec921b04c750b1e40194d9058055d"
       },
       {
         "path": "reports/README.md",
