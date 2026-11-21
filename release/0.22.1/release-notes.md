@@ -1,3 +1,5 @@
+# Whist 0.22.1
+
 Actualizările RAG de mentenanță aleg componentele în funcție de proprietatea sursei și reutilizează dovezile validate pentru modulele neschimbate.
 
 ## Schimbări

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 2,
+  "publication": {
+    "state": "PREPARED",
+    "channel": "TEST",
+    "repository": "crististefanita/whist",
+    "accessMode": "AUTHENTICATED",
+    "targetUrl": "https://github.com/crististefanita/whist/releases/download/v0.23.0/WhistLab-0.23.0.apk"
+  },
+  "release": {
+    "applicationId": "ro.whistlab.app",
+    "versionName": "0.23.0",
+    "versionCode": 47,
+    "minSdk": 24,
+    "targetSdk": 36,
+    "artifactKind": "apk",
+    "platforms": ["android"],
+    "platform": "android",
+    "apkName": "WhistLab-0.23.0.apk",
+    "apkRelativePath": "WhistLab-0.23.0.apk",
+    "apkBytes": 1033649,
+    "apkSha256": "f77a65d25f7c1249409d10de3379751592ca018b350394a3ef852bc73e32665a",
+    "apkCrc32": "d433ac47",
+    "signingCertificate": "Android Debug",
+    "productionManagedKey": false,
+    "certificateSha256": "b80c45a9b52ef0c83dcb929ba4aeb8775c836e5e6d587324d7ec725c079fb4c3"
+  }
+}

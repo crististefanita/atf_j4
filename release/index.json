@@ -1,5 +1,6 @@
 {
   "schemaVersion": 2,
   "currentVersion": "0.22.1",
-  "versions": ["0.22.1", "0.22"]
+  "versions": ["0.22.1", "0.22"],
+  "candidateVersion": "0.23.0"
 }
