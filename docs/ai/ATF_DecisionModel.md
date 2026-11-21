@@ -61,7 +61,7 @@ Observarea în laborator distinge prima alegere pentru zero de o decizie eligibi
 | Responsabil | Contract |
 |---|---|
 | [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) | API-ul observației, generarea și agregarea comparațiilor, apoi gărzile finite. |
-| [BidConditioning](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/BidConditioning.java) | Reponderează mâinile inițiale ipotetice folosind dovezi limitate din licitații al căror prefix legal este cunoscut. |
+| [BidConditioning](https://github.com/crististefanita/whist/blob/main/whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/inference/BidConditioning.java) | Reponderează mâinile inițiale ipotetice folosind dovezi limitate din licitații al căror prefix legal este cunoscut. |
 | [HandTrickPotential](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/policy/HandTrickPotential.java) | Scor de potențial pentru onoruri, acoperirea în aceeași culoare și scurtime cu sprijin de atu, consumat doar de condiționarea licitațiilor; estimarea licitației pentru Normal rămâne neschimbată. |
 | [DecisionEvaluation](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionEvaluation.java) | Transformă continuările ipotetice în utilitate, folosind aceleași ținte și reguli de scor; nu selectează lumi sau acțiuni. |
 | [DecisionOrdering](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionOrdering.java) | Ordonează alternativele deja evaluate după profil și toleranțele consacrate; nu consumă numere aleatoare. |
