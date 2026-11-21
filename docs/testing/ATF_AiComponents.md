@@ -55,6 +55,9 @@ Un parcurs Android rămâne E2E numai când execută interacțiuni noi în aplic
 | Sursă | Responsabilitate |
 |---|---|
 | [ContextualHonorDiscardTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/ContextualHonorDiscardTest.java) | Martori legali, necesar și efectul cărților publice. |
+| [BidConditioningTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/BidConditioningTest.java) | Acoperire pentru onoruri și tăiere; plauzibilitate moderată cu licitații legale și oferta finală interzisă; reconstruire din levate curente și încheiate; oprire după mărimea efectivă a eșantionului; comportament neutru pentru moduri, programe și mărimi de masă necalibrate. |
+| [ContractEndgameTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/ContractEndgameTest.java) | Restricții publice de lipsă de culoare, finaluri mici exacte, numărul cărților, excluderea atuului întors și dovezile mesei curente înainte de punctarea levatei. |
+| [OfflinePerspectiveMatchTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/match/OfflinePerspectiveMatchTest.java) | Rejoacă aceeași secvență de distribuiri într-un mod ales cu toți Normal, toți Hard și fiecare loc Hard individual; validează angajamentele opace ale distribuirilor și programul mâinilor declarat în matrice. |
 | [BlindPolicyObservationTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/information/BlindPolicyObservationTest.java) | Separarea mâinii proprii și a informației publice înaintea apelului politicii. |
 | [CertifiedContractRegressionTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/CertifiedContractRegressionTest.java) | Certificat, lipsa garanției și fallback. |
 | [HardSalvageObjectiveTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/contract/HardSalvageObjectiveTest.java) | Ordinea obiectivelor când exactul este imposibil public. |
@@ -69,8 +72,15 @@ Un parcurs Android rămâne E2E numai când execută interacțiuni noi în aplic
 
 ## Organizarea colecțiilor
 
-Regresia implicită păstrează cazuri mici, stabile și cu așteptare independentă. Cercetarea, turneele și diagnosticele care explorează limite nerezolvate sunt colecții explicite, cu buget și scop declarate.
+| Colecție | Scop | Limită |
+|---|---|---|
+| Regresie implicită | Cazuri mici, stabile și independente | Fiecare caz acoperă o proprietate sau frontieră distinctă. |
+| Cercetare, turneu și diagnostic | Explorează comportamente nerezolvate | Declară scopul și bugetul; păstrează loturile mari de jocuri în corpusul extern. [Selecția focalizată](../learning/ATF_Selection.md) controlează costul analizei. |
+| `offlineMockMatchTest`, `offlinePerspectiveMatchTest` | Partide offline la patru jucători | Whistul românesc 1–8–1 este implicit; testele de perspective acceptă fiecare `GameMode` declarat, pentru a verifica izolarea regulilor românești față de celelalte variante. |
 
-Un caz nou trebuie să aducă o proprietate sau frontieră distinctă. Seturile mari de jocuri și rezultatele lor rămân în corpusul extern, iar [selecția focalizată](../learning/ATF_Selection.md) controlează costul analizei.
+- `whist.offlineMatch.seed` alege primul seed determinist; `whist.offlineMatch.mode` selectează un `GameMode`; `whist.offlineMatch.roster` selectează patru locuri `NORMAL`/`HARD`; `whist.offlineMatch.count` acceptă 1–100 de partide complete.
+- `run-offline-perspectives.ps1 -Mode <GameMode> -Seed <seed>` compară toate cele șase alcătuiri de locuri pe aceeași ordine privată de distribuiri. Valoarea implicită este `ROMANIAN_WHIST`; rulările alternative se păstrează cu modul și seed-ul pereche în rădăcina externă de dovezi.
+- O partidă scrie urma publică completă a licitațiilor și cărților. Un lot scrie scoruri compacte pentru fiecare partidă și numărul contractelor exacte în `whist.offlineMatch.output`, care trebuie să indice în afara checkout-ului.
+- Agregatele generează idei de ecranare; comparațiile pereche cu același seed și regresiile de componentă rămân necesare înainte de promovarea unei schimbări de politică.
 
 [Colecții](ATF_Collections.md) · [Guvernanța schimbărilor](../governance/ATF_TestChanges.md) · [Modelul deciziei](../ai/ATF_DecisionModel.md)

@@ -61,6 +61,8 @@ Observarea în laborator distinge prima alegere pentru zero de o decizie eligibi
 | Responsabil | Contract |
 |---|---|
 | [MonteCarloAi](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/MonteCarloAi.java) | API-ul observației, generarea și agregarea comparațiilor, apoi gărzile finite. |
+| [BidConditioning](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/BidConditioning.java) | Reponderează mâinile inițiale ipotetice folosind dovezi limitate din licitații al căror prefix legal este cunoscut. |
+| [HandTrickPotential](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/policy/HandTrickPotential.java) | Scor de potențial pentru onoruri, acoperirea în aceeași culoare și scurtime cu sprijin de atu, consumat doar de condiționarea licitațiilor; estimarea licitației pentru Normal rămâne neschimbată. |
 | [DecisionEvaluation](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionEvaluation.java) | Transformă continuările ipotetice în utilitate, folosind aceleași ținte și reguli de scor; nu selectează lumi sau acțiuni. |
 | [DecisionOrdering](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/engine/DecisionOrdering.java) | Ordonează alternativele deja evaluate după profil și toleranțele consacrate; nu consumă numere aleatoare. |
 
@@ -69,7 +71,7 @@ Calea de evaluare depinde de domeniu. [MonteCarloAi](../../whist-lab-app/game-co
 | Domeniu | Evaluare și limită |
 |---|---|
 | Licitare de o carte | `OneCardBidBelief` condiționează enumerarea pe licitațiile deja observate în domeniul românesc de patru locuri cu carte întoarsă; în afara domeniului sau fără evidență eligibilă se folosește estimarea de bază. |
-| Licitare de 2–8 cărți | Alternativele legale folosesc aceleași lumi; contractele publice sunt păstrate, iar ofertele încă necunoscute sunt estimate în continuare. |
+| Licitare de 2–8 cărți | Alternativele legale folosesc aceleași distribuiri posibile. Licitațiile publice anterioare reponderează moderat mâinile inițiale ipotetice ale adversarilor; licitațiile cu prefix lipsă și propria licitație a actorului nu sunt dovezi. |
 | Jocul cărții | O singură acțiune legală sau o regulă de dominanță poate evita simularea; altfel cărțile candidate sunt comparate pe lumi comune. |
 | Finaluri mici | Enumerarea lumilor și căutarea continuărilor au domenii distincte; enumerarea completă nu transformă modelul continuării într-un certificat universal. |
 
@@ -78,14 +80,20 @@ Modelul de o carte are [implementare în motor](../../whist-lab-app/game-core/sr
 Pentru alternativele simulate, vectorul terminal conține punctele proprii, scorul rivalului principal, indicatorul contractului exact și numărul ratărilor adverse:
 
 ```text
-estimate(action) = weighted_sum_utilities / sum_weights
+world_weight(D) = tempered_product(public_bid_likelihoods(D))
+estimate(action) = sum(world_weight(D) × utility(action, D)) / sum(world_weight(D))
 mixed_utility = (1 − α) × rollout_utility + α × MaxN_utility
+effective_sample_size = sum(world_weights)² / sum(world_weights²)
 ```
 
-- Agregarea simulărilor generale folosește ponderi egale ale lumilor generate; samplerul nu este dovedit uniform peste toate distribuirile fezabile.
+- La 2–8 cărți, în Whist românesc 1–8–1 cu patru locuri, plauzibilitatea licitației păstrează 65% sprijin uniform și 35% plauzibilitate normalizată după forța estimată, pentru fiecare ofertă eligibilă; produsul este temperat cu 0,25 la două cărți și 0,50 la trei–opt. Estimarea comună a forței acordă regelui acoperit un potențial limitat în aceeași culoare și o flexibilitate modestă la tăiere pentru culori fără atu scurte, dacă actorul are atu; niciuna nu reprezintă o levată sigură. Whistul românesc lung rămâne neutru până când o validare separată pe date nefolosite susține transferul.
+- Poziția la licitație schimbă setul de oferte legale și informația disponibilă înaintea deciziei. Calibrați și validați jocul condiționat de licitații separat pentru primul, mijlocul și ultimul ofertant, precum și pentru mese cu politici uniforme și mixte; un câștig agregat pe semințele de ajustare nu este dovadă de validare independentă.
+- Cărțile jucate sunt scoase din pachetul necunoscut, culorile demonstrate ca lipsă restrâng repartizările, iar cărțile publice jucate distinct se adaugă la reconstrucția mâinii inițiale a ofertantului. Atuul întors este exclus din pachet.
+- O licitație impusă de reguli, una făcută după un prefix incomplet și oferta proprie a observatorului nu adaugă plauzibilitate. Licitația de o carte își păstrează separat domeniul calibrat din `OneCardBidBelief`.
+- Ponderile sunt plauzibilități relative regularizate peste samplerul existent cu restricții; nici distribuția propusă de acesta, nici valorile rezultate nu sunt prezentate drept posterior calibrat. Mărimea efectivă a eșantionului arată concentrarea, iar planificatorul de cărți își păstrează bugetul limitat de lumi.
 - Amestecul cu MaxN se aplică numai în domeniul mic definit de `DecisionEvaluation.evaluate`; în rest se folosește rollout-ul.
 - Căutarea pe o lume ipotetică poate folosi acea lume pentru consecințe, fără a demonstra optimalitatea strategiei cu informație ascunsă.
-- Frecvența exactului depinde de modelul lumilor și al continuării; condiționarea generală după licitații la 2–8 cărți este [cercetare separată](ATF_RulesConfiguration.md#inferența-comportamentului).
+- Frecvența exactului depinde de modelul lumilor și de continuare; alegerea adversarilor de a juca anumite cărți nu este încă folosită drept dovadă de plauzibilitate.
 
 ## Prioritatea obiectivelor
 
@@ -97,10 +105,16 @@ Ordinea de mai jos privește profilul românesc; celelalte variante folosesc uti
 | Normal, joc | Urmărirea necesarului prin rang și situația curentă; evitarea levatelor după țintă. |
 | Hard românesc, licitare | Șansa estimată a contractului exact, punctele proprii, apoi licitația mai mică la egalitate. |
 | Hard, contract recuperabil | Șansa estimată a exactului, punctele proprii, apoi reducerea scorului rivalului principal. |
-| Hard, imposibilitate dovedită public | Punctele proprii estimate, ratările adverse estimate, apoi scorul rivalului principal. |
+| Hard, imposibilitate dovedită public, cu peste două levate rămase | Punctele proprii estimate, ratările adverse estimate, apoi scorul rivalului principal. |
+| Hard, imposibilitate dovedită public, ultimele două levate | Mai întâi ratările adverse estimate, apoi punctele proprii estimate și scorul rivalului principal. Un certificat universal poate înlocui propunerea doar dacă nu înrăutățește punctele proprii sau ratările rivalilor. |
 | Jucător independent | Punctele proprii; la carte, scorul rivalului principal departajează egalitatea. |
 
-Tabelul descrie profilul runtime `CURRENT`; profilurile experimentale pot schimba ordinea și se selectează explicit. Criteriile se aplică lexicografic, cu toleranțele numerice din comparator: un criteriu ulterior departajează valori considerate egale la nivelul anterior.
+Tabelul descrie profilul de producție `Hard`:
+
+- Tactica de ardere târzie se activează numai după ce imposibilitatea este dovedită public și au rămas cel mult două levate.
+- Normal păstrează prioritatea contractului și nu intră în profilul de ardere.
+- Profilurile experimentale rămân selectabile explicit.
+- Comparatorul aplică toleranțe numerice lexicografice: fiecare criteriu ulterior departajează valorile considerate egale la nivelul precedent.
 
 ## Fezabilitate și certificate
 

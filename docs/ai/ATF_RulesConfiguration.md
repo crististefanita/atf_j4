@@ -118,12 +118,28 @@ Corecția contextuală se aplică doar în ramura eligibilă a modelului experim
 
 ## Inferența comportamentului
 
-Această secțiune descrie modelul general de cercetare pentru 2–8 cărți. Modelul runtime specializat de o carte și fallback-ul său sunt documentate în [modelul deciziei](ATF_DecisionModel.md#estimarea-alternativelor); controlul automat al coerenței manifestului cu acel domeniu rămâne [criteriu deschis](../feedback/ATF_Ai.md#coordonarea-evaluării-și-delimitarea-mecanismelor).
+Motorul acceptat aplică acum o plauzibilitate limitată a licitațiilor publice în mâinile de 2–8 cărți, la Whist românesc 1–8–1 cu patru locuri. Celelalte programe nu au validat încă acest transfer; modelul pentru o carte și modelele experimentale de estimare a licitațiilor rămân separate. [Modelul deciziei](ATF_DecisionModel.md#estimate-of-alternatives) descrie responsabilitățile și limitele.
+
+Plauzibilitatea interpretează moderat licitația publică și se recalculează din observația curentă.
+
+| Aspect | Contract runtime |
+|---|---|
+| Reconstruirea mâinii | Reface mâna de la momentul licitației din cărțile rămase eșantionate și cărțile publice distincte jucate; vezi [HandTrickPotential](../../whist-lab-app/game-core/src/main/java/ro/whistlab/core/ai/policy/HandTrickPotential.java). |
+| Plauzibilitatea licitației | Folosește numai valori legale; păstrează 65% sprijin uniform și 35% plauzibilitate după forță. Aplică temperatura 0,25 la două cărți și 0,50 la trei–opt. |
+| Indicii din onoruri și formă | Limitează potențialul regelui acoperit. Adaugă flexibilitate modestă de tăiere pentru culoare fără atu și singleton numai când se deține atu (0,22 pentru fiecare lipsă de culoare și 0,03 pentru singleton, scalată cu cel mult două atuuri). |
+| Excluderea dovezilor | Nu folosește licitația proprie, una făcută după prefix incomplet sau una impusă mecanic. Păstrează o plauzibilitate nenulă pentru orice ofertă legală surprinzătoare. |
+| Evoluția stării publice | Elimină cărțile jucate și întoarse din distribuirile ascunse; adaugă noile cărți publice jucate și culorile dovedite ca lipsă înaintea reponderării. |
+| Domeniu | Se aplică numai la Whist românesc 1–8–1, patru locuri și două–opt cărți. Mâinile de o carte folosesc `OneCardBidBelief`; Whistul românesc lung, celelalte moduri și alte mărimi de masă păstrează plauzibilitatea neutră. Estimatorul Normal și estimările ofertelor încă nedepuse rămân neschimbate. |
+| Limite | Sunt ponderi relative peste un sampler cu restricții, nu un posterior calibrat. Samplerul nu este demonstrat uniform, alegerea cărților nu este modelată ca dovadă, iar bugetul de lumi al planificatorului de cărți rămâne fix și limitat. Se raportează mărimea efectivă a eșantionului. |
+
+### Modele de calibrare experimentală
+
+Modelele de mai jos sunt alternative de cercetare; ele nu furnizează plauzibilitatea runtime acceptată decât dacă sunt promovate explicit printr-o implementare și o poartă de regresie separată.
 
 [Modelul experimental de licitații](../../whist-lab-app/ai-lab/experiments/bid-models/shared/game-core/src/main/java/ro/whistlab/core/LearnedBidEvidence.java) folosește coeficienți fixați și caracteristici ale mâinii ipotetice originale și prefixului disponibil atunci. Cărțile rămase și cele jucate de același loc se reunesc fără dublarea mesei curente.
 
 <details>
-<summary>Plauzibilitate, regularizare și mărimea efectivă a eșantionului</summary>
+<summary>Calibrarea modelului alternativ de caracteristici și mărimea eșantionului</summary>
 
 ```text
 μ = clamp(scale × θ · φ(initial_hand, prefix), 0, hand_size)

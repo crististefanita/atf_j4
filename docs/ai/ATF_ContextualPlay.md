@@ -26,6 +26,8 @@ Legalitatea precedă orice intenție. Fezabilitatea folosește limite publice ș
 
 | Condiție | Implicație |
 |---|---|
+| Regele are o carte mai mică în aceeași culoare | Tratați cartea mică drept acoperire care poate expune sau consuma o carte mai mare înainte de rege; crește potențialul, dar nu considerați regele o levată sigură. |
+| Licitațiile publice sunt complete sau prefixul este cunoscut | Folosiți-le ca indicii limitate despre mâinile inițiale ale adversarilor; licitația rămâne o dovadă incertă, nu identitatea unei cărți. |
 | Contractul este realizat | Reduceți riscul levatelor suplimentare în limitele legalității. |
 | Mai lipsesc levate realizabile | Păstrați sau folosiți cărțile care oferă oportunitățile necesare. |
 | Lipsește culoarea cerută, dar există atu | Tăierea obligatorie prevalează asupra intenției de evitare. |
@@ -45,6 +47,8 @@ Cererea pozitivă însumează `max(0, necesar)` pentru fiecare loc: un contract 
 Ordinea runtime și cuantificatorii certificatelor sunt definiți în [modelul deciziei](ATF_DecisionModel.md#prioritatea-obiectivelor). [Regulile și configurarea](ATF_RulesConfiguration.md) disting aceste ramuri active de indicii și ponderi experimentale.
 
 - [ContextualHonorDiscardTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/ContextualHonorDiscardTest.java) verifică frontierele regulilor prin martori legali și schimbări controlate ale necesarului.
+- [BidConditioningTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/BidConditioningTest.java) verifică acoperirea onorurilor, flexibilitatea oferită de atu la culori scurte, dovezile din licitații legale, excluderea licitației finale ilegale, reconstruirea din cărți jucate în levata curentă și în cele încheiate, oprirea după eșantionul efectiv și comportamentul neutru în afara domeniului calibrat: Whist românesc 1–8–1, patru locuri.
+- [ContractEndgameTest](../../whist-lab-app/game-core/src/test/java/ro/whistlab/core/ai/engine/ContractEndgameTest.java) verifică faptul că atuul întors și cărțile jucate nu reapar în distribuțiile ascunse și că lipsurile publice restrâng lumile generate.
 - [Proiectarea componentelor](../testing/ATF_AiComponents.md) delimitează observația actorului și oracolul.
 - [Jucătorul independent](../../whist-lab-app/ai-lab/README.md) are implementare și utilitate separate.
 
